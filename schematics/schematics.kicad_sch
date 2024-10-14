@@ -1,0 +1,5235 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "63ceb2e0-4444-45f9-852b-5c8aedd47ba6")
+	(paper "A4")
+	(lib_symbols
+		(symbol "ga_fujitsu_av:D24"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at 1.27 2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "D24"
+				(at 1.27 -5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "2-wide 2-AND 4-input AND-OR-Inverter"
+				(at -1.27 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "D24_1_1"
+				(arc
+					(start -3.81 -6.35)
+					(mid -2.0837 -5.5363)
+					(end -1.27 -3.81)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(arc
+					(start -3.81 -1.27)
+					(mid -2.0837 -0.4563)
+					(end -1.27 1.27)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(arc
+					(start -1.27 -3.81)
+					(mid -2.0139 -2.0139)
+					(end -3.81 -1.27)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(arc
+					(start -1.27 1.27)
+					(mid -2.0139 3.0661)
+					(end -3.81 3.81)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.175 -3.81) (xy 0.889 -3.81)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.175 1.27) (xy 0.889 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy -3.81 -1.27) (xy -6.35 -1.27) (xy -6.35 -6.35) (xy -3.81 -6.35)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy -3.81 3.81) (xy -6.35 3.81) (xy -6.35 -1.27) (xy -3.81 -1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 -3.81) (xy 0 -3.81) (xy 0 -2.54) (xy 1.524 -2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 1.27) (xy 0 1.27) (xy 0 0) (xy 1.524 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.175 1.27) (xy 0.889 1.27) (xy 1.27 0.635) (xy 1.524 0) (xy 1.651 -0.508) (xy 1.7018 -0.8128)
+						(xy 1.7272 -1.0922) (xy 1.7272 -1.397) (xy 1.6764 -1.9304) (xy 1.6002 -2.286) (xy 1.4986 -2.6416)
+						(xy 1.3716 -2.9464) (xy 1.1938 -3.3274) (xy 1.016 -3.6068) (xy 0.889 -3.81) (xy 3.175 -3.81)
+					)
+					(stroke
+						(width -0.0001)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(arc
+					(start 0.8973 -3.8098)
+					(mid 1.7338 -1.2699)
+					(end 0.8971 1.27)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 3.175 -3.81)
+					(mid 5.2091 -3.0983)
+					(end 6.35 -1.27)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(arc
+					(start 6.35 -1.27)
+					(mid 5.2094 0.5586)
+					(end 3.175 1.27)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin input line
+					(at -8.89 2.54 0)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -8.89 0 0)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -8.89 -2.54 0)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -8.89 -5.08 0)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 8.89 -1.27 180)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "ga_fujitsu_av:FDM"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at 0 5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "FDM"
+				(at 0 -5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 1.27 5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 1.27 5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "DFF"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "FDM_1_1"
+				(rectangle
+					(start -3.81 3.81)
+					(end 3.81 -3.81)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin input line
+					(at -6.35 1.27 0)
+					(length 2.54)
+					(name "D"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -6.35 -1.27 0)
+					(length 2.54)
+					(name "CK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 6.35 1.27 180)
+					(length 2.54)
+					(name "Q"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 6.35 -1.27 180)
+					(length 2.54)
+					(name "~{Q}"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "ga_fujitsu_av:FDQ"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at 2.54 10.16 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "FDQ"
+				(at -2.54 10.16 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 1.27 6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 1.27 6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "4-bit DFF (TODO)"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "FDQ_1_1"
+				(rectangle
+					(start -3.81 8.89)
+					(end 3.81 -8.89)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin input line
+					(at -6.35 6.35 0)
+					(length 2.54)
+					(name "DA"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 6.35 6.35 180)
+					(length 2.54)
+					(name "QA"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "10"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -6.35 3.81 0)
+					(length 2.54)
+					(name "DB"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -6.35 1.27 0)
+					(length 2.54)
+					(name "DC"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -6.35 -1.27 0)
+					(length 2.54)
+					(name "DD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -6.35 -5.08 0)
+					(length 2.54)
+					(name "CK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 6.35 -1.27 180)
+					(length 2.54)
+					(name "QD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 6.35 1.27 180)
+					(length 2.54)
+					(name "QC"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 6.35 3.81 180)
+					(length 2.54)
+					(name "QB"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "9"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "ga_fujitsu_av:LT4"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at -7.62 13.97 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "LT4"
+				(at -7.62 -16.51 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "4-bit Latch"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "TTL DFF DFF4 Latch"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "DIP?16*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "LT4_1_0"
+				(pin input line
+					(at -12.7 10.16 0)
+					(length 5.08)
+					(name "D0"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -12.7 5.08 0)
+					(length 5.08)
+					(name "D1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -12.7 0 0)
+					(length 5.08)
+					(name "D2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -12.7 -5.08 0)
+					(length 5.08)
+					(name "D3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -12.7 -12.7 0)
+					(length 5.08)
+					(name "G"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 12.7 10.16 180)
+					(length 5.08)
+					(name "Q0"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 12.7 5.08 180)
+					(length 5.08)
+					(name "Q1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 12.7 0 180)
+					(length 5.08)
+					(name "Q2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 12.7 -5.08 180)
+					(length 5.08)
+					(name "Q3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 12.7 7.62 180)
+					(length 5.08)
+					(name "~{Q0}"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 12.7 2.54 180)
+					(length 5.08)
+					(name "~{Q1}"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 12.7 -2.54 180)
+					(length 5.08)
+					(name "~{Q2}"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 12.7 -7.62 180)
+					(length 5.08)
+					(name "~{Q3}"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "LT4_1_1"
+				(rectangle
+					(start -7.62 12.7)
+					(end 7.62 -15.24)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+		)
+		(symbol "ga_fujitsu_av:N2N"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at 0 3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "N2N"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at -1.27 3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at -1.27 3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "2-lnput NAND"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "N2N_1_1"
+				(arc
+					(start 0 -2.54)
+					(mid 1.7263 -1.7263)
+					(end 2.54 0)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 2.54) (xy -2.54 2.54) (xy -2.54 -2.54) (xy 0 -2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(arc
+					(start 2.54 0)
+					(mid 1.7961 1.7961)
+					(end 0 2.54)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin input line
+					(at -5.08 1.27 0)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -5.08 -1.27 0)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 5.08 0 180)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "ga_fujitsu_av:N2P"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at 0 3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "N2P"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 3.81 3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 3.81 3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Power 2-input AND"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "N2P_1_1"
+				(arc
+					(start 0 -2.54)
+					(mid 1.7263 -1.7263)
+					(end 2.54 0)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 2.54) (xy -2.54 2.54) (xy -2.54 -2.54) (xy 0 -2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(arc
+					(start 2.54 0)
+					(mid 1.7961 1.7961)
+					(end 0 2.54)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin input line
+					(at -5.08 1.27 0)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -5.08 -1.27 0)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 5.08 0 180)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "ga_fujitsu_av:N3N"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at -1.27 3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "N3N"
+				(at 2.54 3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 7.62 6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 7.62 6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "3-input NAND"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "N3N_1_1"
+				(arc
+					(start 0 -2.54)
+					(mid 1.7263 -1.7263)
+					(end 2.54 0)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 2.54) (xy -2.54 2.54) (xy -2.54 -2.54) (xy 0 -2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(arc
+					(start 2.54 0)
+					(mid 1.7961 1.7961)
+					(end 0 2.54)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin input line
+					(at -5.08 2.54 0)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -5.08 0 0)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -5.08 -2.54 0)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 5.08 0 180)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "ga_fujitsu_av:N3P"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at 0 3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "N3P"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at -1.27 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at -1.27 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Power 3-input AND"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "N3P_1_1"
+				(arc
+					(start 0 -2.54)
+					(mid 1.7263 -1.7263)
+					(end 2.54 0)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 2.54) (xy -2.54 2.54) (xy -2.54 -2.54) (xy 0 -2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(arc
+					(start 2.54 0)
+					(mid 1.7961 1.7961)
+					(end 0 2.54)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin input line
+					(at -5.08 2.54 0)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -5.08 0 0)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -5.08 -2.54 0)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 5.08 0 180)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "ga_fujitsu_av:R2N"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at 0 3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "R2N"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 6.35 13.97 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 6.35 13.97 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "2-lnput NOR"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "R2N_1_1"
+				(arc
+					(start -2.9127 -2.5398)
+					(mid -2.0762 0.0001)
+					(end -2.9129 2.54)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -0.635 -2.54)
+					(mid 1.3992 -1.8283)
+					(end 2.54 0)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.635 -2.54) (xy -2.921 -2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.635 2.54) (xy -2.921 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.635 2.54) (xy -2.921 2.54) (xy -2.54 1.905) (xy -2.286 1.27) (xy -2.159 0.762) (xy -2.1082 0.4572)
+						(xy -2.0828 0.1778) (xy -2.0828 -0.127) (xy -2.1336 -0.6604) (xy -2.2098 -1.016) (xy -2.3114 -1.3716)
+						(xy -2.4384 -1.6764) (xy -2.6162 -2.0574) (xy -2.794 -2.3368) (xy -2.921 -2.54) (xy -0.635 -2.54)
+					)
+					(stroke
+						(width -0.0001)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(arc
+					(start 2.54 0)
+					(mid 1.3994 1.8287)
+					(end -0.635 2.54)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin input line
+					(at -5.08 1.27 0)
+					(length 2.794)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -5.08 -1.27 0)
+					(length 2.794)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 5.08 0 180)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "ga_fujitsu_av:R2P"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at 0 3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "R2P"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 8.89 7.62 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 8.89 7.62 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "2-lnput Power OR"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "R2P_1_1"
+				(arc
+					(start -2.9127 -2.5398)
+					(mid -2.0762 0.0001)
+					(end -2.9129 2.54)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -0.635 -2.54)
+					(mid 1.3992 -1.8283)
+					(end 2.54 0)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.635 -2.54) (xy -2.921 -2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.635 2.54) (xy -2.921 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.635 2.54) (xy -2.921 2.54) (xy -2.54 1.905) (xy -2.286 1.27) (xy -2.159 0.762) (xy -2.1082 0.4572)
+						(xy -2.0828 0.1778) (xy -2.0828 -0.127) (xy -2.1336 -0.6604) (xy -2.2098 -1.016) (xy -2.3114 -1.3716)
+						(xy -2.4384 -1.6764) (xy -2.6162 -2.0574) (xy -2.794 -2.3368) (xy -2.921 -2.54) (xy -0.635 -2.54)
+					)
+					(stroke
+						(width -0.0001)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(arc
+					(start 2.54 0)
+					(mid 1.3994 1.8287)
+					(end -0.635 2.54)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin input line
+					(at -5.08 1.27 0)
+					(length 2.794)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -5.08 -1.27 0)
+					(length 2.794)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 5.08 0 180)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "ga_fujitsu_av:U24"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at 0 16.51 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "U34"
+				(at 0 12.7 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 1.27 -1.27 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+						(color 0 0 0 1)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 1.27 -1.27 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+						(color 0 0 0 1)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Power 2-OR 4-wide Multiplexer"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "U24_1_1"
+				(rectangle
+					(start -6.35 11.43)
+					(end 6.35 -11.43)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(text "AND"
+					(at 2.032 0 0)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(text "OR"
+					(at -1.524 -7.62 0)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(text "OR"
+					(at -1.524 -2.54 0)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(text "OR"
+					(at -1.524 2.54 0)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(text "OR"
+					(at -1.524 7.62 0)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(pin input line
+					(at -8.89 8.89 0)
+					(length 2.54)
+					(name "A1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -8.89 6.35 0)
+					(length 2.54)
+					(name "A2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -8.89 3.81 0)
+					(length 2.54)
+					(name "B1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -8.89 1.27 0)
+					(length 2.54)
+					(name "B2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -8.89 -1.27 0)
+					(length 2.54)
+					(name "C1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -8.89 -3.81 0)
+					(length 2.54)
+					(name "C2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -8.89 -6.35 0)
+					(length 2.54)
+					(name "D1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -8.89 -8.89 0)
+					(length 2.54)
+					(name "D2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 8.89 8.89 180)
+					(length 2.54)
+					(name "X"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "ga_fujitsu_av:V2B"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at 0 3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "V2B"
+				(at 1.27 6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 1.27 6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 1.27 6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Power Inverter"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "V2B_1_1"
+				(polyline
+					(pts
+						(xy -2.54 2.54) (xy -2.54 -2.54) (xy 2.54 0) (xy -2.54 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin input line
+					(at -5.08 0 0)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 5.08 0 180)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "ga_fujitsu_av:X1B"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at 0 3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "X1B"
+				(at 0.254 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 1.27 1.27 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 1.27 1.27 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Power ENOR"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "X1B_1_1"
+				(arc
+					(start -2.9127 -2.5398)
+					(mid -2.0762 0.0001)
+					(end -2.9129 2.54)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -2.54 -2.54)
+					(mid -1.7035 -0.0001)
+					(end -2.5402 2.5398)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -0.635 -2.54)
+					(mid 1.3992 -1.8283)
+					(end 2.54 0)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.635 -2.54) (xy -2.54 -2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.635 2.54) (xy -2.54 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.635 2.54) (xy -2.54 2.54) (xy -2.159 1.905) (xy -1.905 1.27) (xy -1.778 0.762) (xy -1.7272 0.4572)
+						(xy -1.7018 0.1778) (xy -1.7018 -0.127) (xy -1.7526 -0.6604) (xy -1.8288 -1.016) (xy -1.9304 -1.3716)
+						(xy -2.0574 -1.6764) (xy -2.2352 -2.0574) (xy -2.413 -2.3368) (xy -2.54 -2.54) (xy -0.635 -2.54)
+					)
+					(stroke
+						(width -0.0001)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(arc
+					(start 2.54 0)
+					(mid 1.3994 1.8287)
+					(end -0.635 2.54)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin input line
+					(at -5.08 1.27 0)
+					(length 2.794)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -5.08 -1.27 0)
+					(length 2.794)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 5.08 0 180)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_name "ga_fujitsu_av:LT4")
+		(lib_id "ga_fujitsu_av:LT4")
+		(at 63.5 149.86 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "0b525dfc-2f45-4ea9-a879-306f185f7c27")
+		(property "Reference" "V78"
+			(at 63.5 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "LT4"
+			(at 63.5 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 63.5 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 63.5 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "4-bit Latch"
+			(at 63.5 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin ""
+			(uuid "6cdfdac4-08f5-4790-a325-c49ecd604d1f")
+		)
+		(pin ""
+			(uuid "a68da812-3f77-4701-a372-7b3cb35c7d21")
+		)
+		(pin ""
+			(uuid "8881d897-f4b2-42e5-8149-cc41f69b8832")
+		)
+		(pin ""
+			(uuid "3595f91f-a5e2-4ed1-83be-b86ada0f531c")
+		)
+		(pin ""
+			(uuid "e996ddcc-5ce8-4818-baee-059a55a140ae")
+		)
+		(pin ""
+			(uuid "2c4a7060-14bc-48c7-a0ca-086b5ca30e20")
+		)
+		(pin ""
+			(uuid "9e5f8b78-fd59-45cd-b3c6-232846a55779")
+		)
+		(pin ""
+			(uuid "d7463901-c886-4e79-8c24-e2ae44eee8a8")
+		)
+		(pin ""
+			(uuid "af7dc6df-79d5-4212-966a-599ea2d0dd3e")
+		)
+		(pin ""
+			(uuid "19d29aed-f19b-4289-8c7e-65a896126274")
+		)
+		(pin ""
+			(uuid "d929bdf3-cdfc-4d30-92d4-f69df096e75a")
+		)
+		(pin ""
+			(uuid "0984d61c-4609-42ea-a0b6-e865122cf088")
+		)
+		(pin ""
+			(uuid "9d6b1d66-28d0-42b0-be81-77a1058cf2d3")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V78")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:LT4")
+		(at 64.77 -17.78 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "14f41f18-d6db-44ed-bd5d-ebfb4621035f")
+		(property "Reference" "V33"
+			(at 64.77 -35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "LT4"
+			(at 64.77 -33.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 64.77 -17.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 64.77 -17.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "4-bit Latch"
+			(at 64.77 -17.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin ""
+			(uuid "ce945fea-dfce-4283-9bc4-3ba814b990e7")
+		)
+		(pin ""
+			(uuid "0afabe4f-3060-473d-a5a8-97cf7be0d2c1")
+		)
+		(pin ""
+			(uuid "babbfe17-5625-4b7b-9f68-5004ccee13a4")
+		)
+		(pin ""
+			(uuid "bf442815-ff5f-4648-b169-208554acb384")
+		)
+		(pin ""
+			(uuid "ecbef748-4b03-405d-a40c-2e89ec7b5eba")
+		)
+		(pin ""
+			(uuid "7aae3e01-0e66-43f8-9b37-3d8bde5beed8")
+		)
+		(pin ""
+			(uuid "6b0437c8-eb29-4302-96b0-2e60b3bc06c3")
+		)
+		(pin ""
+			(uuid "e7c2bba7-9af4-4731-9be1-a22d720df6dc")
+		)
+		(pin ""
+			(uuid "0a89a03d-25ba-4c67-a2f9-248fb8436fa2")
+		)
+		(pin ""
+			(uuid "df12cb72-a803-4131-a693-5348148bddfd")
+		)
+		(pin ""
+			(uuid "a6d417ac-6704-4eb3-bf83-aaaae5929b21")
+		)
+		(pin ""
+			(uuid "af167e98-2a63-4393-b355-6cd827315a52")
+		)
+		(pin ""
+			(uuid "a93d4376-e49b-4c1b-b1a2-daa19702fee3")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V33")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N2N")
+		(at 63.5 102.87 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "199a1efb-699d-45d5-8cee-ecd80511d135")
+		(property "Reference" "V74"
+			(at 63.5 95.25 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N2N"
+			(at 63.5 97.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 62.23 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 62.23 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput NAND"
+			(at 63.5 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "d5bdd019-c426-40a0-8483-0bc2cc5ace14")
+		)
+		(pin "3"
+			(uuid "72aa007e-86b6-4d86-ae8b-5e4e87c149e4")
+		)
+		(pin "2"
+			(uuid "6da02947-ede9-4ec1-b894-ce1b2ef37f8b")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V74")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N2N")
+		(at 64.77 20.32 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "311c8911-fe6e-415e-b174-4ecae4b8a30d")
+		(property "Reference" "V47"
+			(at 64.77 12.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N2N"
+			(at 64.77 15.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 63.5 16.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 63.5 16.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput NAND"
+			(at 64.77 20.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "327222fa-efca-478c-afdb-0e08da62ca78")
+		)
+		(pin "3"
+			(uuid "8a66ab40-e76c-4e0b-9384-808eb0aacbcb")
+		)
+		(pin "2"
+			(uuid "c10108d7-6578-4edc-a5e8-e0536b3e88ef")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V47")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N3N")
+		(at 62.23 265.43 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "38326a23-e4d0-4198-a614-3912cbf26503")
+		(property "Reference" "V110"
+			(at 62.23 257.81 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N3N"
+			(at 62.23 260.35 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 69.85 259.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 69.85 259.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "3-input NAND"
+			(at 62.23 265.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "8d68a68a-3cf7-483f-82a8-c1f86c46dcf0")
+		)
+		(pin "2"
+			(uuid "5ae6f81d-a8bb-43fb-a9f0-f47ebb79ab84")
+		)
+		(pin "3"
+			(uuid "63b879f6-9490-438c-b469-588496b705a6")
+		)
+		(pin "4"
+			(uuid "92502bbf-2cfd-4250-85ca-befbc514fd81")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V110")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N2N")
+		(at 64.77 -40.64 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "38b1ab47-737b-422c-bb60-fdbb8ec740d4")
+		(property "Reference" "V32"
+			(at 64.77 -48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N2N"
+			(at 64.77 -45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 63.5 -44.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 63.5 -44.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput NAND"
+			(at 64.77 -40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "381788ba-bd86-4357-88f9-9291224f41f0")
+		)
+		(pin "3"
+			(uuid "36c48975-7b6d-4b8f-9f5d-541d985de265")
+		)
+		(pin "2"
+			(uuid "a6bfd65e-7151-4d58-a89b-eb3d710300db")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V32")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:D24")
+		(at 30.48 -151.13 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "3cb82f04-3129-4abc-9b08-4e6f71351e62")
+		(property "Reference" "U3"
+			(at 30.48 -158.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "D24"
+			(at 30.48 -156.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 30.48 -151.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 30.48 -151.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-wide 2-AND 4-input AND-OR-Inverter"
+			(at 29.21 -151.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "9552952c-d318-4dee-aa8b-1f07e6ed3215")
+		)
+		(pin "1"
+			(uuid "55b2223f-6fc0-4a5e-b0b1-629ab4e6c646")
+		)
+		(pin "3"
+			(uuid "c8630ff9-ba97-4462-93ce-2396dce82559")
+		)
+		(pin "4"
+			(uuid "8277bb5c-2386-4fa1-9b41-be2946943023")
+		)
+		(pin "5"
+			(uuid "497f9e99-b395-4e87-a43f-fb23590c9361")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "U3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N2N")
+		(at 64.77 -140.97 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "3fa51720-08a1-45ae-800c-c65e77660d6f")
+		(property "Reference" "V4"
+			(at 64.77 -148.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N2N"
+			(at 64.77 -146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 63.5 -144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 63.5 -144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput NAND"
+			(at 64.77 -140.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "fab7871c-d1ec-47c7-b774-1a3d0e60da32")
+		)
+		(pin "3"
+			(uuid "34e18aa1-a2a8-4d3d-adda-79815e518f44")
+		)
+		(pin "2"
+			(uuid "f7dbcd48-bccd-4759-856d-e617446f0cca")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N2N")
+		(at 64.77 -91.44 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "43f39d64-dad9-44e9-98de-d27f8c2322f3")
+		(property "Reference" "V9"
+			(at 64.77 -99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N2N"
+			(at 64.77 -96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 63.5 -95.25 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 63.5 -95.25 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput NAND"
+			(at 64.77 -91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "8bd6037d-ebe4-40b9-bc2a-6ec7324924c9")
+		)
+		(pin "3"
+			(uuid "21337e5e-0278-40b7-a49f-bdbcbf593498")
+		)
+		(pin "2"
+			(uuid "0d3e0e6a-5cb9-4d2a-9d82-4064fe15d76c")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N2N")
+		(at 64.77 -177.8 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "50d4a878-e272-4a38-aacf-96d409fe639c")
+		(property "Reference" "V1"
+			(at 64.77 -185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N2N"
+			(at 64.77 -182.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 63.5 -181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 63.5 -181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput NAND"
+			(at 64.77 -177.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "2e08307d-9317-44ca-a399-183d8be7fa46")
+		)
+		(pin "3"
+			(uuid "b769ae07-6399-4b88-ab5c-a583b449ccea")
+		)
+		(pin "2"
+			(uuid "8041d38c-c6fd-4786-ae76-af7baeec2c5d")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N2N")
+		(at 63.5 115.57 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "5928e9d0-e93d-49c4-a2be-cc712adb03bd")
+		(property "Reference" "V75"
+			(at 63.5 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N2N"
+			(at 63.5 110.49 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 62.23 111.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 62.23 111.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput NAND"
+			(at 63.5 115.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "02b7db13-75b0-4814-bee3-fddbcfff48d4")
+		)
+		(pin "3"
+			(uuid "c877c738-f487-4dfd-af7d-d7f1935f42c5")
+		)
+		(pin "2"
+			(uuid "d06202d1-427d-4310-a8fe-e0d3a9d6b645")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V75")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N2N")
+		(at 64.77 -165.1 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "5dae7cc5-e5e6-4002-b12f-4e53d32a0c46")
+		(property "Reference" "V2"
+			(at 64.77 -172.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N2N"
+			(at 64.77 -170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 63.5 -168.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 63.5 -168.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput NAND"
+			(at 64.77 -165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "2aa43c47-c15e-4cfc-aad4-e37810f64e84")
+		)
+		(pin "3"
+			(uuid "729bca9f-713f-4d9c-b909-ea6528d1dc35")
+		)
+		(pin "2"
+			(uuid "b77be8be-618d-41b4-876d-c59bb613f4e7")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_name "ga_fujitsu_av:LT4")
+		(lib_id "ga_fujitsu_av:LT4")
+		(at 64.77 77.47 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "66079e90-3d7a-4d73-a1a1-b357d9bdb7e0")
+		(property "Reference" "V61"
+			(at 64.77 59.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "LT4"
+			(at 64.77 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 64.77 77.47 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 64.77 77.47 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "4-bit Latch"
+			(at 64.77 77.47 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin ""
+			(uuid "d0434a6b-ed7d-4b66-83c1-ad5e55df5087")
+		)
+		(pin ""
+			(uuid "2eba7204-689a-4963-a1b4-e2596b09a43e")
+		)
+		(pin ""
+			(uuid "6a774903-c055-4f03-a940-487b678de6ba")
+		)
+		(pin ""
+			(uuid "45814911-a388-4ee9-bbbb-e71f4fdfcb23")
+		)
+		(pin ""
+			(uuid "b3025c37-8dc4-4ccd-ac99-dc01b57246aa")
+		)
+		(pin ""
+			(uuid "f0f5ebea-8921-4365-9d76-053334760f4c")
+		)
+		(pin ""
+			(uuid "0e4185f9-e816-4047-9c92-29c33f1ca77f")
+		)
+		(pin ""
+			(uuid "cecfb778-17ce-458a-b17a-8e37374b4bc9")
+		)
+		(pin ""
+			(uuid "a6655a71-dc6b-4cb5-8890-9bfcecf3abe5")
+		)
+		(pin ""
+			(uuid "21a4598a-b20b-4179-977a-d4a0e8384ce2")
+		)
+		(pin ""
+			(uuid "f7c4d0c4-84fd-484f-87e5-f554323efe6d")
+		)
+		(pin ""
+			(uuid "698b7663-42d2-44fa-8dde-5710967a092b")
+		)
+		(pin ""
+			(uuid "4274c91f-9a78-4889-97cb-8218efad2749")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V61")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:V2B")
+		(at 62.23 276.86 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "681bbf85-56cd-4c77-b1b6-0e0a1c9c62ae")
+		(property "Reference" "V112"
+			(at 62.23 269.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "V2B"
+			(at 62.23 271.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 63.5 270.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 63.5 270.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power Inverter"
+			(at 62.23 276.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "973a2a81-970b-435b-9ffd-3736e7083de6")
+		)
+		(pin "2"
+			(uuid "466d1976-3dbd-4676-a0f3-dbebedca3ace")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V112")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N2N")
+		(at 62.23 217.17 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "6a20a8d4-2320-4516-a3a0-c5fd79db514d")
+		(property "Reference" "V98"
+			(at 62.23 209.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N2N"
+			(at 62.23 212.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 60.96 213.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 60.96 213.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput NAND"
+			(at 62.23 217.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "276075dd-6867-4f2f-8c79-3c32c19aff46")
+		)
+		(pin "3"
+			(uuid "c4b2aef1-d615-42b1-bdc8-671f96d71038")
+		)
+		(pin "2"
+			(uuid "71ba00a9-6608-45d0-8da3-d69fe1c6be66")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V98")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N2N")
+		(at 62.23 204.47 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "7023b0c2-6783-49cc-a925-c0986b0ae330")
+		(property "Reference" "V97"
+			(at 62.23 196.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N2N"
+			(at 62.23 199.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 60.96 200.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 60.96 200.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput NAND"
+			(at 62.23 204.47 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "d641e44e-15ef-485f-b76e-9e6a838b0219")
+		)
+		(pin "3"
+			(uuid "36cc9bbe-e5b1-4910-9aee-ef8a57cc0cc7")
+		)
+		(pin "2"
+			(uuid "83e92dd4-2d88-4446-ae06-ea6ebc37081c")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V97")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:U24")
+		(at 62.23 182.88 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "7914da79-58dc-460a-b9dc-2fca603f0917")
+		(property "Reference" "V91"
+			(at 62.23 166.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "U34"
+			(at 62.23 168.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 63.5 184.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(color 0 0 0 1)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 63.5 184.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(color 0 0 0 1)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power 2-OR 4-wide Multiplexer"
+			(at 62.23 182.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin ""
+			(uuid "addb1582-4df6-4271-b4be-46049905c446")
+		)
+		(pin ""
+			(uuid "200b334c-f14d-405b-9dc3-197ac8cc18f1")
+		)
+		(pin ""
+			(uuid "9505dedb-4196-4ed6-af01-b49caa9b594d")
+		)
+		(pin ""
+			(uuid "a9b6807c-0bd9-490d-9e1f-a8268ad4c103")
+		)
+		(pin ""
+			(uuid "50f7b079-95b3-4a28-9c1d-620dc710fda3")
+		)
+		(pin ""
+			(uuid "40c13cab-cd4f-4e04-b6f0-be3fbcf0e06f")
+		)
+		(pin ""
+			(uuid "fa6c3f0b-04d2-4727-be76-464a9082b4ca")
+		)
+		(pin ""
+			(uuid "ca4fb3d2-dd14-42fe-b57b-22fa3f232e45")
+		)
+		(pin ""
+			(uuid "6de0be2c-1d5d-44e0-9ddb-97a62c93a2a0")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V91")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:V2B")
+		(at 30.48 -165.1 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "8389e6ea-d0cd-414c-84a1-cea0bc423aa8")
+		(property "Reference" "U2"
+			(at 30.48 -171.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "V2B"
+			(at 30.48 -168.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 31.75 -171.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 31.75 -171.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power Inverter"
+			(at 30.48 -165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "91bb12b4-e7e9-4f31-975d-b2e38cf2c9dd")
+		)
+		(pin "2"
+			(uuid "fd7c3657-9ab8-4a22-915c-bf47a015cf4c")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "U2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N2N")
+		(at 64.77 -152.4 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "8ec239aa-d061-4c44-b553-83c19ab54c14")
+		(property "Reference" "V3"
+			(at 64.77 -160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N2N"
+			(at 64.77 -157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 63.5 -156.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 63.5 -156.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput NAND"
+			(at 64.77 -152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "77816ed8-463f-4d80-9fd0-d1aa64b09fec")
+		)
+		(pin "3"
+			(uuid "aad3f803-3aff-4c79-9bcb-1049ff935960")
+		)
+		(pin "2"
+			(uuid "c17c314b-03fa-405f-aa80-d69b402a30d1")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:R2N")
+		(at 62.23 288.29 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "999b90a3-ead9-40af-9501-94d45ff966cb")
+		(property "Reference" "V113"
+			(at 62.0395 280.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "R2N"
+			(at 62.0395 283.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 68.58 274.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 68.58 274.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput NOR"
+			(at 62.23 288.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "a3d22d00-a0e5-468e-9f43-ceacdf14cfa5")
+		)
+		(pin "2"
+			(uuid "b1595c99-01e5-45e8-8b23-4fdfe9fd7650")
+		)
+		(pin "3"
+			(uuid "4c3bf270-2f33-4e7c-bd95-faf002b9b03a")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V113")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:FDM")
+		(at 62.23 229.87 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "a0b75589-4b3c-4aa8-8a84-37245cd2e529")
+		(property "Reference" "V99"
+			(at 62.23 220.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "FDM"
+			(at 62.23 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 63.5 224.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 63.5 224.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "DFF"
+			(at 62.23 229.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "546fca71-ab00-47a0-8feb-72ffb56713e7")
+		)
+		(pin "2"
+			(uuid "4ef42c47-f30d-4f3e-b108-9d6948a7d119")
+		)
+		(pin "4"
+			(uuid "6c8e19f1-a8b7-47b5-a3fd-e5e9ff2d1d79")
+		)
+		(pin "3"
+			(uuid "ef95fd04-c5f0-4a09-b176-0d370125c8bd")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V99")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N2N")
+		(at 64.77 -53.34 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "a0f99ccc-affd-4ab0-8022-ce1d833d6556")
+		(property "Reference" "V31"
+			(at 64.77 -60.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N2N"
+			(at 64.77 -58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 63.5 -57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 63.5 -57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput NAND"
+			(at 64.77 -53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "d8db9a44-82f1-4170-ac52-2bb438ba33d3")
+		)
+		(pin "3"
+			(uuid "df77ddaf-8f43-440a-9f09-ae11e7eba9d8")
+		)
+		(pin "2"
+			(uuid "d7b755fd-ebf9-4162-bae1-fb4002dc1205")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V31")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:D24")
+		(at 30.48 -134.62 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "b74a1e94-960f-4666-991d-878bd5b73a54")
+		(property "Reference" "U5"
+			(at 30.48 -142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "D24"
+			(at 30.48 -139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 30.48 -134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 30.48 -134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-wide 2-AND 4-input AND-OR-Inverter"
+			(at 29.21 -134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "92bbc9f5-22ac-4d98-b4f3-e1bd8e08dbc2")
+		)
+		(pin "1"
+			(uuid "f3168f1e-eebe-4a80-9a21-500790607bab")
+		)
+		(pin "3"
+			(uuid "2c1aa277-35c1-48e6-a8b2-8144c40dabd1")
+		)
+		(pin "4"
+			(uuid "2dbd5bfe-c15a-4d80-806a-ff74e377afe1")
+		)
+		(pin "5"
+			(uuid "aed77762-51c2-44a3-ad52-24bf1dcc46c4")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "U5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N2N")
+		(at 62.23 242.57 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "baf015a8-710e-4a7a-ba8d-aaaa1f49a1e7")
+		(property "Reference" "V105"
+			(at 62.23 234.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N2N"
+			(at 62.23 237.49 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 60.96 238.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 60.96 238.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput NAND"
+			(at 62.23 242.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "05bc4b8d-0493-457a-a864-a9276a1af3a5")
+		)
+		(pin "3"
+			(uuid "0d230ddf-b67c-4133-9e66-99c4a53f90e6")
+		)
+		(pin "2"
+			(uuid "f525334e-3312-4d4d-97a2-183c73157627")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V105")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N2N")
+		(at 30.48 -177.8 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "c0b807c6-a4f3-4172-b601-de8ff1bbaa83")
+		(property "Reference" "U1"
+			(at 30.48 -184.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N2N"
+			(at 30.48 -181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 29.21 -181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 29.21 -181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput NAND"
+			(at 30.48 -177.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "bd01da08-8f9a-4b52-aae3-3d93dc286a64")
+		)
+		(pin "3"
+			(uuid "919d01fe-da54-47be-9519-7700f19425f4")
+		)
+		(pin "2"
+			(uuid "827ec7fc-5c33-4e49-83e5-93ab4de18ec1")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "U1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N2N")
+		(at 63.5 128.27 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "c3297956-d6ec-4570-8227-319cbf77895d")
+		(property "Reference" "V77"
+			(at 63.5 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N2N"
+			(at 63.5 123.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 62.23 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 62.23 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput NAND"
+			(at 63.5 128.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "14acc706-7b95-4071-908b-5363c6b7d8b1")
+		)
+		(pin "3"
+			(uuid "7d06cc9b-eb63-41fe-b948-d1e02a2924cc")
+		)
+		(pin "2"
+			(uuid "8ffcada6-60c3-4670-90ce-8ab27887641d")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V77")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N3P")
+		(at 62.23 254 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "ca0cbe4b-a551-4433-a004-5b5c3181a67c")
+		(property "Reference" "V107"
+			(at 62.23 246.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N3P"
+			(at 62.23 248.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 60.96 254 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 60.96 254 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power 3-input AND"
+			(at 62.23 254 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "7537f252-c52d-42f2-988d-f8df79e07101")
+		)
+		(pin "4"
+			(uuid "49a028fa-54e7-41cd-8082-dab73be79b88")
+		)
+		(pin "3"
+			(uuid "81054e2a-28d7-45a7-abc6-59b47a55fa11")
+		)
+		(pin "1"
+			(uuid "c2a6e90a-0aaa-47b2-a923-8e8c0e22b1b8")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V107")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N2N")
+		(at 64.77 7.62 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "d8731871-95ca-4788-a5c9-817869b4e9dd")
+		(property "Reference" "V46"
+			(at 64.77 0 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N2N"
+			(at 64.77 2.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 63.5 3.81 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 63.5 3.81 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput NAND"
+			(at 64.77 7.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "8e41b360-5e6a-471a-ac39-c20177d450ba")
+		)
+		(pin "3"
+			(uuid "7c2b522f-731f-4a3d-9c8b-27a9e686413d")
+		)
+		(pin "2"
+			(uuid "8b4df70f-a75b-4ee4-89b2-5f58dd4a6359")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V46")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N2N")
+		(at 62.23 322.58 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "db9f009c-a1a0-4f5f-99ee-1708adcbcb75")
+		(property "Reference" "V120"
+			(at 62.23 314.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N2N"
+			(at 62.23 317.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 60.96 318.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 60.96 318.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput NAND"
+			(at 62.23 322.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "ca628200-65b4-4339-8cdd-a783877df213")
+		)
+		(pin "3"
+			(uuid "2f2f5a04-a0b1-4a44-a953-24c703ff74da")
+		)
+		(pin "2"
+			(uuid "11a02b1b-bdaa-471e-8631-ff7def840888")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V120")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:R2P")
+		(at 62.23 311.15 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "de52e547-da02-4630-b918-4add4ec413c3")
+		(property "Reference" "V118"
+			(at 62.0395 303.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "R2P"
+			(at 62.0395 306.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 71.12 303.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 71.12 303.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput Power OR"
+			(at 62.23 311.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "07de0384-ed62-49e8-9bc7-af628e59fcf0")
+		)
+		(pin "1"
+			(uuid "3bfaf9ea-02c0-4e55-ad28-16583e48195c")
+		)
+		(pin "3"
+			(uuid "545f5298-d36d-4752-ba48-528e7b28dbb8")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V118")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_name "ga_fujitsu_av:LT4")
+		(lib_id "ga_fujitsu_av:LT4")
+		(at 64.77 43.18 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e2a9ef0e-8011-4e89-8717-24a9bcdbcfa1")
+		(property "Reference" "V48"
+			(at 64.77 25.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "LT4"
+			(at 64.77 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 64.77 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 64.77 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "4-bit Latch"
+			(at 64.77 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin ""
+			(uuid "a89a0cf8-6d02-4fe1-860e-780a5919e916")
+		)
+		(pin ""
+			(uuid "a729a5a3-ffc0-4d13-8880-f8d90cee4376")
+		)
+		(pin ""
+			(uuid "d2a792ea-97d9-4362-ae0c-4a3ae5dee8db")
+		)
+		(pin ""
+			(uuid "ce45e204-5585-4628-9175-9a9be35f6d9e")
+		)
+		(pin ""
+			(uuid "f81c0684-3d72-40bd-984b-09be6d092877")
+		)
+		(pin ""
+			(uuid "1bb9738d-c4a9-4787-ab5d-c6233ab2a3da")
+		)
+		(pin ""
+			(uuid "54cadafa-b263-4758-9db1-dc173e2cfd35")
+		)
+		(pin ""
+			(uuid "863e6c84-ce9c-485f-9884-1cfe4ebe6139")
+		)
+		(pin ""
+			(uuid "25f919ae-867e-4460-9658-c6d93124eef0")
+		)
+		(pin ""
+			(uuid "1e07085f-e126-4a15-8d6a-87b9b2c7786c")
+		)
+		(pin ""
+			(uuid "de7ec37b-acac-40bf-a776-499a819a8c81")
+		)
+		(pin ""
+			(uuid "35842353-426b-416e-8c82-6e973b6ae49a")
+		)
+		(pin ""
+			(uuid "5d08371a-b667-4b80-8f90-4b970a3331be")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V48")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N2P")
+		(at 64.77 -116.84 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e3703b01-cab9-4e08-82f0-17fdc6904140")
+		(property "Reference" "V6"
+			(at 64.77 -124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N2P"
+			(at 64.77 -121.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 68.58 -120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 68.58 -120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power 2-input AND"
+			(at 64.77 -116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "6b6b3fc0-6355-4b30-a541-82bb91b7a8a3")
+		)
+		(pin "1"
+			(uuid "ab6baac8-e3b9-44b8-bfe1-a7e083113522")
+		)
+		(pin "3"
+			(uuid "fb1be48e-7e4e-4085-8793-1c1e0aaa7d48")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N2N")
+		(at 64.77 -128.27 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e7d99804-ebe0-4ecb-9a93-51fc43b67904")
+		(property "Reference" "V5"
+			(at 64.77 -135.89 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N2N"
+			(at 64.77 -133.35 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 63.5 -132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 63.5 -132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput NAND"
+			(at 64.77 -128.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "65643dca-53fc-48c2-af18-0e49f21747b0")
+		)
+		(pin "3"
+			(uuid "7fb3ff24-919f-4fa3-80cc-aba1b2140702")
+		)
+		(pin "2"
+			(uuid "297f62b8-890d-490c-ab72-24daa0b9c1f8")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:X1B")
+		(at 62.23 299.72 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e92a4ab8-7741-4270-a22b-ba4758939877")
+		(property "Reference" "V114"
+			(at 62.0435 292.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "X1B"
+			(at 62.0435 294.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 63.5 298.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 63.5 298.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power ENOR"
+			(at 62.23 299.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "d7f98ef6-4376-4377-ad7d-59dd9836b82b")
+		)
+		(pin "2"
+			(uuid "efba32b0-729b-4ce6-a333-5bc9949025e8")
+		)
+		(pin "3"
+			(uuid "33878924-0491-494a-9bc4-4c03a5a14b89")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V114")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:FDQ")
+		(at 64.77 -72.39 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "f7c9592c-1647-425c-b775-0a60bd97495f")
+		(property "Reference" "V10"
+			(at 64.77 -86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "FDQ"
+			(at 64.77 -83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 66.04 -78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 66.04 -78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "4-bit DFF (TODO)"
+			(at 64.77 -72.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "6e3ca40a-bdc1-495e-baf0-e5c5838520eb")
+		)
+		(pin "3"
+			(uuid "e208ba9e-79fa-40ce-880e-42a255d292bd")
+		)
+		(pin "1"
+			(uuid "ed083ddb-5423-466b-a922-ee18398514c7")
+		)
+		(pin "10"
+			(uuid "30bb99fb-d5f6-4a1c-98d4-935e8b772141")
+		)
+		(pin "4"
+			(uuid "25eeb96c-a2b4-418c-af60-8c2e52259a05")
+		)
+		(pin "5"
+			(uuid "0cce71bd-7329-49c2-961c-1786a975023f")
+		)
+		(pin "7"
+			(uuid "b23ba40e-6be0-469a-be00-b14d866de761")
+		)
+		(pin "8"
+			(uuid "2fb29c77-b429-402c-ba25-b85492d0e05a")
+		)
+		(pin "9"
+			(uuid "5ee09629-8b8a-48ca-84e3-3f1f471d138f")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ga_fujitsu_av:N2N")
+		(at 64.77 -104.14 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "ff5f46ce-05e8-435b-9def-4f1788db500e")
+		(property "Reference" "V8"
+			(at 64.77 -111.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "N2N"
+			(at 64.77 -109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 63.5 -107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 63.5 -107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "2-lnput NAND"
+			(at 64.77 -104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "ef427030-9f93-4e0e-b384-9cd255b4c4b3")
+		)
+		(pin "3"
+			(uuid "195e12d4-6476-4569-ae94-fd45d89f04d4")
+		)
+		(pin "2"
+			(uuid "ba3057c8-18ec-4845-8b2d-feaeb91ad253")
+		)
+		(instances
+			(project "schematics"
+				(path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
+					(reference "V8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+)
