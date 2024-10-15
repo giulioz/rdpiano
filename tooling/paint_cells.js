@@ -1,13 +1,7 @@
 const fs = require("fs");
-const sharp = require("sharp");
 const lodash = require("lodash");
 const { parse } = require("svg-parser");
-// const PImage = require("pureimage");
-// const { createCanvas, loadImage } = require("canvas");
-const sizeOf = require("image-size");
 
-const imgPath =
-  "/Users/giuliozausa/personal/programming/rdpiano/roland_r15229837_mz_nikon20x.jpg";
 const svgPath =
   "/Users/giuliozausa/personal/programming/rdpiano/ic19_trace copy.svg";
 
@@ -18,22 +12,6 @@ const cellWidthWithMargin = 349;
 const cellsStartX = -3633;
 const cellsStartY = -3256.87;
 const cellHeight = totalCellHeight / totalCellHeightCount;
-
-function findIndices(array, callback) {
-  const res = [];
-  for (let i = 0; i < array.length; i++)
-    if (callback(array[i], i, array)) res.push(i);
-  return res;
-}
-
-// function getRandomColor() {
-//   var letters = "0123456789ABCDEF";
-//   var color = "#";
-//   for (var i = 0; i < 6; i++) {
-//     color += letters[Math.floor(Math.random() * 16)];
-//   }
-//   return color;
-// }
 
 function generateContrastingColors(N) {
   const colors = [];
@@ -84,20 +62,29 @@ function rgbToHex(r, g, b) {
   );
 }
 
-const colors = generateContrastingColors(40);
-
-function xyToPixelCoord(x, y) {
-  const px = Math.round(((x + 5224.6) / (5224.6 + 5433.87)) * 30213);
-  const py = Math.round(((y + 5122.26) / (5122.26 + 5363.88)) * 29723);
-  return [px, py];
+function indexToLetter(index) {
+  let letter = "";
+  while (index >= 0) {
+    letter = String.fromCharCode((index % 26) + 65) + letter;
+    index = Math.floor(index / 26) - 1;
+  }
+  return letter;
 }
+
+const colors = generateContrastingColors(40);
 
 const cellTypes = fs
   .readdirSync("../ident_cells/")
-  .filter((f) => f !== ".DS_Store");
+  .filter(
+    (f) =>
+      f !== ".DS_Store" &&
+      fs
+        .readdirSync(`../ident_cells/${f}`)
+        .filter((f) => f !== ".DS_Store" && !f.startsWith("specimen")).length >
+        0
+  );
 
 const colorPerCellType = Object.fromEntries(
-  // cellTypes.map((cellType) => [cellType, getRandomColor()])
   cellTypes.map((cellType, i) => [cellType, colors[i]])
 );
 
@@ -111,29 +98,14 @@ const cellsG = svgParsed.children[0].children[2].children.find(
   (c) => c.properties["inkscape:label"] === "CELLS"
 );
 
-// const img = PImage.make(30213, 29723);
-// const img = createCanvas(30213, 29723);
-// const ctx = img.getContext("2d");
-// ctx.drawImage(img, 0, 0);
-
 cellTypes.forEach((cellType) => {
   const cellsInType = fs
     .readdirSync(`../ident_cells/${cellType}`)
-    .filter((f) => f !== ".DS_Store");
+    .filter((f) => f !== ".DS_Store" && !f.startsWith("specimen"));
   // console.log(cellType, colorPerCellType[cellType], cellsInType);
 
   cellsInType.forEach((cell) => {
-    const imageSize = sizeOf(`../ident_cells/${cellType}/${cell}`);
     const [lx, ly] = cell.replace(".jpg", "").split("_").map(parseFloat);
-    const nCells = Math.round(imageSize.height / cellHeight);
-    const [px1, py1] = xyToPixelCoord(
-      lx * cellWidthWithMargin + cellsStartX,
-      ly * cellHeight + cellsStartY
-    );
-    const [px2, py2] = xyToPixelCoord(
-      lx * cellWidthWithMargin + cellWidth + cellsStartX,
-      (ly + nCells) * cellHeight + cellsStartY
-    );
     const color = colorPerCellType[cellType];
 
     const closestCell = lodash.minBy(cellsG.children, (c) => {
@@ -145,36 +117,18 @@ cellTypes.forEach((cellType) => {
     });
     // console.log(closestCell, `id="${closestCell.properties.id}"`);
 
-    const closestCellLineIs = findIndices(
-      svgContentLines,
+    const closestCellLineI = svgContentLines.findIndex(
       (c) => c === `         id="${closestCell.properties.id}"`
     );
-    if (closestCellLineIs.length > 1) {
-      console.log("ERROR", closestCell);
-    }
-    const closestCellLineI = closestCellLineIs[0];
-    // console.log(closestCellLineI, svgContentLines[closestCellLineI]);
 
-    svgContentLines[closestCellLineI] = `         id="${lx}_${ly}_${cellType}"`;
+    svgContentLines[closestCellLineI] = `         id="${indexToLetter(lx)}_${
+      ly + 1
+    }_${cellType}"`;
     svgContentLines[
       closestCellLineI - 1
     ] = `         style="fill:${color};stroke:#ff0000;stroke-width:0;-inkscape-stroke:none;opacity:0.5"`;
-    // console.log(svgContentLines[closestCellLineI - 1]);
-
-    // ctx.fillStyle = color;
-    // ctx.fillRect(
-    //   Math.min(px1, px2),
-    //   Math.min(py1, py2),
-    //   Math.abs(px2 - px1),
-    //   Math.abs(py2 - py1)
-    // );
+    // console.log(svgContentLines[closestCellLineI]);
   });
 });
-
-// PImage.encodePNGToStream(img, fs.createWriteStream("out.png"));
-
-// const out = fs.createWriteStream("out.jpg");
-// const stream = canvas.createJPEGStream();
-// stream.pipe(out);
 
 fs.writeFileSync("../ic19_trace.svg", svgContentLines.join("\n"));

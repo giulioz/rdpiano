@@ -4,3 +4,4 @@ node_modules
 *nikon*
 *auto_saved_files*
 *.lck
+*.out

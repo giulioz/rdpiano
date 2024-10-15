@@ -13,16 +13,16 @@ const cellsStartX = -3633;
 const cellsStartY = -3256.87;
 const cellHeight = totalCellHeight / totalCellHeightCount;
 
-function findIndices(array, callback) {
-  const res = [];
-  for (let i = 0; i < array.length; i++)
-    if (callback(array[i], i, array)) res.push(i);
-  return res;
-}
-
 const cellTypes = fs
   .readdirSync("../ident_cells/")
-  .filter((f) => f !== ".DS_Store");
+  .filter(
+    (f) =>
+      f !== ".DS_Store" &&
+      fs
+        .readdirSync(`../ident_cells/${f}`)
+        .filter((f) => f !== ".DS_Store" && !f.startsWith("specimen")).length >
+        0
+  );
 
 const svgContent = fs.readFileSync(svgPath, "utf8");
 const svgContentLines = svgContent.split("\n");
@@ -39,7 +39,7 @@ const lines = [];
 cellTypes.forEach((cellType) => {
   const cellsInType = fs
     .readdirSync(`../ident_cells/${cellType}`)
-    .filter((f) => f !== ".DS_Store");
+    .filter((f) => f !== ".DS_Store" && !f.startsWith("specimen"));
   // console.log(cellType, colorPerCellType[cellType], cellsInType);
 
   cellsInType.forEach((cell) => {

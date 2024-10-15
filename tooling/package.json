@@ -10,6 +10,7 @@
     "node-gyp": "^10.2.0",
     "pureimage": "^0.4.18",
     "sharp": "^0.33.5",
-    "svg-parser": "^2.0.4"
+    "svg-parser": "^2.0.4",
+    "uuid": "^10.0.0"
   }
 }
