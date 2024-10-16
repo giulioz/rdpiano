@@ -4,13 +4,17 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@napi-rs/canvas": "^0.1.58",
     "canvas": "^2.11.2",
     "image-size": "^1.1.1",
     "lodash": "^4.17.21",
     "node-gyp": "^10.2.0",
     "pureimage": "^0.4.18",
+    "rbush": "^4.0.1",
     "sharp": "^0.33.5",
     "svg-parser": "^2.0.4",
-    "uuid": "^10.0.0"
+    "svg-path-parser": "^1.1.0",
+    "uuid": "^10.0.0",
+    "xml2json": "^0.12.0"
   }
 }

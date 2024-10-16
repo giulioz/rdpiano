@@ -5,3 +5,5 @@ node_modules
 *auto_saved_files*
 *.lck
 *.out
+out.json
+*.elk

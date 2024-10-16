@@ -44,25 +44,6 @@ const cellsG = svgParsed.children[0].children[2].children.find(
 );
 
 const schemContentLines = [];
-schemContentLines.push(`
-(kicad_sch
-	(version 20231120)
-	(generator "eeschema")
-	(generator_version "8.0")
-	(uuid "63ceb2e0-4444-45f9-852b-5c8aedd47ba6")
-	(paper "A4")`);
-
-// schemContentLines.push(`
-// (wire
-//   (pts
-//     (xy 431.12 -90.37) (xy 431.12 -82.37)
-//   )
-//   (stroke
-//     (width 0)
-//     (type default)
-//   )
-//   (uuid "04b6529c-ab52-4d70-966b-a55e6d303118")
-// )`);
 
 cellTypes.forEach((cellType) => {
   const cellsInType = fs
@@ -100,46 +81,8 @@ cellTypes.forEach((cellType) => {
     const row = ly + 1;
     const ref = `${column}${row}`.toUpperCase();
 
-    const centerX = lx * 40;
-    const centerY = (ly + parseFloat(cellsHeight) / 2) * 8;
-
-    schemContentLines.push(`
-    (symbol
-      (lib_id "ga_fujitsu_av:${cellCode.toUpperCase()}")
-      (at ${centerX} ${centerY} 0)
-      (unit 1)
-      (exclude_from_sim no)
-      (in_bom yes)
-      (on_board yes)
-      (dnp no)
-      (fields_autoplaced yes)
-      (uuid "${uuidv4()}")
-      (property "Reference" "${ref}"
-        (at ${centerX} ${centerY} 0)
-        (effects
-          (font
-            (size 1.27 1.27)
-          )
-        )
-      )
-      (instances
-        (project "schematics"
-          (path "/63ceb2e0-4444-45f9-852b-5c8aedd47ba6"
-            (reference "${ref}")
-            (unit 1)
-          )
-        )
-      )
-    )`);
+    schemContentLines.push(`node ${ref} { label "${cellCode.toUpperCase()}" }`);
   });
 });
 
-schemContentLines.push(`
-  (sheet_instances
-    (path "/"
-      (page "1")
-    )
-  )
-)`);
-
-fs.writeFileSync("schem.out", schemContentLines.join("\n"));
+fs.writeFileSync("schem.elk", schemContentLines.join("\n"));

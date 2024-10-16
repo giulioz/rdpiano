@@ -1,134 +1,183 @@
 const fs = require("fs");
 const lodash = require("lodash");
 const { parse } = require("svg-parser");
+const {
+  generateContrastingColors,
+  indexToLetter,
+  svgPathToLineSegments,
+  sizeParams,
+  getPossibleCellTypes,
+} = require("./common");
 
 const svgPath =
   "/Users/giuliozausa/personal/programming/rdpiano/ic19_trace copy.svg";
 
-const totalCellHeight = 6780.243;
-const totalCellHeightCount = 120;
-const cellWidth = 138;
-const cellWidthWithMargin = 349;
-const cellsStartX = -3633;
-const cellsStartY = -3256.87;
-const cellHeight = totalCellHeight / totalCellHeightCount;
+async function process() {
+  const rbush = (await import("rbush")).default;
 
-function generateContrastingColors(N) {
-  const colors = [];
+  const colors = generateContrastingColors(40);
 
-  for (let i = 0; i < N; i++) {
-    // Evenly distribute hues on the color wheel
-    const hue = ((i * 360) / N) % 360;
-    const rgb = hslToRgb(hue, 0.7, 0.5); // Adjust saturation and lightness as needed
-    colors.push(rgbToHex(rgb[0], rgb[1], rgb[2]));
-  }
+  const cellTypes = getPossibleCellTypes();
 
-  return colors;
-}
-
-// Convert HSL to RGB
-function hslToRgb(h, s, l) {
-  h /= 360;
-  let r, g, b;
-
-  if (s === 0) {
-    r = g = b = l; // achromatic
-  } else {
-    const hue2rgb = (p, q, t) => {
-      if (t < 0) t += 1;
-      if (t > 1) t -= 1;
-      if (t < 1 / 6) return p + (q - p) * 6 * t;
-      if (t < 1 / 3) return q;
-      if (t < 1 / 2) return p + (q - p) * (2 / 3 - t) * 6;
-      return p;
-    };
-
-    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-    const p = 2 * l - q;
-
-    r = hue2rgb(p, q, h + 1 / 3);
-    g = hue2rgb(p, q, h);
-    b = hue2rgb(p, q, h - 1 / 3);
-  }
-
-  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-}
-
-// Convert RGB to Hex
-function rgbToHex(r, g, b) {
-  return (
-    "#" +
-    ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()
-  );
-}
-
-function indexToLetter(index) {
-  let letter = "";
-  while (index >= 0) {
-    letter = String.fromCharCode((index % 26) + 65) + letter;
-    index = Math.floor(index / 26) - 1;
-  }
-  return letter;
-}
-
-const colors = generateContrastingColors(40);
-
-const cellTypes = fs
-  .readdirSync("../ident_cells/")
-  .filter(
-    (f) =>
-      f !== ".DS_Store" &&
-      fs
-        .readdirSync(`../ident_cells/${f}`)
-        .filter((f) => f !== ".DS_Store" && !f.startsWith("specimen")).length >
-        0
+  const colorPerCellType = Object.fromEntries(
+    cellTypes.map((cellType, i) => [cellType, colors[i]])
   );
 
-const colorPerCellType = Object.fromEntries(
-  cellTypes.map((cellType, i) => [cellType, colors[i]])
-);
+  const svgContent = fs.readFileSync(svgPath, "utf8");
+  const svgContentLines = svgContent.split("\n");
+  const svgParsed = parse(svgContent);
+  const wiresG = svgParsed.children[0].children[2].children.find(
+    (c) => c.properties["inkscape:label"] === "WIRES"
+  );
+  const cellsG = svgParsed.children[0].children[2].children.find(
+    (c) => c.properties["inkscape:label"] === "CELLS"
+  );
 
-const svgContent = fs.readFileSync(svgPath, "utf8");
-const svgContentLines = svgContent.split("\n");
-const svgParsed = parse(svgContent);
-const wiresG = svgParsed.children[0].children[2].children.find(
-  (c) => c.properties["inkscape:label"] === "WIRES"
-);
-const cellsG = svgParsed.children[0].children[2].children.find(
-  (c) => c.properties["inkscape:label"] === "CELLS"
-);
+  const nets = [];
+  wiresG.children.forEach((net) => {
+    const segments = [];
+    if (net.children.length === 0) {
+      svgPathToLineSegments(net.properties.d).forEach((segment) => {
+        segments.push({
+          ...segment,
+          pt1: { x: segment.x1, y: segment.y1 },
+          pt2: {
+            x: (segment.x1 + segment.x2) / 2,
+            y: (segment.y1 + segment.y2) / 2,
+          },
+          pt3: { x: segment.x2, y: segment.y2 },
+          minX: Math.min(segment.x1, segment.x2),
+          minY: Math.min(segment.y1, segment.y2),
+          maxX: Math.max(segment.x1, segment.x2),
+          maxY: Math.max(segment.y1, segment.y2),
+        });
+      });
+    } else {
+      net.children.forEach((path) => {
+        svgPathToLineSegments(path.properties.d).forEach((segment) => {
+          segments.push({
+            ...segment,
+            pt1: { x: segment.x1, y: segment.y1 },
+            pt2: {
+              x: (segment.x1 + segment.x2) / 2,
+              y: (segment.y1 + segment.y2) / 2,
+            },
+            pt3: { x: segment.x2, y: segment.y2 },
+            minX: Math.min(segment.x1, segment.x2),
+            minY: Math.min(segment.y1, segment.y2),
+            maxX: Math.max(segment.x1, segment.x2),
+            maxY: Math.max(segment.y1, segment.y2),
+          });
+        });
+      });
+    }
+    nets.push({ id: net.properties.id, segments });
+  });
 
-cellTypes.forEach((cellType) => {
-  const cellsInType = fs
-    .readdirSync(`../ident_cells/${cellType}`)
-    .filter((f) => f !== ".DS_Store" && !f.startsWith("specimen"));
-  // console.log(cellType, colorPerCellType[cellType], cellsInType);
+  const cells = [];
+  cellTypes.forEach((cellType) => {
+    const cellsInType = fs
+      .readdirSync(`../ident_cells/${cellType}`)
+      .filter((f) => f !== ".DS_Store" && !f.startsWith("specimen"));
+    const nCellsVertical = parseFloat(cellType.split("_")[0]);
 
-  cellsInType.forEach((cell) => {
-    const [lx, ly] = cell.replace(".jpg", "").split("_").map(parseFloat);
-    const color = colorPerCellType[cellType];
+    cellsInType.forEach((cell) => {
+      const [lx, ly] = cell.replace(".jpg", "").split("_").map(parseFloat);
+      const color = colorPerCellType[cellType];
 
-    const closestCell = lodash.minBy(cellsG.children, (c) => {
-      const { x, y } = c.properties;
-      return (
-        Math.abs(x - (lx * cellWidthWithMargin + cellsStartX)) +
-        Math.abs(y - (ly * cellHeight + cellsStartY))
-      );
+      const closestCell = lodash.minBy(cellsG.children, (c) => {
+        const { x, y } = c.properties;
+        return (
+          Math.abs(
+            x - (lx * sizeParams.cellWidthWithMargin + sizeParams.cellsStartX)
+          ) +
+          Math.abs(y - (ly * sizeParams.cellHeight + sizeParams.cellsStartY))
+        );
+      });
+
+      cells.push({
+        lx,
+        ly,
+        color,
+        closestCell,
+        cellType,
+        minX: lx * sizeParams.cellWidthWithMargin + sizeParams.cellsStartX,
+        maxX:
+          lx * sizeParams.cellWidthWithMargin +
+          sizeParams.cellsStartX +
+          sizeParams.cellWidth,
+        minY: ly * sizeParams.cellHeight + sizeParams.cellsStartY,
+        maxY:
+          (ly + nCellsVertical) * sizeParams.cellHeight +
+          sizeParams.cellsStartY,
+        nets: [],
+      });
     });
-    // console.log(closestCell, `id="${closestCell.properties.id}"`);
+  });
 
+  const tree = new rbush();
+  tree.load(cells);
+
+  nets.forEach((net) => {
+    const allCells = [];
+    net.segments.forEach((segment) => {
+      const foundCells1 = tree.search({
+        minX: segment.pt1.x,
+        minY: segment.pt1.y,
+        maxX: segment.pt1.x,
+        maxY: segment.pt1.y,
+      });
+      const foundCells2 = tree.search({
+        minX: segment.pt2.x,
+        minY: segment.pt2.y,
+        maxX: segment.pt2.x,
+        maxY: segment.pt2.y,
+      });
+      const foundCells3 = tree.search({
+        minX: segment.pt3.x,
+        minY: segment.pt3.y,
+        maxX: segment.pt3.x,
+        maxY: segment.pt3.y,
+      });
+      allCells.push(...foundCells1);
+      allCells.push(...foundCells2);
+      allCells.push(...foundCells3);
+    });
+    const cellIds = Array.from(
+      new Set(allCells.map((c) => c.closestCell.properties.id))
+    );
+    cellIds.forEach((cellId) =>
+      cells
+        .find((c) => c.closestCell.properties.id === cellId)
+        .nets.push(net.id)
+    );
+  });
+
+  fs.writeFileSync(
+    "out.json",
+    JSON.stringify(
+      cells.map((c) => ({
+        id: c.closestCell.properties.id,
+        nets: c.nets,
+      })),
+      null,
+      2
+    )
+  );
+
+  cells.forEach((cell) => {
     const closestCellLineI = svgContentLines.findIndex(
-      (c) => c === `         id="${closestCell.properties.id}"`
+      (c) => c === `         id="${cell.closestCell.properties.id}"`
     );
 
-    svgContentLines[closestCellLineI] = `         id="${indexToLetter(lx)}_${
-      ly + 1
-    }_${cellType}"`;
+    svgContentLines[closestCellLineI] = `         id="${indexToLetter(
+      cell.lx
+    )}_${cell.ly + 1}_${cell.cellType}"`;
     svgContentLines[
       closestCellLineI - 1
-    ] = `         style="fill:${color};stroke:#ff0000;stroke-width:0;-inkscape-stroke:none;opacity:0.5"`;
-    // console.log(svgContentLines[closestCellLineI]);
+    ] = `         style="fill:${cell.color};stroke:#ff0000;stroke-width:0;-inkscape-stroke:none;opacity:0.5"`;
   });
-});
+  fs.writeFileSync("../ic19_trace.svg", svgContentLines.join("\n"));
+}
 
-fs.writeFileSync("../ic19_trace.svg", svgContentLines.join("\n"));
+process();

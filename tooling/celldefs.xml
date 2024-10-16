@@ -1,0 +1,921 @@
+<?xml version="1.0"?>
+
+<celldefs series="Fujitsu AV">
+    <cell name="x" size="1" description="Empty BC">
+    </cell>
+    <cell name="A1N" size="8" description="1-bit Full Adder">
+        <input name="A" xpos="0" ypos="0" type="line"/>
+        <input name="B" xpos="0" ypos="8" type="line"/>
+        <input name="CI" xpos="0" ypos="30" type="line"/>
+        <output name="S" xpos="0" ypos="21" type="line"/>
+        <output name="CO" xpos="0" ypos="1" type="line"/>
+    </cell>
+    <cell name="A2N" size="16" description="2-bit Full Adder">
+        <input name="A1" xpos="0" ypos="46" type="line"/>
+        <input name="A2" xpos="0" ypos="14" type="line"/>
+        <input name="B1" xpos="0" ypos="40" type="line"/>
+        <input name="B2" xpos="0" ypos="8" type="line"/>
+        <input name="CI" xpos="0" ypos="62" type="line"/>
+        <output name="S1" xpos="0" ypos="53" type="line"/>
+        <output name="S2" xpos="0" ypos="21" type="line"/>
+        <output name="CO" xpos="0" ypos="1" type="line"/>
+    </cell>
+    <cell name="A4H" size="50" description="4-bit Full Adder">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <input name="C1" xpos="0" ypos="0" type="missing"/>
+        <input name="C2" xpos="0" ypos="0" type="missing"/>
+        <input name="D1" xpos="0" ypos="0" type="missing"/>
+        <input name="D2" xpos="0" ypos="0" type="missing"/>
+        <input name="CI" xpos="0" ypos="0" type="missing"/>
+        <output name="S1" xpos="0" ypos="0" type="missing"/>
+        <output name="S2" xpos="0" ypos="0" type="missing"/>
+        <output name="S3" xpos="0" ypos="0" type="missing"/>
+        <output name="S4" xpos="0" ypos="0" type="missing"/>
+        <output name="CO" xpos="0" ypos="0" type="missing"/>
+    </cell>
+
+    <cell name="BD3" size="5" description="Delay Cell">
+        <input name="A" xpos="0" ypos="0" type="line"/>
+        <output name="X" xpos="0" ypos="1" type="line"/>
+    </cell>
+    <cell name="BD5" size="9" description="Delay Cell">
+        <input name="A" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+
+    <cell name="C43" size="48" description="14-bit Binary Synchronous Up Counter">
+        <input name="DA" xpos="0" ypos="8" type="line"/>
+        <input name="DB" xpos="0" ypos="44" type="line"/>
+        <input name="DC" xpos="0" ypos="145" type="line"/>
+        <input name="DD" xpos="0" ypos="182" type="line"/>
+        <input name="L" xpos="0" ypos="190" type="line"/>
+        <input name="CK" xpos="0" ypos="0" type="line"/>
+        <input name="EN" xpos="0" ypos="76" type="line"/>
+        <input name="CI" xpos="0" ypos="78" type="line"/>
+        <input name="CL" xpos="0" ypos="82" type="line"/>
+        <output name="QA" xpos="0" ypos="22" type="line"/>
+        <output name="QB" xpos="0" ypos="58" type="line"/>
+        <output name="QC" xpos="0" ypos="132" type="line"/>
+        <output name="QD" xpos="0" ypos="168" type="line"/>
+        <output name="CO" xpos="0" ypos="93" type="line"/>
+    </cell>
+
+    <cell name="D14" size="2" description="2-wide 3-AND 4-lnput AND-OR inverter">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="A3" xpos="0" ypos="0" type="missing"/>
+        <input name="B" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="D24" size="2" description="2-wide 2-AND 4-input AND-OR-Inverter">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <input name="B1" xpos="0" ypos="4" type="line"/>
+        <input name="B2" xpos="0" ypos="6" type="line"/>
+        <output name="X" xpos="0" ypos="5" type="line"/>
+    </cell>
+    <cell name="D34" size="2" description="3-wide 2-AND 4-input AND-OR-Inverter">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="D36" size="3" description="3-input AND-OR-Inverter">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <input name="C1" xpos="0" ypos="0" type="missing"/>
+        <input name="C2" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="D44" size="2" description="2-wide 2-OR 2-AND 4-input AND-OR-Inverter">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="B" xpos="0" ypos="0" type="missing"/>
+        <input name="C" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+
+    <cell name="FD2" size="8" description="Power DFF">
+        <input name="D" xpos="0" ypos="0" type="missing"/>
+        <input name="CK" xpos="0" ypos="0" type="missing"/>
+        <output name="Q" xpos="0" ypos="0" type="missing"/>
+        <output name="XQ" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="FD3" size="9" description="Power DFF with PRESET">
+        <input name="D" xpos="0" ypos="0" type="missing"/>
+        <input name="CK" xpos="0" ypos="0" type="missing"/>
+        <input name="PR" xpos="0" ypos="0" type="missing"/>
+        <output name="Q" xpos="0" ypos="0" type="missing"/>
+        <output name="XQ" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="FD4" size="10" description="Power DFF with CLEAR and PRESET">
+        <input name="D" xpos="0" ypos="0" type="missing"/>
+        <input name="CK" xpos="0" ypos="0" type="missing"/>
+        <input name="PR" xpos="0" ypos="0" type="missing"/>
+        <input name="CL" xpos="0" ypos="0" type="missing"/>
+        <output name="Q" xpos="0" ypos="0" type="missing"/>
+        <output name="XQ" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="FD5" size="9" description="Power DFF with CLEAR">
+        <input name="D" xpos="0" ypos="0" type="missing"/>
+        <input name="CK" xpos="0" ypos="0" type="missing"/>
+        <input name="CL" xpos="0" ypos="0" type="missing"/>
+        <output name="Q" xpos="0" ypos="0" type="missing"/>
+        <output name="XQ" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="FD6" size="7" description="DFF">
+        <input name="D" xpos="0" ypos="0" type="line"/>
+        <input name="CK" xpos="0" ypos="4" type="line"/>
+        <output name="Q" xpos="0" ypos="0" type="missing"/>
+        <output name="XQ" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="FD7" size="8" description="DFF with CLEAR">
+        <input name="D" xpos="0" ypos="0" type="missing"/>
+        <input name="CK" xpos="0" ypos="0" type="missing"/>
+        <input name="CL" xpos="0" ypos="0" type="missing"/>
+        <output name="Q" xpos="0" ypos="0" type="missing"/>
+        <output name="XQ" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="FD8" size="9" description="DFF and Latch">
+        <input name="D" xpos="0" ypos="0" type="missing"/>
+        <input name="CK" xpos="0" ypos="0" type="missing"/>
+        <input name="G" xpos="0" ypos="0" type="missing"/>
+        <output name="Q" xpos="0" ypos="0" type="missing"/>
+        <output name="XQ" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="FDD" size="11" description="Positive Edge Clocked Power DFF with CLEAR and PRESET">
+        <input name="D" xpos="0" ypos="0" type="missing"/>
+        <input name="CK" xpos="0" ypos="0" type="missing"/>
+        <input name="PR" xpos="0" ypos="0" type="missing"/>
+        <input name="CL" xpos="0" ypos="0" type="missing"/>
+        <output name="Q" xpos="0" ypos="0" type="missing"/>
+        <output name="XQ" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="FDE" size="10" description="Positive Edge Clocked Power DFF with CLEAR">
+        <!-- Checked -->
+        <input name="CK" xpos="0" ypos="2" type="line"/>
+        <input name="D" xpos="0" ypos="4" type="line"/>
+        <input name="CL" xpos="0" ypos="8" type="line"/>
+        <output name="XQ" xpos="0" ypos="33" type="line"/>
+        <output name="Q" xpos="0" ypos="37" type="line"/>
+    </cell>
+    <cell name="FDG" size="9" description="Positive Edge Clocked DFF with CLEAR">
+        <!-- Checked -->
+        <input name="CK" xpos="0" ypos="2" type="line"/>
+        <input name="D" xpos="0" ypos="4" type="line"/>
+        <input name="CL" xpos="0" ypos="8" type="line"/>
+        <output name="XQ" xpos="0" ypos="32" type="line"/>
+        <output name="Q" xpos="0" ypos="34" type="line"/>
+    </cell>
+    <cell name="FDM" size="6" description="DFF">
+        <!-- Checked -->
+        <input name="CK" xpos="0" ypos="0" type="line"/>
+        <input name="D" xpos="0" ypos="8" type="line"/>
+        <output name="XQ" xpos="0" ypos="21" type="line"/>
+        <output name="Q" xpos="0" ypos="22" type="missing"/>
+    </cell>
+    <cell name="FDN" size="7" description="DFF with Set">
+        <!-- Checked -->
+        <input name="CK" xpos="0" ypos="0" type="line"/>
+        <input name="D" xpos="0" ypos="4" type="line"/>
+        <output name="Q" xpos="0" ypos="10" type="line"/>
+        <input name="S" xpos="0" ypos="14" type="line"/>
+        <output name="XQ" xpos="0" ypos="26" type="line"/>
+    </cell>
+    <cell name="FDO" size="7" description="DFF with Reset">
+        <!-- Checked -->
+        <input name="CK" xpos="0" ypos="0" type="line"/>
+        <input name="D" xpos="0" ypos="8" type="line"/>
+        <input name="R" xpos="0" ypos="10" type="line"/>
+        <output name="Q" xpos="0" ypos="25" type="line"/>
+        <output name="XQ" xpos="0" ypos="26" type="line"/>
+    </cell>
+    <cell name="FDR" size="26" description="4-bit DFF with CLEAR">
+        <input name="CK" xpos="0" ypos="4" type="line"/>
+        <input name="DA" xpos="0" ypos="12" type="line"/>
+        <input name="DB" xpos="0" ypos="36" type="line"/>
+        <input name="DC" xpos="0" ypos="60" type="line"/>
+        <input name="DD" xpos="0" ypos="84" type="line"/>
+        <input name="CL" xpos="0" ypos="0" type="line"/>
+        <output name="QA" xpos="0" ypos="30" type="line"/>
+        <output name="QB" xpos="0" ypos="54" type="line"/>
+        <output name="QC" xpos="0" ypos="78" type="line"/>
+        <output name="QD" xpos="0" ypos="102" type="line"/>
+    </cell>
+    <cell name="FDS" size="20" description="Positive Edge Clocked 4-bit DFF">
+        <input name="CK" xpos="0" ypos="36" type="line"/>
+        <input name="DA" xpos="0" ypos="0" type="line"/>
+        <input name="DB" xpos="0" ypos="34" type="line"/>
+        <input name="DC" xpos="0" ypos="44" type="line"/>
+        <input name="DD" xpos="0" ypos="78" type="line"/>
+        <output name="QA" xpos="0" ypos="16" type="line"/>
+        <output name="QB" xpos="0" ypos="18" type="line"/>
+        <output name="QC" xpos="0" ypos="60" type="line"/>
+        <output name="QD" xpos="0" ypos="62" type="line"/>
+    </cell>
+    <cell name="FJD" size="12" description="Positive Edge Clocked Power JKFF with CLEAR">
+        <!-- Checked -->
+        <input name="CK" xpos="0" ypos="2" type="missing"/>
+        <input name="J" xpos="0" ypos="6" type="missing"/>
+        <input name="K" xpos="0" ypos="10" type="missing"/>
+        <input name="CL" xpos="0" ypos="22" type="missing"/>
+        <output name="XQ" xpos="0" ypos="41" type="missing"/>
+        <output name="Q" xpos="0" ypos="45" type="missing"/>
+    </cell>
+
+    <cell name="G14" size="2" description="2-wide 3-OR 4-input OR-AND-Inverter">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="A3" xpos="0" ypos="0" type="missing"/>
+        <input name="B" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="G23" size="2" description="2-wide 2-OR 3-input OR-AND-Inverter">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="B" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="G24" size="2" description="2-wide 2-OR 4-input OR-AND-Inverter">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="G34" size="2" description="3-wide 2-OR 4-input OR-AND-Inverter">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="G44" size="2" description="2-wide 2-AND 2-0R 4-input OR-AND-Inverter">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <input name="B" xpos="0" ypos="4" type="line"/>
+        <input name="C" xpos="0" ypos="6" type="line"/>
+        <output name="X" xpos="0" ypos="5" type="line"/>
+    </cell>
+
+    <cell name="K1B" size="2" description="Clock Buffer">
+        <input name="A" xpos="0" ypos="0" type="line"/>
+        <output name="X" xpos="0" ypos="5" type="line"/>
+    </cell>
+    <cell name="K2B" size="3" description="Power Clock Buffer">
+        <input name="A" xpos="0" ypos="0" type="line"/>
+        <output name="X" xpos="0" ypos="9" type="line"/>
+    </cell>
+    <cell name="K3B" size="3" description="Gated Clock Buffer">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <output name="X" xpos="0" ypos="9" type="line"/>
+    </cell>
+    <cell name="K4B" size="3" description="Gated Clock (OR) Buffer">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <output name="X" xpos="0" ypos="9" type="line"/>
+    </cell>
+    <cell name="KCB" size="11" description="Block Clock Buffer (Non-Inv)">
+        <input name="A" xpos="0" ypos="0" type="line"/>
+        <output name="X" xpos="0" ypos="41" type="line"/>
+    </cell>
+
+    <cell name="LT1" size="4" description="SR latch with Clear">
+        <!-- Checked -->
+        <input name="CL" xpos="0" ypos="2" type="line"/>
+        <input name="R" xpos="0" ypos="4" type="line"/>
+        <output name="Q" xpos="0" ypos="8" type="line"/>
+        <output name="XQ" xpos="0" ypos="10" type="line"/>
+        <input name="S" xpos="0" ypos="14" type="line"/>
+    </cell>
+    <cell name="LT2" size="4" description="1-bit Data Latch">
+        <input name="D" xpos="0" ypos="0" type="missing"/>
+        <input name="G" xpos="0" ypos="0" type="missing"/>
+        <output name="Q" xpos="0" ypos="0" type="missing"/>
+        <output name="XQ" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="LT4" size="13" description="4-bit Data Latch">
+        <input name="DA" xpos="0" ypos="8" type="line"/>
+        <input name="DB" xpos="0" ypos="20" type="line"/>
+        <input name="DC" xpos="0" ypos="32" type="line"/>
+        <input name="DD" xpos="0" ypos="44" type="line"/>
+        <input name="G" xpos="0" ypos="0" type="line"/>
+        <output name="PA" xpos="0" ypos="14" type="line"/>
+        <output name="NA" xpos="0" ypos="13" type="line"/>
+        <output name="PB" xpos="0" ypos="26" type="line"/>
+        <output name="NB" xpos="0" ypos="25" type="line"/>
+        <output name="PC" xpos="0" ypos="38" type="line"/>
+        <output name="NC" xpos="0" ypos="37" type="line"/>
+        <output name="PD" xpos="0" ypos="50" type="line"/>
+        <output name="ND" xpos="0" ypos="49" type="line"/>
+    </cell>
+    <cell name="LTK" size="4" description="1-bit Data Latch">
+        <!-- Checked -->
+        <input name="G" xpos="0" ypos="0" type="line"/>
+        <input name="D" xpos="0" ypos="8" type="line"/>
+        <output name="Q" xpos="0" ypos="12" type="line"/>
+        <output name="XQ" xpos="0" ypos="14" type="line"/>
+    </cell>
+    <cell name="LTL" size="5" description="1-bit Data Latch with Clear">
+        <!-- Checked -->
+        <input name="G" xpos="0" ypos="0" type="line"/>
+        <input name="D" xpos="0" ypos="8" type="line"/>
+        <input name="CL" xpos="0" ypos="10" type="line"/>
+        <output name="Q" xpos="0" ypos="16" type="line"/>
+        <output name="XQ" xpos="0" ypos="18" type="line"/>
+    </cell>
+    <cell name="LTM" size="15" description="4-bit Data Latch with Clear">
+        <!-- P/N outputs maybe swapped -->
+        <input name="DA" xpos="0" ypos="8" type="missing"/>
+        <input name="DB" xpos="0" ypos="26" type="missing"/>
+        <input name="DC" xpos="0" ypos="36" type="missing"/>
+        <input name="DD" xpos="0" ypos="54" type="missing"/>
+        <input name="G" xpos="0" ypos="0" type="missing"/>
+        <input name="CL" xpos="0" ypos="10" type="missing"/>
+        <output name="PA" xpos="0" ypos="16" type="missing"/>
+        <output name="NA" xpos="0" ypos="14" type="missing"/>
+        <output name="PB" xpos="0" ypos="18" type="missing"/>
+        <output name="NB" xpos="0" ypos="20" type="missing"/>
+        <output name="PC" xpos="0" ypos="44" type="missing"/>
+        <output name="NC" xpos="0" ypos="42" type="missing"/>
+        <output name="PD" xpos="0" ypos="46" type="missing"/>
+        <output name="ND" xpos="0" ypos="48" type="missing"/>
+    </cell>
+
+    <cell name="N2B" size="3" description="Power 2-input NAND">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <output name="X" xpos="0" ypos="9" type="line"/>
+    </cell>
+    <cell name="N2N" size="1" description="2-input NAND">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <output name="X" xpos="0" ypos="1" type="line"/>
+    </cell>
+    <cell name="N2P" size="2" description="Power 2-input AND">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <output name="X" xpos="0" ypos="5" type="line"/>
+    </cell>
+    <cell name="N3B" size="3" description="Power 3-input AND">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="A3" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="N3N" size="2" description="3-input AND">
+        <input name="A1" xpos="0" ypos="2" type="line"/>
+        <input name="A2" xpos="0" ypos="4" type="line"/>
+        <input name="A3" xpos="0" ypos="6" type="line"/>
+        <output name="X" xpos="0" ypos="5" type="line"/>
+    </cell>
+    <cell name="N3P" size="3" description="Power 3-input AND">
+        <input name="A1" xpos="0" ypos="2" type="line"/>
+        <input name="A2" xpos="0" ypos="4" type="line"/>
+        <input name="A3" xpos="0" ypos="6" type="line"/>
+        <output name="X" xpos="0" ypos="9" type="line"/>
+    </cell>
+    <cell name="N4B" size="4" description="Power 4-input AND">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <input name="A3" xpos="0" ypos="4" type="line"/>
+        <input name="A4" xpos="0" ypos="6" type="line"/>
+        <output name="X" xpos="0" ypos="13" type="line"/>
+    </cell>
+    <cell name="N4N" size="2" description="4-input NAND">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <input name="A3" xpos="0" ypos="4" type="line"/>
+        <input name="A4" xpos="0" ypos="6" type="line"/>
+        <output name="X" xpos="0" ypos="5" type="line"/>
+    </cell>
+    <cell name="N4P" size="3" description="Power 4-input AND">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <input name="A3" xpos="0" ypos="4" type="line"/>
+        <input name="A4" xpos="0" ypos="6" type="line"/>
+        <output name="X" xpos="0" ypos="9" type="line"/>
+    </cell>
+    <cell name="N6B" size="5" description="Power 6-input NAND">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <input name="A3" xpos="0" ypos="4" type="line"/>
+        <input name="A4" xpos="0" ypos="6" type="line"/>
+        <input name="A5" xpos="0" ypos="8" type="line"/>
+        <input name="A6" xpos="0" ypos="10" type="line"/>
+        <output name="X" xpos="0" ypos="17" type="line"/>
+    </cell>
+    <cell name="N8B" size="6" description="Power 8-input NAND">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <input name="A3" xpos="0" ypos="4" type="line"/>
+        <input name="A4" xpos="0" ypos="6" type="line"/>
+        <input name="A5" xpos="0" ypos="12" type="line"/>
+        <input name="A6" xpos="0" ypos="14" type="line"/>
+        <input name="A7" xpos="0" ypos="16" type="line"/>
+        <input name="A8" xpos="0" ypos="18" type="line"/>
+        <output name="X" xpos="0" ypos="21" type="line"/>
+    </cell>
+    <cell name="N9B" size="7" description="Power 9-input NAND">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <input name="A3" xpos="0" ypos="4" type="line"/>
+        <input name="A4" xpos="0" ypos="6" type="line"/>
+        <input name="A5" xpos="0" ypos="8" type="line"/>
+        <input name="A6" xpos="0" ypos="10" type="line"/>
+        <input name="A7" xpos="0" ypos="18" type="line"/>
+        <input name="A8" xpos="0" ypos="20" type="line"/>
+        <input name="A9" xpos="0" ypos="22" type="line"/>
+        <output name="X" xpos="0" ypos="25" type="line"/>
+    </cell>
+    <cell name="NCB" size="9" description="Power 12-input NAND">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="A3" xpos="0" ypos="0" type="missing"/>
+        <input name="A4" xpos="0" ypos="0" type="missing"/>
+        <input name="A5" xpos="0" ypos="0" type="missing"/>
+        <input name="A6" xpos="0" ypos="0" type="missing"/>
+        <input name="A7" xpos="0" ypos="0" type="missing"/>
+        <input name="A8" xpos="0" ypos="0" type="missing"/>
+        <input name="A9" xpos="0" ypos="0" type="missing"/>
+        <input name="A10" xpos="0" ypos="0" type="missing"/>
+        <input name="A11" xpos="0" ypos="0" type="missing"/>
+        <input name="A12" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="NGB" size="11" description="Power 16-input NAND">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="A3" xpos="0" ypos="0" type="missing"/>
+        <input name="A4" xpos="0" ypos="0" type="missing"/>
+        <input name="A5" xpos="0" ypos="0" type="missing"/>
+        <input name="A6" xpos="0" ypos="0" type="missing"/>
+        <input name="A7" xpos="0" ypos="0" type="missing"/>
+        <input name="A8" xpos="0" ypos="0" type="missing"/>
+        <input name="A9" xpos="0" ypos="0" type="missing"/>
+        <input name="A10" xpos="0" ypos="0" type="missing"/>
+        <input name="A11" xpos="0" ypos="0" type="missing"/>
+        <input name="A12" xpos="0" ypos="0" type="missing"/>
+        <input name="A13" xpos="0" ypos="0" type="missing"/>
+        <input name="A14" xpos="0" ypos="0" type="missing"/>
+        <input name="A15" xpos="0" ypos="0" type="missing"/>
+        <input name="A16" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+
+    <cell name="R2B" size="3" description="Power 2-input NOR">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <output name="X" xpos="0" ypos="9" type="line"/>
+    </cell>
+    <cell name="R2N" size="1" description="2-input NOR">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <output name="X" xpos="0" ypos="1" type="line"/>
+    </cell>
+    <cell name="R3N" size="2" description="3-input NOR">
+        <input name="A1" xpos="0" ypos="2" type="line"/>
+        <input name="A2" xpos="0" ypos="4" type="line"/>
+        <input name="A3" xpos="0" ypos="6" type="line"/>
+        <output name="X" xpos="0" ypos="5" type="line"/>
+    </cell>
+    <cell name="R2P" size="2" description="Power 2-input OR">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <output name="X" xpos="0" ypos="5" type="line"/>
+    </cell>
+    <cell name="R3B" size="3" description="Power 3-input NOR">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <input name="A3" xpos="0" ypos="4" type="line"/>
+        <output name="X" xpos="0" ypos="9" type="line"/>
+    </cell>
+    <cell name="R3P" size="3" description="Power 3-input OR">
+        <input name="A1" xpos="0" ypos="2" type="line"/>
+        <input name="A2" xpos="0" ypos="4" type="line"/>
+        <input name="A3" xpos="0" ypos="6" type="line"/>
+        <output name="X" xpos="0" ypos="9" type="line"/>
+    </cell>
+    <cell name="R4B" size="4" description="Power 4-input NOR">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <input name="A3" xpos="0" ypos="4" type="line"/>
+        <input name="A4" xpos="0" ypos="6" type="line"/>
+        <output name="X" xpos="0" ypos="13" type="line"/>
+    </cell>
+    <cell name="R4N" size="2" description="4-input NOR">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <input name="A3" xpos="0" ypos="4" type="line"/>
+        <input name="A4" xpos="0" ypos="6" type="line"/>
+        <output name="X" xpos="0" ypos="5" type="line"/>
+    </cell>
+    <cell name="R4P" size="3" description="Power 4-input OR">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <input name="A3" xpos="0" ypos="4" type="line"/>
+        <input name="A4" xpos="0" ypos="6" type="line"/>
+        <output name="X" xpos="0" ypos="9" type="line"/>
+    </cell>
+    <cell name="R6B" size="5" description="Power 6-input NOR">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <input name="A3" xpos="0" ypos="4" type="line"/>
+        <input name="A4" xpos="0" ypos="6" type="line"/>
+        <input name="A5" xpos="0" ypos="8" type="line"/>
+        <input name="A6" xpos="0" ypos="10" type="line"/>
+        <output name="X" xpos="0" ypos="17" type="line"/>
+    </cell>
+    <cell name="R8B" size="3" description="Power 8-input NOR">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <input name="A3" xpos="0" ypos="4" type="line"/>
+        <input name="A4" xpos="0" ypos="6" type="line"/>
+        <input name="A5" xpos="0" ypos="12" type="line"/>
+        <input name="A6" xpos="0" ypos="14" type="line"/>
+        <input name="A7" xpos="0" ypos="16" type="line"/>
+        <input name="A8" xpos="0" ypos="18" type="line"/>
+        <output name="X" xpos="0" ypos="21" type="line"/>
+    </cell>
+    <cell name="R9B" size="7" description="Power 9-input NOR">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="A3" xpos="0" ypos="0" type="missing"/>
+        <input name="A4" xpos="0" ypos="0" type="missing"/>
+        <input name="A5" xpos="0" ypos="0" type="missing"/>
+        <input name="A6" xpos="0" ypos="0" type="missing"/>
+        <input name="A7" xpos="0" ypos="0" type="missing"/>
+        <input name="A8" xpos="0" ypos="0" type="missing"/>
+        <input name="A9" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="RCB" size="9" description="Power 12-input NOR">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="A3" xpos="0" ypos="0" type="missing"/>
+        <input name="A4" xpos="0" ypos="0" type="missing"/>
+        <input name="A5" xpos="0" ypos="0" type="missing"/>
+        <input name="A6" xpos="0" ypos="0" type="missing"/>
+        <input name="A7" xpos="0" ypos="0" type="missing"/>
+        <input name="A8" xpos="0" ypos="0" type="missing"/>
+        <input name="A9" xpos="0" ypos="0" type="missing"/>
+        <input name="A10" xpos="0" ypos="0" type="missing"/>
+        <input name="A11" xpos="0" ypos="0" type="missing"/>
+        <input name="A12" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="RGB" size="11" description="Power 16-input NOR">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="A3" xpos="0" ypos="0" type="missing"/>
+        <input name="A4" xpos="0" ypos="0" type="missing"/>
+        <input name="A5" xpos="0" ypos="0" type="missing"/>
+        <input name="A6" xpos="0" ypos="0" type="missing"/>
+        <input name="A7" xpos="0" ypos="0" type="missing"/>
+        <input name="A8" xpos="0" ypos="0" type="missing"/>
+        <input name="A9" xpos="0" ypos="0" type="missing"/>
+        <input name="A10" xpos="0" ypos="0" type="missing"/>
+        <input name="A11" xpos="0" ypos="0" type="missing"/>
+        <input name="A12" xpos="0" ypos="0" type="missing"/>
+        <input name="A13" xpos="0" ypos="0" type="missing"/>
+        <input name="A14" xpos="0" ypos="0" type="missing"/>
+        <input name="A15" xpos="0" ypos="0" type="missing"/>
+        <input name="A16" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+
+    <cell name="T24" size="6" description="Power 2-AND 4-wide Multiplexer">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <input name="C1" xpos="0" ypos="0" type="missing"/>
+        <input name="C2" xpos="0" ypos="0" type="missing"/>
+        <input name="D1" xpos="0" ypos="0" type="missing"/>
+        <input name="D2" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="T26" size="9" description="Power 2-AND 6-wide Multiplexer">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <input name="C1" xpos="0" ypos="0" type="missing"/>
+        <input name="C2" xpos="0" ypos="0" type="missing"/>
+        <input name="D1" xpos="0" ypos="0" type="missing"/>
+        <input name="D2" xpos="0" ypos="0" type="missing"/>
+        <input name="E1" xpos="0" ypos="0" type="missing"/>
+        <input name="E2" xpos="0" ypos="0" type="missing"/>
+        <input name="F1" xpos="0" ypos="0" type="missing"/>
+        <input name="F2" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="T28" size="11" description="Power 2-AND 8-wide Multiplexer">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <input name="C1" xpos="0" ypos="0" type="missing"/>
+        <input name="C2" xpos="0" ypos="0" type="missing"/>
+        <input name="D1" xpos="0" ypos="0" type="missing"/>
+        <input name="D2" xpos="0" ypos="0" type="missing"/>
+        <input name="E1" xpos="0" ypos="0" type="missing"/>
+        <input name="E2" xpos="0" ypos="0" type="missing"/>
+        <input name="F1" xpos="0" ypos="0" type="missing"/>
+        <input name="F2" xpos="0" ypos="0" type="missing"/>
+        <input name="G1" xpos="0" ypos="0" type="missing"/>
+        <input name="G2" xpos="0" ypos="0" type="missing"/>
+        <input name="H1" xpos="0" ypos="0" type="missing"/>
+        <input name="H2" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="T2B" size="2" description="2:1 Selector">
+        <input name="A" xpos="7" ypos="0" type="point"/>
+        <input name="B" xpos="7" ypos="2" type="point"/>
+        <input name="S1" xpos="0" ypos="4" type="line"/>
+        <input name="S2" xpos="0" ypos="6" type="line"/>
+        <output name="X" xpos="0" ypos="1" type="line"/>
+    </cell>
+    <cell name="T2C" size="4" description="Dual 2:1 Selector">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <input name="B1" xpos="0" ypos="12" type="line"/>
+        <input name="B2" xpos="0" ypos="14" type="line"/>
+        <input name="S1" xpos="0" ypos="4" type="line"/>
+        <input name="S2" xpos="0" ypos="6" type="line"/>
+        <output name="X0" xpos="0" ypos="1" type="line"/>
+        <output name="X1" xpos="0" ypos="13" type="line"/>
+    </cell>
+    <cell name="T2D" size="2" description="2:1 Selector">
+        <input name="A" xpos="0" ypos="0" type="line"/>
+        <input name="B" xpos="0" ypos="2" type="line"/>
+        <input name="S1" xpos="0" ypos="4" type="line"/>
+        <input name="S2" xpos="0" ypos="6" type="line"/>
+        <output name="X" xpos="0" ypos="5" type="line"/>
+    </cell>
+    <cell name="T32" size="5" description="Power 3-AND 2-wide Multiplexer">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="A3" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <input name="B3" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="T33" size="7" description="Power 3-AND 3-wide Multiplexer">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="A3" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <input name="B3" xpos="0" ypos="0" type="missing"/>
+        <input name="C1" xpos="0" ypos="0" type="missing"/>
+        <input name="C2" xpos="0" ypos="0" type="missing"/>
+        <input name="C3" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="T34" size="9" description="Power 3-AND 4-wide Multiplexer">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <input name="A3" xpos="0" ypos="4" type="line"/>
+        <input name="B1" xpos="0" ypos="6" type="line"/>
+        <input name="B2" xpos="0" ypos="8" type="line"/>
+        <input name="B3" xpos="0" ypos="10" type="line"/>
+        <input name="C1" xpos="0" ypos="20" type="line"/>
+        <input name="C2" xpos="0" ypos="22" type="line"/>
+        <input name="C3" xpos="0" ypos="24" type="line"/>
+        <input name="D1" xpos="0" ypos="26" type="line"/>
+        <input name="D2" xpos="0" ypos="28" type="line"/>
+        <input name="D3" xpos="0" ypos="30" type="line"/>
+        <output name="X" xpos="0" ypos="33" type="line"/>
+    </cell>
+    <cell name="T42" size="6" description="Power 4-AND 2-wide Multiplexer">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="A3" xpos="0" ypos="0" type="missing"/>
+        <input name="A4" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <input name="B3" xpos="0" ypos="0" type="missing"/>
+        <input name="B4" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="T43" size="9" description="Power 4-AND 3-wide Multiplexer">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="A3" xpos="0" ypos="0" type="missing"/>
+        <input name="A4" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <input name="B3" xpos="0" ypos="0" type="missing"/>
+        <input name="B4" xpos="0" ypos="0" type="missing"/>
+        <input name="C1" xpos="0" ypos="0" type="missing"/>
+        <input name="C2" xpos="0" ypos="0" type="missing"/>
+        <input name="C3" xpos="0" ypos="0" type="missing"/>
+        <input name="C4" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="T44" size="11" description="Power 4-AND 4-wide Multiplexer">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <input name="A3" xpos="0" ypos="4" type="line"/>
+        <input name="A4" xpos="0" ypos="6" type="line"/>
+        <input name="B1" xpos="0" ypos="8" type="line"/>
+        <input name="B2" xpos="0" ypos="10" type="line"/>
+        <input name="B3" xpos="0" ypos="12" type="line"/>
+        <input name="B4" xpos="0" ypos="14" type="line"/>
+        <input name="C1" xpos="0" ypos="24" type="line"/>
+        <input name="C2" xpos="0" ypos="26" type="line"/>
+        <input name="C3" xpos="0" ypos="28" type="line"/>
+        <input name="C4" xpos="0" ypos="30" type="line"/>
+        <input name="D1" xpos="0" ypos="32" type="line"/>
+        <input name="D2" xpos="0" ypos="34" type="line"/>
+        <input name="D3" xpos="0" ypos="36" type="line"/>
+        <input name="D4" xpos="0" ypos="38" type="line"/>
+        <output name="X" xpos="0" ypos="41" type="line"/>
+    </cell>
+    <cell name="T5A" size="5" description="4:1 Selector">
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="2" type="line"/>
+        <input name="B1" xpos="0" ypos="18" type="line"/>
+        <input name="B2" xpos="0" ypos="16" type="line"/>
+        <input name="S1" xpos="0" ypos="4" type="line"/>
+        <input name="S2" xpos="0" ypos="6" type="line"/>
+        <input name="S3" xpos="0" ypos="12" type="line"/>
+        <input name="S4" xpos="0" ypos="14" type="line"/>
+        <input name="S5" xpos="0" ypos="10" type="line"/>
+        <input name="S6" xpos="0" ypos="8" type="line"/>
+        <output name="X" xpos="0" ypos="9" type="line"/>
+    </cell>
+
+    <cell name="U24" size="6" description="Power 2-OR 4-wide Multiplexer">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <input name="C1" xpos="0" ypos="0" type="missing"/>
+        <input name="C2" xpos="0" ypos="0" type="missing"/>
+        <input name="D1" xpos="0" ypos="0" type="missing"/>
+        <input name="D2" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="U26" size="9" description="Power 2-OR 6-wide Multiplexer">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <input name="C1" xpos="0" ypos="0" type="missing"/>
+        <input name="C2" xpos="0" ypos="0" type="missing"/>
+        <input name="D1" xpos="0" ypos="0" type="missing"/>
+        <input name="D2" xpos="0" ypos="0" type="missing"/>
+        <input name="E1" xpos="0" ypos="0" type="missing"/>
+        <input name="E2" xpos="0" ypos="0" type="missing"/>
+        <input name="F1" xpos="0" ypos="0" type="missing"/>
+        <input name="F2" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="U28" size="11" description="Power 2-OR 8-wide Multiplexer">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <input name="C1" xpos="0" ypos="0" type="missing"/>
+        <input name="C2" xpos="0" ypos="0" type="missing"/>
+        <input name="D1" xpos="0" ypos="0" type="missing"/>
+        <input name="D2" xpos="0" ypos="0" type="missing"/>
+        <input name="E1" xpos="0" ypos="0" type="missing"/>
+        <input name="E2" xpos="0" ypos="0" type="missing"/>
+        <input name="F1" xpos="0" ypos="0" type="missing"/>
+        <input name="F2" xpos="0" ypos="0" type="missing"/>
+        <input name="G1" xpos="0" ypos="0" type="missing"/>
+        <input name="G2" xpos="0" ypos="0" type="missing"/>
+        <input name="H1" xpos="0" ypos="0" type="missing"/>
+        <input name="H2" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="U32" size="5" description="Power 3-OR 2-wide Multiplexer">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="A3" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <input name="B3" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="U33" size="7" description="Power 3-OR 3-wide Multiplexer">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="A3" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <input name="B3" xpos="0" ypos="0" type="missing"/>
+        <input name="C1" xpos="0" ypos="0" type="missing"/>
+        <input name="C2" xpos="0" ypos="0" type="missing"/>
+        <input name="C3" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="U33" size="9" description="Power 3-OR 4-wide Multiplexer">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="A3" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <input name="B3" xpos="0" ypos="0" type="missing"/>
+        <input name="C1" xpos="0" ypos="0" type="missing"/>
+        <input name="C2" xpos="0" ypos="0" type="missing"/>
+        <input name="C3" xpos="0" ypos="0" type="missing"/>
+        <input name="D1" xpos="0" ypos="0" type="missing"/>
+        <input name="D2" xpos="0" ypos="0" type="missing"/>
+        <input name="D3" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="U42" size="6" description="Power 4-OR 2-wide Multiplexer">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="A3" xpos="0" ypos="0" type="missing"/>
+        <input name="A4" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <input name="B3" xpos="0" ypos="0" type="missing"/>
+        <input name="B4" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="U43" size="9" description="Power 4-OR 3-wide Multiplexer">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="A3" xpos="0" ypos="0" type="missing"/>
+        <input name="A4" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <input name="B3" xpos="0" ypos="0" type="missing"/>
+        <input name="B4" xpos="0" ypos="0" type="missing"/>
+        <input name="C1" xpos="0" ypos="0" type="missing"/>
+        <input name="C2" xpos="0" ypos="0" type="missing"/>
+        <input name="C3" xpos="0" ypos="0" type="missing"/>
+        <input name="C4" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="U44" size="11" description="Power 4-OR 4-wide Multiplexer">
+        <input name="A1" xpos="0" ypos="0" type="missing"/>
+        <input name="A2" xpos="0" ypos="0" type="missing"/>
+        <input name="A3" xpos="0" ypos="0" type="missing"/>
+        <input name="A4" xpos="0" ypos="0" type="missing"/>
+        <input name="B1" xpos="0" ypos="0" type="missing"/>
+        <input name="B2" xpos="0" ypos="0" type="missing"/>
+        <input name="B3" xpos="0" ypos="0" type="missing"/>
+        <input name="B4" xpos="0" ypos="0" type="missing"/>
+        <input name="C1" xpos="0" ypos="0" type="missing"/>
+        <input name="C2" xpos="0" ypos="0" type="missing"/>
+        <input name="C3" xpos="0" ypos="0" type="missing"/>
+        <input name="C4" xpos="0" ypos="0" type="missing"/>
+        <input name="D1" xpos="0" ypos="0" type="missing"/>
+        <input name="D2" xpos="0" ypos="0" type="missing"/>
+        <input name="D3" xpos="0" ypos="0" type="missing"/>
+        <input name="D4" xpos="0" ypos="0" type="missing"/>
+        <output name="X" xpos="0" ypos="0" type="missing"/>
+    </cell>
+
+    <cell name="V1N" size="1" description="Inverter">
+        <input name="A" xpos="0" ypos="0" type="line"/>
+        <output name="X" xpos="0" ypos="1" type="line"/>
+    </cell>
+    <cell name="V2B" size="1" description="Power Inverter">
+        <input name="A" xpos="0" ypos="0" type="line"/>
+        <output name="X" xpos="0" ypos="1" type="line"/>
+    </cell>
+    <cell name="V3A" size="2" description="1:2 Selector">
+        <input name="A" xpos="0" ypos="0" type="missing"/>
+        <input name="S1" xpos="0" ypos="0" type="missing"/>
+        <input name="S2" xpos="0" ypos="0" type="missing"/>
+        <output name="X0" xpos="0" ypos="0" type="missing"/>
+        <output name="X1" xpos="0" ypos="0" type="missing"/>
+    </cell>
+    <cell name="V3B" size="3" description="Dual 1:2 Selector">
+        <input name="A" xpos="0" ypos="0" type="missing"/>
+        <input name="B" xpos="0" ypos="0" type="missing"/>
+        <input name="S1" xpos="0" ypos="0" type="missing"/>
+        <input name="S2" xpos="0" ypos="0" type="missing"/>
+        <output name="X0" xpos="0" ypos="0" type="missing"/>
+        <output name="X1" xpos="0" ypos="0" type="missing"/>
+        <output name="X2" xpos="0" ypos="0" type="missing"/>
+        <output name="X3" xpos="0" ypos="0" type="missing"/>
+    </cell>
+
+    <cell name="X1B" size="4" description="Power EXNOR">
+        <input name="A1" xpos="0" ypos="6" type="line"/>
+        <input name="A2" xpos="0" ypos="8" type="line"/>
+        <output name="X" xpos="0" ypos="13" type="line"/>
+    </cell>
+    <cell name="X2B" size="4" description="Power EOR">
+        <input name="A1" xpos="0" ypos="6" type="line"/>
+        <input name="A2" xpos="0" ypos="8" type="line"/>
+        <output name="X" xpos="0" ypos="13" type="line"/>
+    </cell>
+</celldefs>
