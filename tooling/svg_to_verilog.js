@@ -20,41 +20,6 @@ const cellsStartX = -3633;
 const cellsStartY = -3256.87;
 const cellHeight = totalCellHeight / totalCellHeightCount;
 
-// function convertCellsToExpr(cells, assigns, cellCode, fn) {
-//   const cellsToRemove = [];
-//   cells.forEach((cell) => {
-//     if (cell.cellCode === cellCode) {
-//       const inputs = cell.params.filter((p) => p.type === "input");
-//       const output = cell.params.find((p) => p.type === "output");
-//       assigns.push([output.netId, fn({ inputs })]);
-//       cellsToRemove.push(cell.ref);
-//     }
-//   });
-//   cellsToRemove.forEach((ctr) =>
-//     [].splice(
-//       cells.findIndex((c) => c.ref === ctr),
-//       1
-//     )
-//   );
-// }
-
-// function simplifyAssigns(cells, assigns) {
-//   assigns.forEach((assign) => {
-//   })
-//   const assignsToRemove = [];
-//   cells.forEach((cell) => {
-//     const inputs = cell.params.filter((p) => p.type === "input");
-//     inputs.forEach((input) => {
-//       assigns.forEach((assign) => {
-//         if (input.netId === assign[0]) {
-//           input.netId = assign[1];
-//           assignsToRemove.push(input.netId);
-//         }
-//       });
-//     });
-//   });
-// }
-
 function astToString(ast) {
   if (ast.type === "ident") {
     return ast.value;
@@ -79,6 +44,23 @@ function fixAst(ast, ident, fn, substRef) {
     };
   } else if (ast.type === "neg") {
     return { type: "neg", value: fixAst(ast.value, ident, fn, substRef) };
+  }
+  return ast;
+}
+
+function fixDoubleNeg(ast) {
+  if (ast.type === "ident") {
+    return ast;
+  } else if (ast.type === "op") {
+    return {
+      type: "op",
+      op: ast.op,
+      values: ast.values.map((a) => fixDoubleNeg(a)),
+    };
+  } else if (ast.type === "neg" && ast.value.type === "neg") {
+    return fixDoubleNeg(ast.value.value);
+  } else if (ast.type === "neg") {
+    return { type: "neg", value: fixDoubleNeg(ast.value) };
   }
   return ast;
 }
@@ -577,6 +559,11 @@ async function process() {
     if (substRef.subst && !substRef.subst) {
       assign.used = true;
     }
+  });
+
+  // Simplify further by removing double negations
+  assigns.forEach((assign) => {
+    assign.value = fixDoubleNeg(assign.value);
   });
 
   const codeLines = [];

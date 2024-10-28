@@ -6,4 +6,5 @@ node_modules
 *.lck
 *.out
 out.json
+out.v
 *.elk
