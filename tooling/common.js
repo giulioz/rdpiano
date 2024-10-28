@@ -151,6 +151,48 @@ function getPossibleCellTypes() {
   return cellTypes;
 }
 
+function lineIntersectsCircle(x1, y1, x2, y2, cx, cy, radius) {
+  // Function to calculate the distance from a point to a line segment
+  function pointToSegmentDistance(x, y, x1, y1, x2, y2) {
+    const A = x - x1;
+    const B = y - y1;
+    const C = x2 - x1;
+    const D = y2 - y1;
+
+    const dot = A * C + B * D;
+    const lenSq = C * C + D * D;
+    let param = -1;
+
+    if (lenSq !== 0) {
+      // In case of a line segment with length zero
+      param = dot / lenSq;
+    }
+
+    let nearestX, nearestY;
+
+    if (param < 0) {
+      nearestX = x1;
+      nearestY = y1;
+    } else if (param > 1) {
+      nearestX = x2;
+      nearestY = y2;
+    } else {
+      nearestX = x1 + param * C;
+      nearestY = y1 + param * D;
+    }
+
+    const dx = x - nearestX;
+    const dy = y - nearestY;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  // Calculate the distance from the circle's center to the line segment
+  const distance = pointToSegmentDistance(cx, cy, x1, y1, x2, y2);
+
+  // Check if the distance is less than or equal to the radius
+  return distance <= radius;
+}
+
 const totalCellHeight = 6780.243;
 const totalCellHeightCount = 120;
 const cellWidth = 138;
@@ -174,4 +216,5 @@ module.exports = {
   svgPathToLineSegments,
   sizeParams,
   getPossibleCellTypes,
+  lineIntersectsCircle,
 };

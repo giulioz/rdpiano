@@ -1,0 +1,2059 @@
+[
+  {
+    "name": "FJD",
+    "size": 12,
+    "description": "Positive Edge Clocked Power JKFF with CLEAR",
+    "conns": [
+      {
+        "cy": 41.652324999999564,
+        "name": "CK",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "missing",
+        "io": "input"
+      },
+      {
+        "cy": 99.06692499999963,
+        "name": "J",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "missing",
+        "io": "input"
+      },
+      {
+        "cy": 154.8940249999996,
+        "name": "K",
+        "xpos": "0",
+        "ypos": "10",
+        "type": "missing",
+        "io": "input"
+      },
+      {
+        "cy": 325.02112499999953,
+        "name": "CL",
+        "xpos": "0",
+        "ypos": "22",
+        "type": "missing",
+        "io": "input"
+      },
+      {
+        "cy": 591.7210249999996,
+        "name": "XQ",
+        "xpos": "0",
+        "ypos": "41",
+        "type": "missing",
+        "io": "output"
+      },
+      {
+        "cy": 649.9294249999996,
+        "name": "Q",
+        "xpos": "0",
+        "ypos": "45",
+        "type": "missing",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "LT4",
+    "size": 13,
+    "description": "4-bit Data Latch",
+    "conns": [
+      {
+        "cy": 10.843062499999519,
+        "name": "G",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 123.8200624999995,
+        "name": "DA",
+        "xpos": "0",
+        "ypos": "8",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 194.5962124999994,
+        "name": "NA",
+        "xpos": "0",
+        "ypos": "13",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 209.94201249999946,
+        "name": "PA",
+        "xpos": "0",
+        "ypos": "14",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 294.2118124999995,
+        "name": "DB",
+        "xpos": "0",
+        "ypos": "20",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 365.2524624999994,
+        "name": "NB",
+        "xpos": "0",
+        "ypos": "25",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 379.14306249999936,
+        "name": "PB",
+        "xpos": "0",
+        "ypos": "26",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 464.20661249999944,
+        "name": "DC",
+        "xpos": "0",
+        "ypos": "32",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 533.1305124999994,
+        "name": "NC",
+        "xpos": "0",
+        "ypos": "37",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 547.8666124999995,
+        "name": "PC",
+        "xpos": "0",
+        "ypos": "38",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 632.8784624999994,
+        "name": "DD",
+        "xpos": "0",
+        "ypos": "44",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 703.5222624999994,
+        "name": "ND",
+        "xpos": "0",
+        "ypos": "49",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 717.3436124999996,
+        "name": "PD",
+        "xpos": "0",
+        "ypos": "50",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "DE3",
+    "size": 15,
+    "description": "3:8 Decoder",
+    "conns": [
+      {
+        "cy": 12.576114999999959,
+        "name": "A",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 69.08307500000001,
+        "name": "B",
+        "xpos": "0",
+        "ypos": "1",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 139.197635,
+        "name": "X0",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 253.23303499999997,
+        "name": "X1",
+        "xpos": "0",
+        "ypos": "3",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 309.589365,
+        "name": "X2",
+        "xpos": "0",
+        "ypos": "4",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 421.24344499999995,
+        "name": "X3",
+        "xpos": "0",
+        "ypos": "5",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 463.84135499999996,
+        "name": "C",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 534.485155,
+        "name": "X4",
+        "xpos": "0",
+        "ypos": "7",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 647.4622549999999,
+        "name": "X5",
+        "xpos": "0",
+        "ypos": "8",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 703.818452,
+        "name": "X6",
+        "xpos": "0",
+        "ypos": "9",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 818.1184549999999,
+        "name": "X7",
+        "xpos": "0",
+        "ypos": "10",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "N2N",
+    "size": 1,
+    "description": "2-input NAND",
+    "conns": [
+      {
+        "cy": 12.90842944444421,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 26.843138333333098,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "1",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 41.13067611111089,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      }
+    ]
+  },
+  {
+    "name": "R2N",
+    "size": 1,
+    "description": "2-input NOR",
+    "conns": [
+      {
+        "cy": 13.86279999999988,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 27.885800000000017,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "1",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 42.17309999999998,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      }
+    ]
+  },
+  {
+    "name": "V1N",
+    "size": 1,
+    "description": "Inverter",
+    "conns": [
+      {
+        "cy": 13.482978333333108,
+        "name": "A",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 27.811514999999645,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "1",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "V2B",
+    "size": 1,
+    "description": "Power Inverter",
+    "conns": [
+      {
+        "cy": 13.387558333333232,
+        "name": "A",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 27.41049166666649,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "1",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "FDQ",
+    "size": 21,
+    "description": "4-bit DFF",
+    "conns": [
+      {
+        "cy": 10.160149999999476,
+        "name": "CK",
+        "xpos": "0",
+        "ypos": "1",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 67.44239999999945,
+        "name": "DA",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 95.7528499999994,
+        "name": "QA",
+        "xpos": "0",
+        "ypos": "3",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 350.1496499999996,
+        "name": "DB",
+        "xpos": "0",
+        "ypos": "4",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 377.9309499999997,
+        "name": "QB",
+        "xpos": "0",
+        "ypos": "5",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 632.7246499999994,
+        "name": "DC",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 660.7704999999996,
+        "name": "QC",
+        "xpos": "0",
+        "ypos": "7",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 913.5798499999996,
+        "name": "DD",
+        "xpos": "0",
+        "ypos": "8",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 943.6100999999996,
+        "name": "QD",
+        "xpos": "0",
+        "ypos": "9",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "D14",
+    "size": 2,
+    "description": "2-wide 3-AND 4-lnput AND-OR inverter",
+    "conns": [
+      {
+        "cy": 13.158175000000028,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 41.73327500000005,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 68.72067500000003,
+        "name": "A3",
+        "xpos": "0",
+        "ypos": "4",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 83.00827500000014,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "5",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 99.67697499999986,
+        "name": "B",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "input"
+      }
+    ]
+  },
+  {
+    "name": "D23",
+    "size": 2,
+    "description": "2-wide 2-AND 3-input AOI",
+    "conns": [
+      {
+        "cy": 41.23102499999959,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 69.80602499999941,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "8",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 84.62262499999952,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "13",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 98.91022499999963,
+        "name": "B",
+        "xpos": "0",
+        "ypos": "14",
+        "type": "line",
+        "io": "input"
+      }
+    ]
+  },
+  {
+    "name": "D24",
+    "size": 2,
+    "description": "2-wide 2-AND 4-input AND-OR-Inverter",
+    "conns": [
+      {
+        "cy": 12.233312045454216,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 40.69648513636329,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 68.73388622727238,
+        "name": "B1",
+        "xpos": "0",
+        "ypos": "4",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 83.03186325909057,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "5",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 97.25705689999967,
+        "name": "B2",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "input"
+      }
+    ]
+  },
+  {
+    "name": "D34",
+    "size": 2,
+    "description": "3-wide 2-AND 4-input AND-OR-Inverter",
+    "conns": [
+      {
+        "cy": 10.637054999999577,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 40.005824999999504,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 68.3162549999995,
+        "name": "B1",
+        "xpos": "0",
+        "ypos": "4",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 81.81002499999954,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "5",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 95.8329149999995,
+        "name": "B2",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "input"
+      }
+    ]
+  },
+  {
+    "name": "K1B",
+    "size": 2,
+    "description": "Clock Buffer",
+    "conns": [
+      {
+        "cy": 11.555417999999852,
+        "name": "A",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 82.59601799999982,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "5",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "N2P",
+    "size": 2,
+    "description": "Power 2-input AND",
+    "conns": [
+      {
+        "cy": 14.148162499999899,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 41.97891249999998,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 84.84136250000006,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "5",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "N3N",
+    "size": 2,
+    "description": "3-input AND",
+    "conns": [
+      {
+        "cy": 39.21501249999983,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 68.31921249999982,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "4",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 82.20976249999967,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "5",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 96.23271249999993,
+        "name": "A3",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "input"
+      }
+    ]
+  },
+  {
+    "name": "N4N",
+    "size": 2,
+    "description": "4-input NAND",
+    "conns": [
+      {
+        "cy": 13.324991499999847,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 41.90089049999986,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 69.41758099999969,
+        "name": "A3",
+        "xpos": "0",
+        "ypos": "4",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 84.2342308999999,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "5",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 99.58007244999988,
+        "name": "A4",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "input"
+      }
+    ]
+  },
+  {
+    "name": "R2P",
+    "size": 2,
+    "description": "Power 2-input OR",
+    "conns": [
+      {
+        "cy": 12.558212499999854,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 41.70416249999971,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 82.40821249999976,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "5",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "K2B",
+    "size": 3,
+    "description": "Power Clock Buffer",
+    "conns": [
+      {
+        "cy": 10.003737499999488,
+        "name": "A",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 137.13608749999958,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "9",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "K4B",
+    "size": 3,
+    "description": "Gated Clock (OR) Buffer",
+    "conns": [
+      {
+        "cy": 12.985897499999567,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 41.29637249999962,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 140.2505424999996,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "9",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "N3P",
+    "size": 3,
+    "description": "Power 3-input AND",
+    "conns": [
+      {
+        "cy": 39.553249999999935,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 66.01155000000017,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "4",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 95.64485000000013,
+        "name": "A3",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 137.44905000000017,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "9",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "R2B",
+    "size": 3,
+    "description": "Power 2-input NOR",
+    "conns": [
+      {
+        "cy": 12.400245999999825,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 40.842957999999825,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 139.66482799999983,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "9",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "R4P",
+    "size": 3,
+    "description": "Power 4-input OR",
+    "conns": [
+      {
+        "cy": 10.356463666666386,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 39.78231393333305,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 68.09837999999971,
+        "name": "A3",
+        "xpos": "0",
+        "ypos": "4",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 97.22799633333302,
+        "name": "A4",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 138.31379733333304,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "9",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "C43",
+    "size": 48,
+    "description": "4-bit Binary Synchronous Up Counter",
+    "conns": [
+      {
+        "cy": 15.817549999999756,
+        "name": "DA",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 492.5966999999998,
+        "name": "QA",
+        "xpos": "0",
+        "ypos": "1",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 523.0237999999997,
+        "name": "EN",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 550.6727499999998,
+        "name": "CI",
+        "xpos": "0",
+        "ypos": "3",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 606.3675999999999,
+        "name": "L",
+        "xpos": "0",
+        "ypos": "4",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 691.2987999999999,
+        "name": "QB",
+        "xpos": "0",
+        "ypos": "5",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 1171.6499,
+        "name": "DB",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 1199.29885,
+        "name": "CL",
+        "xpos": "0",
+        "ypos": "7",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 1255.03235,
+        "name": "CK",
+        "xpos": "0",
+        "ypos": "8",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 1326.4310999999998,
+        "name": "CO",
+        "xpos": "0",
+        "ypos": "9",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 1709.464845,
+        "name": "QC",
+        "xpos": "0",
+        "ypos": "10",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 2188.31135,
+        "name": "DC",
+        "xpos": "0",
+        "ypos": "11",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 2217.0186249999997,
+        "name": "QD",
+        "xpos": "0",
+        "ypos": "12",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 2697.267805,
+        "name": "DD",
+        "xpos": "0",
+        "ypos": "13",
+        "type": "line",
+        "io": "input"
+      }
+    ]
+  },
+  {
+    "name": "LT2",
+    "size": 4,
+    "description": "1-bit Data Latch",
+    "conns": [
+      {
+        "cy": 12.284419999999614,
+        "name": "D",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "missing",
+        "io": "input"
+      },
+      {
+        "cy": 41.90935999999965,
+        "name": "G",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "missing",
+        "io": "input"
+      },
+      {
+        "cy": 153.0427199999997,
+        "name": "Q",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "missing",
+        "io": "output"
+      },
+      {
+        "cy": 210.19280999999967,
+        "name": "XQ",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "missing",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "N4B",
+    "size": 4,
+    "description": "Power 4-input AND",
+    "conns": [
+      {
+        "cy": 11.784710499999711,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 39.03678949999971,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 66.81804049999971,
+        "name": "A3",
+        "xpos": "0",
+        "ypos": "4",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 95.92220539999971,
+        "name": "A4",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 194.61179499999972,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "13",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "X1B",
+    "size": 4,
+    "description": "Power EXNOR",
+    "conns": [
+      {
+        "cy": 95.68267499999956,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 123.72857499999964,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "8",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 194.10777499999995,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "13",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "X2B",
+    "size": 4,
+    "description": "Power EOR",
+    "conns": [
+      {
+        "cy": 97.36646999999996,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 126.33836499999995,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "8",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 196.98210499999993,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "13",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "A4H",
+    "size": 50,
+    "description": "4-bit Full Adder",
+    "conns": [
+      {
+        "cy": 82.79091749999958,
+        "name": "CI",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 520.6819874999997,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "1",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 605.2749874999995,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 817.5050374999996,
+        "name": "S1",
+        "xpos": "0",
+        "ypos": "3",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 1367.6054374999994,
+        "name": "B1",
+        "xpos": "0",
+        "ypos": "4",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 1451.7628874999996,
+        "name": "B2",
+        "xpos": "0",
+        "ypos": "5",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 1607.7776874999995,
+        "name": "S2",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 1988.0084874999995,
+        "name": "C1",
+        "xpos": "0",
+        "ypos": "7",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 2073.3156375,
+        "name": "C2",
+        "xpos": "0",
+        "ypos": "8",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 2228.1974874999996,
+        "name": "S3",
+        "xpos": "0",
+        "ypos": "9",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 2439.8958374999993,
+        "name": "D1",
+        "xpos": "0",
+        "ypos": "10",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 2525.0643374999995,
+        "name": "D2",
+        "xpos": "0",
+        "ypos": "11",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 2736.9300374999993,
+        "name": "S4",
+        "xpos": "0",
+        "ypos": "12",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 2779.6208374999997,
+        "name": "CO",
+        "xpos": "0",
+        "ypos": "13",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "DE2",
+    "size": 5,
+    "description": "2:4 Decoder",
+    "conns": [
+      {
+        "cy": 10.341049999999996,
+        "name": "A",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 38.38695000000007,
+        "name": "B",
+        "xpos": "0",
+        "ypos": "8",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 81.24955,
+        "name": "X0",
+        "xpos": "0",
+        "ypos": "9",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 137.07664999999997,
+        "name": "X1",
+        "xpos": "0",
+        "ypos": "10",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 192.90355,
+        "name": "X2",
+        "xpos": "0",
+        "ypos": "11",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 249.78904999999986,
+        "name": "X3",
+        "xpos": "0",
+        "ypos": "12",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "FDM",
+    "size": 6,
+    "description": "DFF",
+    "conns": [
+      {
+        "cy": 13.007449999999608,
+        "name": "CK",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 126.51361666666632,
+        "name": "D",
+        "xpos": "0",
+        "ypos": "8",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 310.22268333333295,
+        "name": "XQ",
+        "xpos": "0",
+        "ypos": "21",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 323.54001666666636,
+        "name": "Q",
+        "xpos": "0",
+        "ypos": "22",
+        "type": "missing",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "N8B",
+    "size": 6,
+    "description": "Power 8-input NAND",
+    "conns": [
+      {
+        "cy": 12.202674999999772,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 40.77767499999982,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 68.82357499999989,
+        "name": "A3",
+        "xpos": "0",
+        "ypos": "4",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 97.39847499999973,
+        "name": "A4",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 182.06517499999973,
+        "name": "A5",
+        "xpos": "0",
+        "ypos": "12",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 211.43387499999972,
+        "name": "A6",
+        "xpos": "0",
+        "ypos": "14",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 237.8922749999997,
+        "name": "A7",
+        "xpos": "0",
+        "ypos": "16",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 266.7318749999997,
+        "name": "A8",
+        "xpos": "0",
+        "ypos": "18",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 310.12347499999987,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "21",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "T24",
+    "size": 6,
+    "description": "Power 2-AND 4-wide Multiplexer",
+    "conns": [
+      {
+        "cy": 11.66846499999997,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 39.978824999999915,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 69.08301499999993,
+        "name": "B1",
+        "xpos": "0",
+        "ypos": "4",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 96.86426499999993,
+        "name": "B2",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 181.79553499999997,
+        "name": "C1",
+        "xpos": "0",
+        "ypos": "13",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 207.989265,
+        "name": "C2",
+        "xpos": "0",
+        "ypos": "14",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 237.887185,
+        "name": "D1",
+        "xpos": "0",
+        "ypos": "16",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 265.93301499999995,
+        "name": "D2",
+        "xpos": "0",
+        "ypos": "18",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 309.060095,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "21",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "U24",
+    "size": 6,
+    "description": "Power 2-OR 4-wide Multiplexer",
+    "conns": [
+      {
+        "cy": 11.010299999999688,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "missing",
+        "io": "input"
+      },
+      {
+        "cy": 37.60094999999967,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "missing",
+        "io": "input"
+      },
+      {
+        "cy": 66.57284999999968,
+        "name": "B1",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "missing",
+        "io": "input"
+      },
+      {
+        "cy": 95.5446999999997,
+        "name": "B2",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "missing",
+        "io": "input"
+      },
+      {
+        "cy": 180.74049999999966,
+        "name": "C1",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "missing",
+        "io": "input"
+      },
+      {
+        "cy": 208.12489999999968,
+        "name": "C2",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "missing",
+        "io": "input"
+      },
+      {
+        "cy": 237.49364999999966,
+        "name": "D1",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "missing",
+        "io": "input"
+      },
+      {
+        "cy": 265.40719999999953,
+        "name": "D2",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "missing",
+        "io": "input"
+      },
+      {
+        "cy": 308.0051499999996,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "missing",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "U42",
+    "size": 6,
+    "description": "Power 4-OR 2-wide Multiplexer",
+    "conns": [
+      {
+        "cy": 11.139284999999973,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 40.508005000000026,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 68.28925500000003,
+        "name": "A3",
+        "xpos": "0",
+        "ypos": "4",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 95.01221499999997,
+        "name": "A4",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 181.79553499999997,
+        "name": "B1",
+        "xpos": "0",
+        "ypos": "12",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 209.04761499999995,
+        "name": "B2",
+        "xpos": "0",
+        "ypos": "14",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 238.68094499999995,
+        "name": "B3",
+        "xpos": "0",
+        "ypos": "16",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 265.93301499999995,
+        "name": "B4",
+        "xpos": "0",
+        "ypos": "18",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 309.85385499999995,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "21",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "FDN",
+    "size": 7,
+    "description": "DFF with Set",
+    "conns": [
+      {
+        "cy": 12.337624999999662,
+        "name": "CK",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 69.22292499999958,
+        "name": "D",
+        "xpos": "0",
+        "ypos": "4",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 153.8896249999998,
+        "name": "Q",
+        "xpos": "0",
+        "ypos": "10",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 210.77512499999966,
+        "name": "S",
+        "xpos": "0",
+        "ypos": "14",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 380.37292499999967,
+        "name": "XQ",
+        "xpos": "0",
+        "ypos": "26",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "FDO",
+    "size": 7,
+    "description": "DFF with Reset",
+    "conns": [
+      {
+        "cy": 12.68894999999975,
+        "name": "CK",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 125.13679999999977,
+        "name": "D",
+        "xpos": "0",
+        "ypos": "8",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 153.4472199999998,
+        "name": "R",
+        "xpos": "0",
+        "ypos": "10",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 365.3784399999997,
+        "name": "Q",
+        "xpos": "0",
+        "ypos": "25",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 380.4596799999998,
+        "name": "XQ",
+        "xpos": "0",
+        "ypos": "26",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "unkf",
+    "size": 7,
+    "description": "Unknown F",
+    "conns": [
+      {
+        "cy": 41.54442499999982,
+        "name": "I",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 352.4298249999997,
+        "name": "XA",
+        "xpos": "0",
+        "ypos": "13",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 379.68202499999984,
+        "name": "XB",
+        "xpos": "0",
+        "ypos": "14",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "FDP",
+    "size": 8,
+    "description": "DFF with SET and RESET",
+    "conns": [
+      {
+        "cy": 13.903424999999515,
+        "name": "CK",
+        "xpos": "0",
+        "ypos": "1",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 126.42682499999955,
+        "name": "D",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 154.7373249999996,
+        "name": "R",
+        "xpos": "0",
+        "ypos": "3",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 182.78322499999967,
+        "name": "S",
+        "xpos": "0",
+        "ypos": "4",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 423.55402499999946,
+        "name": "Q",
+        "xpos": "0",
+        "ypos": "5",
+        "type": "line",
+        "io": "output"
+      },
+      {
+        "cy": 438.1060249999996,
+        "name": "XQ",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  },
+  {
+    "name": "T26",
+    "size": 9,
+    "description": "Power 2-AND 6-wide Multiplexer",
+    "conns": [
+      {
+        "cy": 11.455259999999498,
+        "name": "A1",
+        "xpos": "0",
+        "ypos": "0",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 39.63337999999948,
+        "name": "A2",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 67.8114949999995,
+        "name": "B1",
+        "xpos": "0",
+        "ypos": "4",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 96.12191999999948,
+        "name": "B2",
+        "xpos": "0",
+        "ypos": "6",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 123.6385899999995,
+        "name": "C1",
+        "xpos": "0",
+        "ypos": "8",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 153.1396249999995,
+        "name": "C2",
+        "xpos": "0",
+        "ypos": "10",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 180.4406049999995,
+        "name": "D1",
+        "xpos": "0",
+        "ypos": "12",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 208.9667099999995,
+        "name": "D2",
+        "xpos": "0",
+        "ypos": "14",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 351.3125399999995,
+        "name": "E1",
+        "xpos": "0",
+        "ypos": "22",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 379.0937890499995,
+        "name": "E2",
+        "xpos": "0",
+        "ypos": "24",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 406.8750414999995,
+        "name": "F1",
+        "xpos": "0",
+        "ypos": "26",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 435.8469139999995,
+        "name": "F2",
+        "xpos": "0",
+        "ypos": "28",
+        "type": "line",
+        "io": "input"
+      },
+      {
+        "cy": 477.9156599999995,
+        "name": "X",
+        "xpos": "0",
+        "ypos": "31",
+        "type": "line",
+        "io": "output"
+      }
+    ]
+  }
+]

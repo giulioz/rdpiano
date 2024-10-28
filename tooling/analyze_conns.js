@@ -108,21 +108,28 @@ async function process() {
       }
 
       // XML quirks...
-      const nPins = firstCell.ioDef
-        ? (Array.isArray(firstCell.ioDef.input)
-            ? firstCell.ioDef.input.length
-            : firstCell.ioDef.input
-            ? 1
-            : 0) +
-          (Array.isArray(firstCell.ioDef.output)
-            ? firstCell.ioDef.output.length
-            : firstCell.ioDef.output
-            ? 1
-            : 0)
-        : 0;
-      if (firstCell.ioDef && nPins !== firstCell.connPoints.length) {
+      const originalConns = [];
+      if (firstCell.ioDef && Array.isArray(firstCell.ioDef.input)) {
+        originalConns.push(
+          ...firstCell.ioDef.input.map((p) => ({ ...p, io: "input" }))
+        );
+      } else if (firstCell.ioDef && firstCell.ioDef.input) {
+        originalConns.push({ ...firstCell.ioDef.input, io: "input" });
+      }
+      if (firstCell.ioDef && Array.isArray(firstCell.ioDef.output)) {
+        originalConns.push(
+          ...firstCell.ioDef.output.map((p) => ({ ...p, io: "output" }))
+        );
+      } else if (firstCell.ioDef && firstCell.ioDef.output) {
+        originalConns.push({ ...firstCell.ioDef.output, io: "output" });
+      }
+      originalConns.sort((a, b) => parseFloat(a.ypos) - parseFloat(b.ypos));
+      if (
+        firstCell.ioDef &&
+        originalConns.length !== firstCell.connPoints.length
+      ) {
         console.log("warning: mismatched pin number", cellType, {
-          expected: nPins,
+          expected: originalConns.length,
           actual: firstCell.connPoints.length,
         });
       }
@@ -137,6 +144,8 @@ async function process() {
           connYsAll.map((c) => c[i]).reduce((a, b) => a + b) / connYsAll.length
       );
 
+      const conns = connYs.map((cy, i) => ({ cy, ...originalConns[i] }));
+
       // Save cells image example
       const canvas = createCanvas(
         391,
@@ -144,12 +153,13 @@ async function process() {
       );
       const ctx = canvas.getContext("2d");
       ctx.drawImage(await loadImage(fs.readFileSync(firstCell.path)), 0, 0);
-      ctx.fillStyle = "#FF0000AA";
-      connYs.forEach((y) => {
+      conns.forEach((conn) => {
         const py = Math.round(
-          (y / firstCell.height) * 160 * parseFloat(cellType.split("_")[0])
+          (conn.cy / firstCell.height) * 160 * parseFloat(cellType.split("_")[0])
         );
         const pr = (5.6791458 / (5122.26 + 5363.88)) * 29723;
+        if (conn.io === "input") ctx.fillStyle = "#0000FFAA";
+        else ctx.fillStyle = "#FF0000AA";
         ctx.fillRect(30, py - pr, 391 - 30, pr * 2);
       });
       const imgData = await canvas.encode("jpeg");
@@ -159,12 +169,12 @@ async function process() {
         name: cellType.split("_")[1],
         size: parseFloat(cellType.split("_")[0]),
         description: firstCell.ioDef?.description,
-        connYs,
+        conns,
       };
     })
   );
 
-  console.log(JSON.stringify(cellTypesWithConns, null, 2));
+  // console.log(JSON.stringify(cellTypesWithConns, null, 2));
 
   fs.writeFileSync(
     "cellsInfo.json",
