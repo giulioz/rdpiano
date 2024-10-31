@@ -22,7 +22,7 @@
     </cell>
     <cell name="A4H" size="50" description="4-bit Full Adder">
         <!-- order unchecked -->
-        <input name="CI" xpos="0" ypos="0" type="line"/>
+        <output name="CO" xpos="0" ypos="0" type="line"/>
         <input name="A1" xpos="0" ypos="1" type="line"/>
         <input name="A2" xpos="0" ypos="2" type="line"/>
         <output name="S1" xpos="0" ypos="3" type="line"/>
@@ -35,7 +35,7 @@
         <input name="D1" xpos="0" ypos="10" type="line"/>
         <input name="D2" xpos="0" ypos="11" type="line"/>
         <output name="S4" xpos="0" ypos="12" type="line"/>
-        <output name="CO" xpos="0" ypos="13" type="line"/>
+        <input name="CI" xpos="0" ypos="13" type="line"/>
     </cell>
 
     <cell name="BD3" size="5" description="Delay Cell">
@@ -316,10 +316,10 @@
     </cell>
     <cell name="LT2" size="4" description="1-bit Data Latch">
         <!-- TODO -->
-        <input name="D" xpos="0" ypos="0" type="missing"/>
         <input name="G" xpos="0" ypos="0" type="missing"/>
-        <output name="Q" xpos="0" ypos="0" type="missing"/>
-        <output name="XQ" xpos="0" ypos="0" type="missing"/>
+        <output name="Q" xpos="0" ypos="1" type="missing"/>
+        <input name="D" xpos="0" ypos="2" type="missing"/>
+        <output name="XQ" xpos="0" ypos="3" type="missing"/>
     </cell>
     <cell name="LT4" size="13" description="4-bit Data Latch">
         <input name="DA" xpos="0" ypos="8" type="line"/>

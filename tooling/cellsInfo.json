@@ -1095,14 +1095,6 @@
     "conns": [
       {
         "cy": 12.284419999999614,
-        "name": "D",
-        "xpos": "0",
-        "ypos": "0",
-        "type": "missing",
-        "io": "input"
-      },
-      {
-        "cy": 41.90935999999965,
         "name": "G",
         "xpos": "0",
         "ypos": "0",
@@ -1110,18 +1102,26 @@
         "io": "input"
       },
       {
-        "cy": 153.0427199999997,
+        "cy": 41.90935999999965,
         "name": "Q",
         "xpos": "0",
-        "ypos": "0",
+        "ypos": "1",
         "type": "missing",
         "io": "output"
+      },
+      {
+        "cy": 153.0427199999997,
+        "name": "D",
+        "xpos": "0",
+        "ypos": "2",
+        "type": "missing",
+        "io": "input"
       },
       {
         "cy": 210.19280999999967,
         "name": "XQ",
         "xpos": "0",
-        "ypos": "0",
+        "ypos": "3",
         "type": "missing",
         "io": "output"
       }
@@ -1243,11 +1243,11 @@
     "conns": [
       {
         "cy": 82.79091749999958,
-        "name": "CI",
+        "name": "CO",
         "xpos": "0",
         "ypos": "0",
         "type": "line",
-        "io": "input"
+        "io": "output"
       },
       {
         "cy": 520.6819874999997,
@@ -1347,11 +1347,11 @@
       },
       {
         "cy": 2779.6208374999997,
-        "name": "CO",
+        "name": "CI",
         "xpos": "0",
         "ypos": "13",
         "type": "line",
-        "io": "output"
+        "io": "input"
       }
     ]
   },

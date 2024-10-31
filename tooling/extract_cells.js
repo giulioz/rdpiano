@@ -3,51 +3,83 @@ const sharp = require("sharp");
 const lodash = require("lodash");
 const { parse } = require("svg-parser");
 
+// const imgPath =
+//   "/Users/giuliozausa/personal/programming/rdpiano/roland_r15229837_mz_nikon20x.jpg";
+// const svgPath =
+//   "/Users/giuliozausa/personal/programming/rdpiano/ic19_trace.svg";
+
 const imgPath =
-  "/Users/giuliozausa/personal/programming/rdpiano/roland_r15229837_mz_nikon20x.jpg";
-const svgPath =
-  "/Users/giuliozausa/personal/programming/rdpiano/ic19_trace.svg";
+  "/Users/giuliozausa/personal/programming/rdpiano/roland_r15229838_mz_nikon20x_quick.jpg";
+const svgPath = "/Users/giuliozausa/personal/programming/rdpiano/ic9_trace.svg";
 
 // avg width: 133.4090909090909
 // avg dist: 215.47619047619048
 // avg total: 349.4761904761905
-const columns = [
-  [-3633, -3500],
-  [-3283, -3150],
-  [-2933, -2800],
-  [-2584, -2450],
-  [-2235, -2100],
-  [-1885, -1752],
-  [-1534, -1400],
-  [-1185, -1053],
-  [-836, -704],
-  [-488, -355],
-  [-140, -4],
-  [210, 343],
-  [559, 694],
-  [909, 1043],
-  [1258, 1392],
-  [1608, 1741],
-  [1957, 2092],
-  [2307, 2441],
-  [2658, 2790],
-  [3006, 3140],
-  [3356, 3488],
-  [3706, 3837],
-];
+// const columns = [
+//   [-3633, -3500],
+//   [-3283, -3150],
+//   [-2933, -2800],
+//   [-2584, -2450],
+//   [-2235, -2100],
+//   [-1885, -1752],
+//   [-1534, -1400],
+//   [-1185, -1053],
+//   [-836, -704],
+//   [-488, -355],
+//   [-140, -4],
+//   [210, 343],
+//   [559, 694],
+//   [909, 1043],
+//   [1258, 1392],
+//   [1608, 1741],
+//   [1957, 2092],
+//   [2307, 2441],
+//   [2658, 2790],
+//   [3006, 3140],
+//   [3356, 3488],
+//   [3706, 3837],
+// ];
 
-const totalCellHeight = 6780.243;
-const totalCellHeightCount = 120;
-const cellWidth = 138;
-const cellWidthWithMargin = 349;
-const cellsStartX = -3633;
-const cellsStartY = -3256.87;
-const cellHeight = totalCellHeight / totalCellHeightCount;
+// ic19
+// const totalCellHeightCount = 120;
+// const cellWidth = 138;
+// const cellWidthWithMargin = 349;
+// const totalCellHeight = 6780.243;
+// const cellsStartX = -3633;
+// const cellsStartY = -3256.87;
 // const cellHeight = 624.845 / 11;
 
+// ic9
+const totalCellWidthMinusOne = 7335;
+const totalCellHeight = 6780;
+const totalCellWidthCount = 22;
+const totalCellHeightCount = 120;
+const cellsStartX = -3642;
+const cellsStartY = -3232;
+const cellWidth = 146;
+const cellWidthWithMargin = totalCellWidthMinusOne / (totalCellWidthCount-1);
+const imageSizeX = 30213;
+const imageSizeY = 29706;
+const imageStartX = -5224;
+const imageStartY = -5091;
+const imageEndX = 5433;
+const imageEndY = 5388;
+
+const cellHeight = totalCellHeight / totalCellHeightCount;
+
 function xyToPixelCoord(x, y) {
-  const px = Math.round(((x + 5224.6) / (5224.6 + 5433.87)) * 30213);
-  const py = Math.round(((y + 5122.26) / (5122.26 + 5363.88)) * 29723);
+  // ic9
+  const px = Math.round(
+    ((x - imageStartX) / (imageEndX - imageStartX)) * imageSizeX
+  );
+  const py = Math.round(
+    ((y - imageStartY) / (imageEndY - imageStartY)) * imageSizeY
+  );
+
+  // const px = Math.round(((x + 5224.6 + offsetX) / (5224.6 + 5433.87)) * 30213);
+  // const py = Math.round(
+  //   ((y + 5122.26 + offsetY) / (5122.26 + 5363.88)) * 29723
+  // );
   return [px, py];
 }
 
@@ -97,5 +129,7 @@ cellsG.children.forEach((c, i) => {
       width: Math.abs(px2 - px1),
       height: Math.abs(py2 - py1),
     })
-    .toFile(`../unident_cells/${nCells}/${closestColumn}_${closestRow}.jpg`);
+    .toFile(
+      `../unident_cells/${nCells}/ic9_${closestColumn}_${closestRow}.jpg`
+    );
 });

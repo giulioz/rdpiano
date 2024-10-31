@@ -27,6 +27,8 @@ function astToString(ast) {
     return `(${ast.values
       .map((a) => astToString(a))
       .join(" " + ast.op + " ")})`;
+  } else if (ast.type === "neg" && ast.value.type === "ident") {
+    return `~${astToString(ast.value)}`;
   } else if (ast.type === "neg") {
     return `~(${astToString(ast.value)})`;
   }
@@ -126,7 +128,8 @@ async function process() {
   const segmentsTree = new rbush();
   segmentsTree.load(allSegments);
 
-  let items = [];
+  const items = [];
+  const nets = {};
 
   // Build netlist and cell list
   cellTypes.forEach((cellType) => {
@@ -152,14 +155,18 @@ async function process() {
     const unkPorts = cellInfo.conns.filter((c) => !c.io);
 
     cellsInType.forEach((cell) => {
-      const [lx, ly] = cell.replace(".jpg", "").split("_").map(parseFloat);
+      const [cellIc, lx, ly] = cell
+        .replace(".jpg", "")
+        .split("_")
+        .map((a, i) => (i === 0 ? a : parseFloat(a)));
+      if (cellIc !== "ic19") return;
 
       const column = indexToLetter(lx);
       const row = ly + 1;
       const ref = `${column}${row}`.toUpperCase();
 
       const netsPerCell = cellInfo.conns.map((conn, i) => {
-        const foundNet = allSegments.find((sg) =>
+        const foundNets = allSegments.filter((sg) =>
           lineIntersectsCircle(
             sg.x1,
             sg.y1,
@@ -169,11 +176,33 @@ async function process() {
             ly * sizeParams.cellHeight + sizeParams.cellsStartY + conn.cy,
             5.6791458
           )
-        )?.netId;
+        );
+        if (foundNets.length > 1) {
+          console.log(
+            "ERROR: too many nets on a single pin",
+            ref,
+            conn.name ?? i,
+            foundNets
+          );
+        }
+        const foundNet = foundNets[0]?.netId;
         return {
           conn,
           netId: foundNet ?? `unconnected_${ref}_${conn.name ?? i}`,
         };
+      });
+
+      netsPerCell.forEach((net) => {
+        if (net && net.conn.io === "output") {
+          nets[net.netId] = nets[net.netId] ?? {};
+          nets[net.netId].outputs = nets[net.netId].outputs ?? [];
+          nets[net.netId].outputs.push(`${ref}_${net.conn.name}`);
+        }
+        if (net && net.conn.io === "input") {
+          nets[net.netId] = nets[net.netId] ?? {};
+          nets[net.netId].inputs = nets[net.netId].inputs ?? [];
+          nets[net.netId].inputs.push(`${ref}_${net.conn.name}`);
+        }
       });
 
       const params = [
@@ -212,6 +241,21 @@ async function process() {
         params,
       });
     });
+  });
+
+  // Sanity check nets
+  Object.entries(nets).forEach((net) => {
+    if ((net[1].outputs ?? []).length > 1) {
+      console.log("ERROR: Too many outputs!", net);
+    }
+    if (
+      (net[1].inputs ?? []).length === 0 &&
+      !net[0].endsWith("_OUT") &&
+      !net[0].endsWith("_IOM") &&
+      !net[0].startsWith("unconnected_")
+    ) {
+      console.log("WARNING: Output with no inputs!", net);
+    }
   });
 
   // Convert some cells to assigns
@@ -477,6 +521,62 @@ async function process() {
         },
       };
     } else if (
+      item.cellCode === "T26" // Power 2-AND 6-wide Multiplexer
+    ) {
+      item.type = "assign";
+      item.name = output.expr.value;
+      const A1 = item.params.find(
+        (p) => p.type === "input" && p.name === "A1"
+      )?.expr;
+      const A2 = item.params.find(
+        (p) => p.type === "input" && p.name === "A2"
+      )?.expr;
+      const B1 = item.params.find(
+        (p) => p.type === "input" && p.name === "B1"
+      )?.expr;
+      const B2 = item.params.find(
+        (p) => p.type === "input" && p.name === "B2"
+      )?.expr;
+      const C1 = item.params.find(
+        (p) => p.type === "input" && p.name === "C1"
+      )?.expr;
+      const C2 = item.params.find(
+        (p) => p.type === "input" && p.name === "C2"
+      )?.expr;
+      const D1 = item.params.find(
+        (p) => p.type === "input" && p.name === "D1"
+      )?.expr;
+      const D2 = item.params.find(
+        (p) => p.type === "input" && p.name === "D2"
+      )?.expr;
+      const E1 = item.params.find(
+        (p) => p.type === "input" && p.name === "E1"
+      )?.expr;
+      const E2 = item.params.find(
+        (p) => p.type === "input" && p.name === "E2"
+      )?.expr;
+      const F1 = item.params.find(
+        (p) => p.type === "input" && p.name === "F1"
+      )?.expr;
+      const F2 = item.params.find(
+        (p) => p.type === "input" && p.name === "F2"
+      )?.expr;
+      item.value = {
+        type: "neg",
+        value: {
+          type: "op",
+          op: "||",
+          values: [
+            { type: "op", op: "&&", values: [A1, A2] },
+            { type: "op", op: "&&", values: [B1, B2] },
+            { type: "op", op: "&&", values: [C1, C2] },
+            { type: "op", op: "&&", values: [D1, D2] },
+            { type: "op", op: "&&", values: [E1, E2] },
+            { type: "op", op: "&&", values: [F1, F2] },
+          ],
+        },
+      };
+    } else if (
       item.cellCode === "U42" // Power 4-OR 2-wide Multiplexer
     ) {
       item.type = "assign";
@@ -602,7 +702,8 @@ async function process() {
       .slice(0, -4);
 
     codeLines.push(
-      `module cell_${cellCode} ( // ${
+      `// ${items.filter((i) => i.cellCode === cellCode).length} instances
+module cell_${cellCode} ( // ${
         cellInfo.description ?? "Unknown"
       }\n  ${params}\n);\nendmodule\n`
     );
