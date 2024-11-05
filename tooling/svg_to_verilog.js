@@ -4,34 +4,57 @@ const { parse } = require("svg-parser");
 const {
   indexToLetter,
   svgPathToLineSegments,
-  sizeParams,
   getPossibleCellTypes,
   lineIntersectsCircle,
 } = require("./common");
 
-const svgPath =
-  "/Users/giuliozausa/personal/programming/rdpiano/ic19_trace.svg";
+// const ic = "ic19"
+// const svgPath =
+//   "/Users/giuliozausa/personal/programming/rdpiano/ic19_trace.svg";
+// const totalCellHeight = 6780.243;
+// const totalCellHeightCount = 120;
+// const cellWidth = 138;
+// const cellWidthWithMargin = 349;
+// const cellsStartX = -3633;
+// const cellsStartY = -3256.87;
+// const cellHeight = totalCellHeight / totalCellHeightCount;
 
-const totalCellHeight = 6780.243;
+const ic = "ic9";
+const svgPath = "/Users/giuliozausa/personal/programming/rdpiano/ic9_trace.svg";
+const totalCellWidthMinusOne = 7335;
+const totalCellHeight = 6780;
+const totalCellWidthCount = 22;
 const totalCellHeightCount = 120;
-const cellWidth = 138;
-const cellWidthWithMargin = 349;
-const cellsStartX = -3633;
-const cellsStartY = -3256.87;
+const cellsStartX = -3642;
+const cellsStartY = -3232;
+const cellWidth = 146;
+const cellWidthWithMargin = totalCellWidthMinusOne / (totalCellWidthCount - 1);
 const cellHeight = totalCellHeight / totalCellHeightCount;
 
-function astToString(ast) {
+function astToString(ast, notRoot = false, lastOp = null) {
   if (ast.type === "ident") {
     return ast.value;
   } else if (ast.type === "op") {
-    return `(${ast.values
-      .map((a) => astToString(a))
-      .join(" " + ast.op + " ")})`;
-  } else if (ast.type === "neg" && ast.value.type === "ident") {
-    return `~${astToString(ast.value)}`;
+    const values = ast.values
+      .map((a) => astToString(a, true, ast.op))
+      .join(" " + ast.op + " ");
+    if (lastOp === ast.op) return values;
+    else if (notRoot) return `(${values})`;
+    else return values;
   } else if (ast.type === "neg") {
-    return `~(${astToString(ast.value)})`;
+    return `~${astToString(ast.value, true)}`;
   }
+}
+
+function astHasIdent(ast, ident) {
+  if (ast.type === "ident" && ast.value === ident) {
+    return true;
+  } else if (ast.type === "op") {
+    return ast.values.some((v) => astHasIdent(v, ident));
+  } else if (ast.type === "neg") {
+    return astHasIdent(ast.value, ident);
+  }
+  return false;
 }
 
 function fixAst(ast, ident, fn, substRef) {
@@ -159,7 +182,7 @@ async function process() {
         .replace(".jpg", "")
         .split("_")
         .map((a, i) => (i === 0 ? a : parseFloat(a)));
-      if (cellIc !== "ic19") return;
+      if (cellIc !== ic) return;
 
       const column = indexToLetter(lx);
       const row = ly + 1;
@@ -173,7 +196,7 @@ async function process() {
             sg.x2,
             sg.y2,
             lx * cellWidthWithMargin + cellsStartX + cellWidth / 2,
-            ly * sizeParams.cellHeight + sizeParams.cellsStartY + conn.cy,
+            ly * cellHeight + cellsStartY + conn.cy,
             5.6791458
           )
         );
@@ -243,6 +266,8 @@ async function process() {
     });
   });
 
+  // console.log(nets);
+
   // Sanity check nets
   Object.entries(nets).forEach((net) => {
     if ((net[1].outputs ?? []).length > 1) {
@@ -251,8 +276,8 @@ async function process() {
     if (
       (net[1].inputs ?? []).length === 0 &&
       !net[0].endsWith("_OUT") &&
-      !net[0].endsWith("_IOM") &&
-      !net[0].startsWith("unconnected_")
+      !net[0].endsWith("_IOM")
+      // && !net[0].startsWith("unconnected_")
     ) {
       console.log("WARNING: Output with no inputs!", net);
     }
@@ -286,7 +311,7 @@ async function process() {
     } else if (
       item.cellCode === "N2P" || // Power 2-input AND
       item.cellCode === "N3P" || // Power 3-input AND
-      item.cellCode === "N4B" // Power 4-input AND
+      item.cellCode === "N4P" // Power 4-input AND
     ) {
       item.type = "assign";
       item.name = output.expr.value;
@@ -295,6 +320,8 @@ async function process() {
       item.cellCode === "N2N" || // 2-input NAND
       item.cellCode === "N3N" || // 3-input NAND
       item.cellCode === "N4N" || // 4-input NAND
+      item.cellCode === "N4B" || // Power 4-input NAND
+      item.cellCode === "N6B" || // Power 6-input NAND
       item.cellCode === "N8B" // Power 8-input NAND
     ) {
       item.type = "assign";
@@ -657,7 +684,7 @@ async function process() {
       }
     });
     if (substRef.subst && !substRef.subst) {
-      assign.used = true;
+      // assign.used = true;
     }
   });
 
@@ -665,6 +692,51 @@ async function process() {
   assigns.forEach((assign) => {
     assign.value = fixDoubleNeg(assign.value);
   });
+
+  // Remove all unused assigns
+  items.forEach((item) => {
+    item.used = false;
+
+    const isProtected =
+      item.type === "assign" &&
+      (item.name.endsWith("_IN") ||
+        item.name.endsWith("_OUT") ||
+        item.name.endsWith("_IOM") ||
+        item.name.endsWith("VCC") ||
+        item.name.endsWith("GND"));
+    if (item.type === "cell" || isProtected) {
+      item.used = true;
+      return;
+    }
+
+    if (item.type === "assign") {
+      const used = items.find((item2) => {
+        const isCell = item2.type === "cell";
+        const isProtectedAssign =
+          item2.type === "assign" &&
+          (item2.name?.endsWith("_IN") ||
+            item2.name?.endsWith("_OUT") ||
+            item2.name?.endsWith("_IOM") ||
+            item2.name?.endsWith("VCC") ||
+            item2.name?.endsWith("GND"));
+        return isCell
+          ? item2.params.some((p) => astHasIdent(p.expr, item.name))
+          : isProtectedAssign
+          ? astHasIdent(item2.value, item.name)
+          : false;
+      });
+      item.used |= Boolean(used);
+    }
+  });
+
+  // Merge latches
+  items.forEach((item) => {
+    if (item.cellCode === "LT4") item.used = false;
+  });
+  const latchesPerClock = lodash.groupBy(
+    items.filter((i) => i.type === "cell" && i.cellCode === "LT4"),
+    (i) => i.params.find((p) => p.type === "input" && p.name === "G").expr.value
+  );
 
   const codeLines = [];
 
@@ -711,9 +783,51 @@ module cell_${cellCode} ( // ${
 
   codeLines.push(`\n\n`);
 
+  // Emit latches
+  Object.entries(latchesPerClock).forEach(([_clockNet, latches]) => {
+    const clocks = latches.flatMap((l) =>
+      l.params
+        .filter((p) => p.type === "input" && p.name === "G")
+        .map((p) => [l.ref, p])
+    );
+    const inputs = latches.flatMap((l) =>
+      l.params
+        .filter((p) => p.type === "input" && p.name !== "G")
+        .map((p) => [l.ref, p])
+    );
+    const outputs = latches.flatMap((l) =>
+      l.params.filter((p) => p.type === "output").map((p) => [l.ref, p])
+    );
+    const usePos =
+      outputs
+        .filter((p) => p[1].name.startsWith("P"))
+        .filter((p) => !p[1].expr.value.startsWith("unconnected")).length === 0;
+    const useNeg =
+      outputs
+        .filter((p) => p[1].name.startsWith("N"))
+        .filter((p) => !p[1].expr.value.startsWith("unconnected")).length === 0;
+    const outputsFilt =
+      (usePos && useNeg) || (!usePos && !useNeg)
+        ? outputs
+        : outputs.filter((p) => p[1].name.startsWith(usePos ? "N" : "P"));
+    if ((usePos && useNeg) || (!usePos && !useNeg)) {
+      console.log("Mixed!", outputs);
+    }
+    const params = [clocks[0], ...inputs, ...outputsFilt]
+      .map(
+        (param) =>
+          `  ${astToString(param[1].expr)}, // ${param[1].type.toUpperCase()} ${
+            param[1].name
+          } ${param[0]}\n`
+      )
+      .join("")
+      .slice(0, -1);
+    codeLines.push(`latch (\n${params}\n);\n`);
+  });
+
   // Emit cells code
   items
-    .filter((i) => i.type === "cell")
+    .filter((i) => i.type === "cell" && i.used)
     .forEach((cell) => {
       const params = cell.params
         .map(
@@ -729,7 +843,7 @@ module cell_${cellCode} ( // ${
       );
     });
   items
-    .filter((i) => i.type === "assign" && !i.used)
+    .filter((i) => i.type === "assign" && i.used)
     .sort((a, b) => {
       const aIsUpper = a.name[0] === a.name[0].toUpperCase();
       const bIsUpper = b.name[0] === b.name[0].toUpperCase();

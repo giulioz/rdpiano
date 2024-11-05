@@ -1,16 +1,33 @@
 const fs = require("fs");
 const lodash = require("lodash");
 const { parse } = require("svg-parser");
-const { sizeParams, getPossibleCellTypes, indexToLetter } = require("./common");
+const { getPossibleCellTypes } = require("./common");
 const xml2json = require("xml2json");
 const { createCanvas, loadImage } = require("@napi-rs/canvas");
 
-function getNearestY(y) {
-  return Math.round(y / 4) * 4;
-}
+// const ic = "ic19"
+// const svgPath =
+//   "/Users/giuliozausa/personal/programming/rdpiano/ic19_trace.svg";
+// const totalCellHeight = 6780.243;
+// const totalCellHeightCount = 120;
+// const cellWidth = 138;
+// const cellWidthWithMargin = 349;
+// const cellsStartX = -3633;
+// const cellsStartY = -3256.87;
+// const cellHeight = totalCellHeight / totalCellHeightCount;
 
+const ic = "ic9"
 const svgPath =
-  "/Users/giuliozausa/personal/programming/rdpiano/ic19_trace.svg";
+  "/Users/giuliozausa/personal/programming/rdpiano/ic9_trace.svg";
+const totalCellWidthMinusOne = 7335;
+const totalCellHeight = 6780;
+const totalCellWidthCount = 22;
+const totalCellHeightCount = 120;
+const cellsStartX = -3642;
+const cellsStartY = -3232;
+const cellWidth = 146;
+const cellWidthWithMargin = totalCellWidthMinusOne / (totalCellWidthCount-1);
+const cellHeight = totalCellHeight / totalCellHeightCount;
 
 const cellDefs = JSON.parse(
   xml2json.toJson(fs.readFileSync("celldefs.xml", "utf8"))
@@ -57,16 +74,16 @@ async function process() {
     );
 
     cellsInType.forEach((cell) => {
-      const [lx, ly] = cell.replace(".jpg", "").split("_").map(parseFloat);
+      const [cic, lx, ly] = cell
+        .replace(".jpg", "")
+        .split("_")
+        .map((a, i) => (i === 0 ? a : parseFloat(a)));
+      if (cic !== ic) return;
 
-      const minX = lx * sizeParams.cellWidthWithMargin + sizeParams.cellsStartX;
-      const maxX =
-        lx * sizeParams.cellWidthWithMargin +
-        sizeParams.cellsStartX +
-        sizeParams.cellWidth;
-      const minY = ly * sizeParams.cellHeight + sizeParams.cellsStartY;
-      const maxY =
-        (ly + nCellsVertical) * sizeParams.cellHeight + sizeParams.cellsStartY;
+      const minX = lx * cellWidthWithMargin + cellsStartX;
+      const maxX = lx * cellWidthWithMargin + cellsStartX + cellWidth;
+      const minY = ly * cellHeight + cellsStartY;
+      const maxY = (ly + nCellsVertical) * cellHeight + cellsStartY;
 
       cells.push({
         path: `../ident_cells/${cellType}/${cell}`,
@@ -155,7 +172,9 @@ async function process() {
       ctx.drawImage(await loadImage(fs.readFileSync(firstCell.path)), 0, 0);
       conns.forEach((conn) => {
         const py = Math.round(
-          (conn.cy / firstCell.height) * 160 * parseFloat(cellType.split("_")[0])
+          (conn.cy / firstCell.height) *
+            160 *
+            parseFloat(cellType.split("_")[0])
         );
         const pr = (5.6791458 / (5122.26 + 5363.88)) * 29723;
         if (conn.io === "input") ctx.fillStyle = "#0000FFAA";
@@ -178,7 +197,7 @@ async function process() {
 
   fs.writeFileSync(
     "cellsInfo.json",
-    JSON.stringify(cellTypesWithConns, null, 2)
+    JSON.stringify(cellTypesWithConns.filter(Boolean), null, 2)
   );
 }
 

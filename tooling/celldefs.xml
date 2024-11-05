@@ -50,20 +50,20 @@
     <cell name="C43" size="48" description="4-bit Binary Synchronous Up Counter">
         <!-- order unchecked -->
 
-        <input name="DA" xpos="0" ypos="0" type="line"/>
-        <output name="QA" xpos="0" ypos="1" type="line"/>
-        <input name="EN" xpos="0" ypos="2" type="line"/>
-        <input name="CI" xpos="0" ypos="3" type="line"/>
-        <input name="L" xpos="0" ypos="4" type="line"/>
-        <output name="QB" xpos="0" ypos="5" type="line"/>
-        <input name="DB" xpos="0" ypos="6" type="line"/>
-        <input name="CL" xpos="0" ypos="7" type="line"/>
         <input name="CK" xpos="0" ypos="8" type="line"/>
-        <output name="CO" xpos="0" ypos="9" type="line"/>
-        <output name="QC" xpos="0" ypos="10" type="line"/>
+        <input name="EN" xpos="0" ypos="2" type="line"/>
+        <input name="CL" xpos="0" ypos="4" type="line"/>
+        <input name="L" xpos="0" ypos="7" type="line"/>
+        <input name="CI" xpos="0" ypos="3" type="line"/>
+        <input name="DA" xpos="0" ypos="0" type="line"/>
+        <input name="DB" xpos="0" ypos="6" type="line"/>
         <input name="DC" xpos="0" ypos="11" type="line"/>
-        <output name="QD" xpos="0" ypos="12" type="line"/>
         <input name="DD" xpos="0" ypos="13" type="line"/>
+        <output name="QA" xpos="0" ypos="1" type="line"/>
+        <output name="QB" xpos="0" ypos="5" type="line"/>
+        <output name="QC" xpos="0" ypos="10" type="line"/>
+        <output name="QD" xpos="0" ypos="12" type="line"/>
+        <output name="CO" xpos="0" ypos="9" type="line"/>
     
 
         <!-- <input name="CK" xpos="0" ypos="0" type="line"/>
@@ -954,8 +954,8 @@
         <output name="X3" xpos="0" ypos="12" type="line"/>
     </cell>
     <cell name="DE3" size="15" description="3:8 Decoder">
-        <input name="A" xpos="0" ypos="0" type="line"/>
-        <input name="B" xpos="0" ypos="1" type="line"/>
+        <input name="B" xpos="0" ypos="0" type="line"/>
+        <input name="A" xpos="0" ypos="1" type="line"/>
         <output name="X0" xpos="0" ypos="2" type="line"/>
         <output name="X1" xpos="0" ypos="3" type="line"/>
         <output name="X2" xpos="0" ypos="4" type="line"/>
@@ -1050,5 +1050,24 @@
         <input name="K" xpos="0" ypos="10" type="line"/>
         <input name="L" xpos="0" ypos="11" type="line"/>
         <output name="X" xpos="0" ypos="13" type="line"/>
+    </cell>
+    <cell name="unkj" size="11" description="Unknown J">
+        <input name="A" xpos="0" ypos="0" type="line"/>
+        <input name="B" xpos="0" ypos="1" type="line"/>
+        <input name="C" xpos="0" ypos="2" type="line"/>
+        <input name="D" xpos="0" ypos="3" type="line"/>
+        <input name="E" xpos="0" ypos="4" type="line"/>
+        <input name="F" xpos="0" ypos="5" type="line"/>
+        <input name="G" xpos="0" ypos="6" type="line"/>
+        <input name="H" xpos="0" ypos="7" type="line"/>
+        <input name="I" xpos="0" ypos="8" type="line"/>
+        <input name="J" xpos="0" ypos="9" type="line"/>
+        <input name="K" xpos="0" ypos="10" type="line"/>
+        <input name="L" xpos="0" ypos="11" type="line"/>
+        <input name="M" xpos="0" ypos="12" type="line"/>
+        <input name="N" xpos="0" ypos="13" type="line"/>
+        <input name="O" xpos="0" ypos="14" type="line"/>
+        <input name="P" xpos="0" ypos="15" type="line"/>
+        <output name="X" xpos="0" ypos="16" type="line"/>
     </cell>
 </celldefs>
