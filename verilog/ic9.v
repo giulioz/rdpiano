@@ -87,7 +87,7 @@ module cell_K3B ( // Gated Clock Buffer
 endmodule
 
 // 4 instances
-module cell_C43 ( // 4-bit Binary Synchronous Up Counter
+module cell_C45 ( // 4-bit Binary Synchronous Up Counter
   input wire DA,
   input wire EN,
   input wire CI,
@@ -909,7 +909,7 @@ assign counters_clock = ~(
 );
 
 // Cycle counter?
-cell_C43 R61 ( // 4-bit Binary Synchronous Up Counter
+cell_C45 R61 ( // 4-bit Binary Synchronous Up Counter
   unconnected_R61_L, // INPUT L
   unconnected_R61_DA, // INPUT DA
   unconnected_R61_DB, // INPUT DB
@@ -929,7 +929,7 @@ cell_C43 R61 ( // 4-bit Binary Synchronous Up Counter
   unconnected_R61_CO, // OUTPUT CO
 );
 
-cell_C43 P13 ( // 4-bit Binary Synchronous Up Counter
+cell_C45 P13 ( // 4-bit Binary Synchronous Up Counter
   unconnected_P13_L, // INPUT L
   unconnected_P13_DA, // INPUT DA
   unconnected_P13_DB, // INPUT DB
@@ -948,7 +948,7 @@ cell_C43 P13 ( // 4-bit Binary Synchronous Up Counter
 
   counter_p13_of, // OUTPUT CO
 );
-cell_C43 S66 ( // 4-bit Binary Synchronous Up Counter
+cell_C45 S66 ( // 4-bit Binary Synchronous Up Counter
   counter_dec_1 || subclock_2, // INPUT L
   unconnected_S66_DA, // INPUT DA
   counter_dec_1 || subclock_2, // INPUT DB
@@ -968,7 +968,7 @@ cell_C43 S66 ( // 4-bit Binary Synchronous Up Counter
   unconnected_S66_CO, // OUTPUT CO
 );
 
-cell_C43 U73 ( // 4-bit Binary Synchronous Up Counter
+cell_C45 U73 ( // 4-bit Binary Synchronous Up Counter
   unconnected_U73_L, // INPUT L
   unconnected_U73_DA, // INPUT DA
   unconnected_U73_DB, // INPUT DB
