@@ -8,28 +8,71 @@ const {
   lineIntersectsCircle,
 } = require("./common");
 
-// const ic = "ic19"
-// const svgPath =
-//   "/Users/giuliozausa/personal/programming/rdpiano/ic19_trace.svg";
-// const totalCellHeight = 6780.243;
-// const totalCellHeightCount = 120;
-// const cellWidth = 138;
-// const cellWidthWithMargin = 349;
-// const cellsStartX = -3633;
-// const cellsStartY = -3256.87;
-// const cellHeight = totalCellHeight / totalCellHeightCount;
-
-const ic = "ic9";
-const svgPath = "/Users/giuliozausa/personal/programming/rdpiano/ic9_trace.svg";
-const totalCellWidthMinusOne = 7335;
-const totalCellHeight = 6780;
+const ic = "ic19";
+const svgPath =
+  "/Users/giuliozausa/personal/programming/rdpiano/ic19_trace.svg";
+const totalCellWidthMinusOne = 7338;
+const totalCellHeight = 6774;
 const totalCellWidthCount = 22;
 const totalCellHeightCount = 120;
-const cellsStartX = -3642;
-const cellsStartY = -3232;
-const cellWidth = 146;
+const cellsStartX = -3640.21;
+const cellsStartY = -3254.92;
+const cellWidth = 147;
+const imageSizeX = 30213;
+const imageSizeY = 29723;
+const imageStartX = -5224.67;
+const imageStartY = -5122.2;
+const imageEndX = 5433.81;
+const imageEndY = 5363.66;
 const cellWidthWithMargin = totalCellWidthMinusOne / (totalCellWidthCount - 1);
 const cellHeight = totalCellHeight / totalCellHeightCount;
+const connRadius = 5.6791458;
+const cellPxWidth = 392;
+const cellPxHeight = (cellHeight / (imageEndY - imageStartY)) * imageSizeY;
+
+// const ic = "ic9"
+// const svgPath =
+//   "/Users/giuliozausa/personal/programming/rdpiano/ic9_trace.svg";
+// const totalCellWidthMinusOne = 7335;
+// const totalCellHeight = 6780;
+// const totalCellWidthCount = 22;
+// const totalCellHeightCount = 120;
+// const cellsStartX = -3642;
+// const cellsStartY = -3232;
+// const cellWidth = 146;
+// const imageSizeX = 30259;
+// const imageSizeY = 29895;
+// const imageStartX = -5067.734;
+// const imageStartY = -5000;
+// const imageEndX = 5433.70;
+// const imageEndY = 5388.29;
+// const cellWidthWithMargin = totalCellWidthMinusOne / (totalCellWidthCount-1);
+// const cellHeight = totalCellHeight / totalCellHeightCount;
+// const connRadius = 5.6791458;
+// const cellPxWidth = 413;
+// const cellPxHeight = (cellHeight / (imageEndY - imageStartY)) * imageSizeY;
+
+// const ic = "ic8";
+// const svgPath = "/Users/giuliozausa/personal/programming/rdpiano/ic8_trace.svg";
+// const totalCellWidthMinusOne = 5889.6;
+// const totalCellHeight = 5668;
+// const totalCellWidthCount = 25;
+// const totalCellHeightCount = 156;
+// const cellsStartX = -4062.8;
+// const cellsStartY = -3902;
+// const cellWidth = 96.7;
+// const imageSizeX = 30259;
+// const imageSizeY = 29895;
+// const imageStartX = -5067.734;
+// const imageStartY = -5000;
+// const imageEndX = 2938.266;
+// const imageEndY = 2909.7;
+// const cellWidthWithMargin = totalCellWidthMinusOne / (totalCellWidthCount - 1);
+// const cellHeight = totalCellHeight / totalCellHeightCount;
+// const connRadius = 4;
+// const cellPxWidth = 366;
+// // const cellPxHeight = 138;
+// const cellPxHeight = (cellHeight / (imageEndY - imageStartY)) * imageSizeY;
 
 function astToString(ast, notRoot = false, lastOp = null) {
   if (ast.type === "ident") {
@@ -197,15 +240,22 @@ async function process() {
             sg.y2,
             lx * cellWidthWithMargin + cellsStartX + cellWidth / 2,
             ly * cellHeight + cellsStartY + conn.cy,
-            5.6791458
+            connRadius
           )
         );
-        if (foundNets.length > 1) {
+        const foundNetsIds = Array.from(new Set(foundNets.map((n) => n.netId)));
+        if (foundNetsIds.length > 1) {
           console.log(
             "ERROR: too many nets on a single pin",
             ref,
             conn.name ?? i,
             foundNets
+          );
+        }
+        if (foundNetsIds.length === 0 && conn.io === "input") {
+          console.log(
+            "Unconnected input",
+            `unconnected_${ref}_${conn.name ?? i}`
           );
         }
         const foundNet = foundNets[0]?.netId;
@@ -296,9 +346,11 @@ async function process() {
       return;
     }
 
-    if (item.cellCode === "K1B" || item.cellCode === "K2B") {
-      // Clock Buffer
-      // Power Clock Buffer
+    if (
+      item.cellCode === "K1B" || // Clock Buffer
+      item.cellCode === "K2B" || // Power Clock Buffer
+      item.cellCode === "KCB" // Block Clock Buffer (Non-inverting)
+    ) {
       item.type = "assign";
       item.name = output.expr.value;
       item.value = input.expr;
@@ -309,6 +361,7 @@ async function process() {
       item.name = output.expr.value;
       item.value = { type: "neg", value: input.expr };
     } else if (
+      item.cellCode === "K3B" || // Gated Clock (AND) Buffer
       item.cellCode === "N2P" || // Power 2-input AND
       item.cellCode === "N3P" || // Power 3-input AND
       item.cellCode === "N4P" // Power 4-input AND
@@ -340,7 +393,8 @@ async function process() {
       item.value = { type: "op", op: "||", values: inputsExpr };
     } else if (
       item.cellCode === "R2N" || // 2-input NOR
-      item.cellCode === "R2B" // Power 2-input NOR
+      item.cellCode === "R2B" || // Power 2-input NOR
+      item.cellCode === "R3B" // Power 3-input NOR
     ) {
       item.type = "assign";
       item.name = output.expr.value;
@@ -604,6 +658,76 @@ async function process() {
         },
       };
     } else if (
+      item.cellCode === "T28" // Power 2-AND 8-wide Multiplexer
+    ) {
+      item.type = "assign";
+      item.name = output.expr.value;
+      const A1 = item.params.find(
+        (p) => p.type === "input" && p.name === "A1"
+      )?.expr;
+      const A2 = item.params.find(
+        (p) => p.type === "input" && p.name === "A2"
+      )?.expr;
+      const B1 = item.params.find(
+        (p) => p.type === "input" && p.name === "B1"
+      )?.expr;
+      const B2 = item.params.find(
+        (p) => p.type === "input" && p.name === "B2"
+      )?.expr;
+      const C1 = item.params.find(
+        (p) => p.type === "input" && p.name === "C1"
+      )?.expr;
+      const C2 = item.params.find(
+        (p) => p.type === "input" && p.name === "C2"
+      )?.expr;
+      const D1 = item.params.find(
+        (p) => p.type === "input" && p.name === "D1"
+      )?.expr;
+      const D2 = item.params.find(
+        (p) => p.type === "input" && p.name === "D2"
+      )?.expr;
+      const E1 = item.params.find(
+        (p) => p.type === "input" && p.name === "E1"
+      )?.expr;
+      const E2 = item.params.find(
+        (p) => p.type === "input" && p.name === "E2"
+      )?.expr;
+      const F1 = item.params.find(
+        (p) => p.type === "input" && p.name === "F1"
+      )?.expr;
+      const F2 = item.params.find(
+        (p) => p.type === "input" && p.name === "F2"
+      )?.expr;
+      const G1 = item.params.find(
+        (p) => p.type === "input" && p.name === "G1"
+      )?.expr;
+      const G2 = item.params.find(
+        (p) => p.type === "input" && p.name === "G2"
+      )?.expr;
+      const H1 = item.params.find(
+        (p) => p.type === "input" && p.name === "H1"
+      )?.expr;
+      const H2 = item.params.find(
+        (p) => p.type === "input" && p.name === "H2"
+      )?.expr;
+      item.value = {
+        type: "neg",
+        value: {
+          type: "op",
+          op: "||",
+          values: [
+            { type: "op", op: "&&", values: [A1, A2] },
+            { type: "op", op: "&&", values: [B1, B2] },
+            { type: "op", op: "&&", values: [C1, C2] },
+            { type: "op", op: "&&", values: [D1, D2] },
+            { type: "op", op: "&&", values: [E1, E2] },
+            { type: "op", op: "&&", values: [F1, F2] },
+            { type: "op", op: "&&", values: [G1, G2] },
+            { type: "op", op: "&&", values: [H1, H2] },
+          ],
+        },
+      };
+    } else if (
       item.cellCode === "U42" // Power 4-OR 2-wide Multiplexer
     ) {
       item.type = "assign";
@@ -667,6 +791,7 @@ async function process() {
               param.expr,
               assign.name,
               (ast) => ast,
+              // (ast) => assign.value,
               shouldAvoidRef
             );
           });
@@ -730,13 +855,13 @@ async function process() {
   });
 
   // Merge latches
-  items.forEach((item) => {
-    if (item.cellCode === "LT4") item.used = false;
-  });
-  const latchesPerClock = lodash.groupBy(
-    items.filter((i) => i.type === "cell" && i.cellCode === "LT4"),
-    (i) => i.params.find((p) => p.type === "input" && p.name === "G").expr.value
-  );
+  // items.forEach((item) => {
+  //   if (item.cellCode === "LT4") item.used = false;
+  // });
+  // const latchesPerClock = lodash.groupBy(
+  //   items.filter((i) => i.type === "cell" && i.cellCode === "LT4"),
+  //   (i) => i.params.find((p) => p.type === "input" && p.name === "G").expr.value
+  // );
 
   const codeLines = [];
 
@@ -784,46 +909,46 @@ module cell_${cellCode} ( // ${
   codeLines.push(`\n\n`);
 
   // Emit latches
-  Object.entries(latchesPerClock).forEach(([_clockNet, latches]) => {
-    const clocks = latches.flatMap((l) =>
-      l.params
-        .filter((p) => p.type === "input" && p.name === "G")
-        .map((p) => [l.ref, p])
-    );
-    const inputs = latches.flatMap((l) =>
-      l.params
-        .filter((p) => p.type === "input" && p.name !== "G")
-        .map((p) => [l.ref, p])
-    );
-    const outputs = latches.flatMap((l) =>
-      l.params.filter((p) => p.type === "output").map((p) => [l.ref, p])
-    );
-    const usePos =
-      outputs
-        .filter((p) => p[1].name.startsWith("P"))
-        .filter((p) => !p[1].expr.value.startsWith("unconnected")).length === 0;
-    const useNeg =
-      outputs
-        .filter((p) => p[1].name.startsWith("N"))
-        .filter((p) => !p[1].expr.value.startsWith("unconnected")).length === 0;
-    const outputsFilt =
-      (usePos && useNeg) || (!usePos && !useNeg)
-        ? outputs
-        : outputs.filter((p) => p[1].name.startsWith(usePos ? "N" : "P"));
-    if ((usePos && useNeg) || (!usePos && !useNeg)) {
-      console.log("Mixed!", outputs);
-    }
-    const params = [clocks[0], ...inputs, ...outputsFilt]
-      .map(
-        (param) =>
-          `  ${astToString(param[1].expr)}, // ${param[1].type.toUpperCase()} ${
-            param[1].name
-          } ${param[0]}\n`
-      )
-      .join("")
-      .slice(0, -1);
-    codeLines.push(`latch (\n${params}\n);\n`);
-  });
+  // Object.entries(latchesPerClock).forEach(([_clockNet, latches]) => {
+  //   const clocks = latches.flatMap((l) =>
+  //     l.params
+  //       .filter((p) => p.type === "input" && p.name === "G")
+  //       .map((p) => [l.ref, p])
+  //   );
+  //   const inputs = latches.flatMap((l) =>
+  //     l.params
+  //       .filter((p) => p.type === "input" && p.name !== "G")
+  //       .map((p) => [l.ref, p])
+  //   );
+  //   const outputs = latches.flatMap((l) =>
+  //     l.params.filter((p) => p.type === "output").map((p) => [l.ref, p])
+  //   );
+  //   const usePos =
+  //     outputs
+  //       .filter((p) => p[1].name.startsWith("P"))
+  //       .filter((p) => !p[1].expr.value.startsWith("unconnected")).length === 0;
+  //   const useNeg =
+  //     outputs
+  //       .filter((p) => p[1].name.startsWith("N"))
+  //       .filter((p) => !p[1].expr.value.startsWith("unconnected")).length === 0;
+  //   const outputsFilt =
+  //     (usePos && useNeg) || (!usePos && !useNeg)
+  //       ? outputs
+  //       : outputs.filter((p) => p[1].name.startsWith(usePos ? "N" : "P"));
+  //   if ((usePos && useNeg) || (!usePos && !useNeg)) {
+  //     console.log("Mixed!", outputs);
+  //   }
+  //   const params = [clocks[0], ...inputs, ...outputsFilt]
+  //     .map(
+  //       (param) =>
+  //         `  ${astToString(param[1].expr)}, // ${param[1].type.toUpperCase()} ${
+  //           param[1].name
+  //         } ${param[0]}\n`
+  //     )
+  //     .join("")
+  //     .slice(0, -1);
+  //   codeLines.push(`latch (\n${params}\n);\n`);
+  // });
 
   // Emit cells code
   items

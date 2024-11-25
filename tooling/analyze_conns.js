@@ -5,29 +5,71 @@ const { getPossibleCellTypes } = require("./common");
 const xml2json = require("xml2json");
 const { createCanvas, loadImage } = require("@napi-rs/canvas");
 
-// const ic = "ic19"
-// const svgPath =
-//   "/Users/giuliozausa/personal/programming/rdpiano/ic19_trace.svg";
-// const totalCellHeight = 6780.243;
-// const totalCellHeightCount = 120;
-// const cellWidth = 138;
-// const cellWidthWithMargin = 349;
-// const cellsStartX = -3633;
-// const cellsStartY = -3256.87;
-// const cellHeight = totalCellHeight / totalCellHeightCount;
-
-const ic = "ic9"
+const ic = "ic19";
 const svgPath =
-  "/Users/giuliozausa/personal/programming/rdpiano/ic9_trace.svg";
-const totalCellWidthMinusOne = 7335;
-const totalCellHeight = 6780;
+  "/Users/giuliozausa/personal/programming/rdpiano/ic19_trace.svg";
+const totalCellWidthMinusOne = 7338;
+const totalCellHeight = 6774;
 const totalCellWidthCount = 22;
 const totalCellHeightCount = 120;
-const cellsStartX = -3642;
-const cellsStartY = -3232;
-const cellWidth = 146;
-const cellWidthWithMargin = totalCellWidthMinusOne / (totalCellWidthCount-1);
+const cellsStartX = -3640.21;
+const cellsStartY = -3254.92;
+const cellWidth = 147;
+const imageSizeX = 30213;
+const imageSizeY = 29723;
+const imageStartX = -5224.67;
+const imageStartY = -5122.2;
+const imageEndX = 5433.81;
+const imageEndY = 5363.66;
+const cellWidthWithMargin = totalCellWidthMinusOne / (totalCellWidthCount - 1);
 const cellHeight = totalCellHeight / totalCellHeightCount;
+const connRadius = 5.6791458;
+const cellPxWidth = 392;
+const cellPxHeight = (cellHeight / (imageEndY - imageStartY)) * imageSizeY;
+
+// const ic = "ic9"
+// const svgPath =
+//   "/Users/giuliozausa/personal/programming/rdpiano/ic9_trace.svg";
+// const totalCellWidthMinusOne = 7335;
+// const totalCellHeight = 6780;
+// const totalCellWidthCount = 22;
+// const totalCellHeightCount = 120;
+// const cellsStartX = -3642;
+// const cellsStartY = -3232;
+// const cellWidth = 146;
+// const imageSizeX = 30259;
+// const imageSizeY = 29895;
+// const imageStartX = -5067.734;
+// const imageStartY = -5000;
+// const imageEndX = 5433.70;
+// const imageEndY = 5388.29;
+// const cellWidthWithMargin = totalCellWidthMinusOne / (totalCellWidthCount-1);
+// const cellHeight = totalCellHeight / totalCellHeightCount;
+// const connRadius = 5.6791458;
+// const cellPxWidth = 413;
+// const cellPxHeight = (cellHeight / (imageEndY - imageStartY)) * imageSizeY;
+
+// const ic = "ic8";
+// const svgPath = "/Users/giuliozausa/personal/programming/rdpiano/ic8_trace.svg";
+// const totalCellWidthMinusOne = 5889.6;
+// const totalCellHeight = 5668;
+// const totalCellWidthCount = 25;
+// const totalCellHeightCount = 156;
+// const cellsStartX = -4062.8;
+// const cellsStartY = -3902;
+// const cellWidth = 96.7;
+// const imageSizeX = 30259;
+// const imageSizeY = 29895;
+// const imageStartX = -5067.734;
+// const imageStartY = -5000;
+// const imageEndX = 2938.266;
+// const imageEndY = 2909.7;
+// const cellWidthWithMargin = totalCellWidthMinusOne / (totalCellWidthCount - 1);
+// const cellHeight = totalCellHeight / totalCellHeightCount;
+// const connRadius = 4;
+// const cellPxWidth = 366;
+// // const cellPxHeight = 138;
+// const cellPxHeight = (cellHeight / (imageEndY - imageStartY)) * imageSizeY;
 
 const cellDefs = JSON.parse(
   xml2json.toJson(fs.readFileSync("celldefs.xml", "utf8"))
@@ -56,6 +98,7 @@ async function process() {
     maxX: conn.properties.cx + conn.properties.r,
     minY: conn.properties.cy - conn.properties.r,
     maxY: conn.properties.cy + conn.properties.r,
+    id: conn.properties["inkscape:label"] ?? conn.properties.id,
   }));
 
   const tree = new rbush();
@@ -165,21 +208,21 @@ async function process() {
 
       // Save cells image example
       const canvas = createCanvas(
-        391,
-        160 * parseFloat(cellType.split("_")[0])
+        cellPxWidth,
+        cellPxHeight * parseFloat(cellType.split("_")[0])
       );
       const ctx = canvas.getContext("2d");
       ctx.drawImage(await loadImage(fs.readFileSync(firstCell.path)), 0, 0);
       conns.forEach((conn) => {
         const py = Math.round(
           (conn.cy / firstCell.height) *
-            160 *
+            cellPxHeight *
             parseFloat(cellType.split("_")[0])
         );
-        const pr = (5.6791458 / (5122.26 + 5363.88)) * 29723;
+        const pr = (connRadius / (imageEndY - imageStartY)) * imageSizeY;
         if (conn.io === "input") ctx.fillStyle = "#0000FFAA";
         else ctx.fillStyle = "#FF0000AA";
-        ctx.fillRect(30, py - pr, 391 - 30, pr * 2);
+        ctx.fillRect(30, py - pr, cellPxWidth - 30, pr * 2);
       });
       const imgData = await canvas.encode("jpeg");
       fs.writeFileSync(`../cells_conn/${cellType.split("_")[1]}.jpg`, imgData);

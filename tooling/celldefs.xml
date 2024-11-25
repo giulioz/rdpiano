@@ -4,11 +4,17 @@
     <cell name="x" size="1" description="Empty BC">
     </cell>
     <cell name="A1N" size="8" description="1-bit Full Adder">
-        <input name="A" xpos="0" ypos="0" type="line"/>
+        <output name="CO" xpos="0" ypos="0" type="line"/>
+        <input name="A" xpos="0" ypos="1" type="line"/>
+        <input name="B" xpos="0" ypos="2" type="line"/>
+        <output name="S" xpos="0" ypos="3" type="line"/>
+        <input name="CI" xpos="0" ypos="4" type="line"/>
+
+        <!-- <input name="A" xpos="0" ypos="0" type="line"/>
         <input name="B" xpos="0" ypos="8" type="line"/>
         <input name="CI" xpos="0" ypos="30" type="line"/>
         <output name="S" xpos="0" ypos="21" type="line"/>
-        <output name="CO" xpos="0" ypos="1" type="line"/>
+        <output name="CO" xpos="0" ypos="1" type="line"/> -->
     </cell>
     <cell name="A2N" size="16" description="2-bit Full Adder">
         <input name="A1" xpos="0" ypos="46" type="line"/>
@@ -23,6 +29,20 @@
     <cell name="A4H" size="50" description="4-bit Full Adder">
         <!-- order unchecked -->
         <output name="CO" xpos="0" ypos="0" type="line"/>
+        <input name="A4" xpos="0" ypos="1" type="line"/>
+        <input name="B4" xpos="0" ypos="2" type="line"/>
+        <output name="S4" xpos="0" ypos="3" type="line"/>
+        <input name="A3" xpos="0" ypos="4" type="line"/>
+        <input name="B3" xpos="0" ypos="5" type="line"/>
+        <output name="S3" xpos="0" ypos="6" type="line"/>
+        <input name="A2" xpos="0" ypos="7" type="line"/>
+        <input name="B2" xpos="0" ypos="8" type="line"/>
+        <output name="S2" xpos="0" ypos="9" type="line"/>
+        <input name="A1" xpos="0" ypos="10" type="line"/>
+        <input name="B1" xpos="0" ypos="11" type="line"/>
+        <output name="S1" xpos="0" ypos="12" type="line"/>
+        <input name="CI" xpos="0" ypos="13" type="line"/>
+        <!-- <output name="CO" xpos="0" ypos="0" type="line"/>
         <input name="A1" xpos="0" ypos="1" type="line"/>
         <input name="A2" xpos="0" ypos="2" type="line"/>
         <output name="S1" xpos="0" ypos="3" type="line"/>
@@ -35,7 +55,7 @@
         <input name="D1" xpos="0" ypos="10" type="line"/>
         <input name="D2" xpos="0" ypos="11" type="line"/>
         <output name="S4" xpos="0" ypos="12" type="line"/>
-        <input name="CI" xpos="0" ypos="13" type="line"/>
+        <input name="CI" xpos="0" ypos="13" type="line"/> -->
     </cell>
 
     <cell name="BD3" size="5" description="Delay Cell">
@@ -80,6 +100,22 @@
         <output name="QD" xpos="0" ypos="168" type="line"/>
         <input name="DD" xpos="0" ypos="182" type="line"/>
         <input name="L" xpos="0" ypos="190" type="line"/> -->
+    </cell>
+    <cell name="C45" size="48" description="4-bit Binary Synchronous Up Counter">
+        <input name="DA" xpos="0" ypos="0" type="line"/>
+        <output name="QA" xpos="0" ypos="1" type="line"/>
+        <input name="EN" xpos="0" ypos="2" type="line"/>
+        <input name="CI" xpos="0" ypos="3" type="line"/>
+        <input name="CL" xpos="0" ypos="4" type="line"/>
+        <output name="QB" xpos="0" ypos="5" type="line"/>
+        <input name="DB" xpos="0" ypos="6" type="line"/>
+        <input name="L" xpos="0" ypos="7" type="line"/>
+        <input name="CK" xpos="0" ypos="8" type="line"/>
+        <output name="CO" xpos="0" ypos="9" type="line"/>
+        <output name="QC" xpos="0" ypos="10" type="line"/>
+        <input name="DC" xpos="0" ypos="11" type="line"/>
+        <output name="QD" xpos="0" ypos="12" type="line"/>
+        <input name="DD" xpos="0" ypos="13" type="line"/>
     </cell>
 
     <cell name="D14" size="2" description="2-wide 3-AND 4-lnput AND-OR inverter">
@@ -638,23 +674,23 @@
         <output name="X" xpos="0" ypos="31" type="line"/>
     </cell>
     <cell name="T28" size="11" description="Power 2-AND 8-wide Multiplexer">
-        <input name="A1" xpos="0" ypos="0" type="missing"/>
-        <input name="A2" xpos="0" ypos="0" type="missing"/>
-        <input name="B1" xpos="0" ypos="0" type="missing"/>
-        <input name="B2" xpos="0" ypos="0" type="missing"/>
-        <input name="C1" xpos="0" ypos="0" type="missing"/>
-        <input name="C2" xpos="0" ypos="0" type="missing"/>
-        <input name="D1" xpos="0" ypos="0" type="missing"/>
-        <input name="D2" xpos="0" ypos="0" type="missing"/>
-        <input name="E1" xpos="0" ypos="0" type="missing"/>
-        <input name="E2" xpos="0" ypos="0" type="missing"/>
-        <input name="F1" xpos="0" ypos="0" type="missing"/>
-        <input name="F2" xpos="0" ypos="0" type="missing"/>
-        <input name="G1" xpos="0" ypos="0" type="missing"/>
-        <input name="G2" xpos="0" ypos="0" type="missing"/>
-        <input name="H1" xpos="0" ypos="0" type="missing"/>
-        <input name="H2" xpos="0" ypos="0" type="missing"/>
-        <output name="X" xpos="0" ypos="0" type="missing"/>
+        <input name="A1" xpos="0" ypos="0" type="line"/>
+        <input name="A2" xpos="0" ypos="1" type="line"/>
+        <input name="B1" xpos="0" ypos="2" type="line"/>
+        <input name="B2" xpos="0" ypos="3" type="line"/>
+        <input name="C1" xpos="0" ypos="4" type="line"/>
+        <input name="C2" xpos="0" ypos="5" type="line"/>
+        <input name="D1" xpos="0" ypos="6" type="line"/>
+        <input name="D2" xpos="0" ypos="7" type="line"/>
+        <input name="E1" xpos="0" ypos="8" type="line"/>
+        <input name="E2" xpos="0" ypos="9" type="line"/>
+        <input name="F1" xpos="0" ypos="10" type="line"/>
+        <input name="F2" xpos="0" ypos="11" type="line"/>
+        <input name="G1" xpos="0" ypos="12" type="line"/>
+        <input name="G2" xpos="0" ypos="13" type="line"/>
+        <input name="H1" xpos="0" ypos="14" type="line"/>
+        <input name="H2" xpos="0" ypos="15" type="line"/>
+        <output name="X" xpos="0" ypos="16" type="line"/>
     </cell>
     <cell name="T2B" size="2" description="2:1 Selector">
         <input name="A" xpos="7" ypos="0" type="point"/>
@@ -1035,6 +1071,11 @@
         <input name="I" xpos="0" ypos="0" type="line"/>
         <output name="XA" xpos="0" ypos="13" type="line"/>
         <output name="XB" xpos="0" ypos="14" type="line"/>
+    </cell>
+    <cell name="unkk" size="3" description="Unknown K">
+        <input name="A" xpos="0" ypos="0" type="line"/>
+        <input name="B" xpos="0" ypos="2" type="line"/>
+        <output name="X" xpos="0" ypos="9" type="line"/>
     </cell>
     <cell name="unkh" size="9" description="Unknown H">
         <input name="A" xpos="0" ypos="0" type="line"/>
