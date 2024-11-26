@@ -8,49 +8,49 @@ const {
   lineIntersectsCircle,
 } = require("./common");
 
-const ic = "ic19";
-const svgPath =
-  "/Users/giuliozausa/personal/programming/rdpiano/ic19_trace.svg";
-const totalCellWidthMinusOne = 7338;
-const totalCellHeight = 6774;
-const totalCellWidthCount = 22;
-const totalCellHeightCount = 120;
-const cellsStartX = -3640.21;
-const cellsStartY = -3254.92;
-const cellWidth = 147;
-const imageSizeX = 30213;
-const imageSizeY = 29723;
-const imageStartX = -5224.67;
-const imageStartY = -5122.2;
-const imageEndX = 5433.81;
-const imageEndY = 5363.66;
-const cellWidthWithMargin = totalCellWidthMinusOne / (totalCellWidthCount - 1);
-const cellHeight = totalCellHeight / totalCellHeightCount;
-const connRadius = 5.6791458;
-const cellPxWidth = 392;
-const cellPxHeight = (cellHeight / (imageEndY - imageStartY)) * imageSizeY;
-
-// const ic = "ic9"
+// const ic = "ic19";
 // const svgPath =
-//   "/Users/giuliozausa/personal/programming/rdpiano/ic9_trace.svg";
-// const totalCellWidthMinusOne = 7335;
-// const totalCellHeight = 6780;
+//   "/Users/giuliozausa/personal/programming/rdpiano/ic19_trace.svg";
+// const totalCellWidthMinusOne = 7338;
+// const totalCellHeight = 6774;
 // const totalCellWidthCount = 22;
 // const totalCellHeightCount = 120;
-// const cellsStartX = -3642;
-// const cellsStartY = -3232;
-// const cellWidth = 146;
-// const imageSizeX = 30259;
-// const imageSizeY = 29895;
-// const imageStartX = -5067.734;
-// const imageStartY = -5000;
-// const imageEndX = 5433.70;
-// const imageEndY = 5388.29;
-// const cellWidthWithMargin = totalCellWidthMinusOne / (totalCellWidthCount-1);
+// const cellsStartX = -3640.21;
+// const cellsStartY = -3254.92;
+// const cellWidth = 147;
+// const imageSizeX = 30213;
+// const imageSizeY = 29723;
+// const imageStartX = -5224.67;
+// const imageStartY = -5122.2;
+// const imageEndX = 5433.81;
+// const imageEndY = 5363.66;
+// const cellWidthWithMargin = totalCellWidthMinusOne / (totalCellWidthCount - 1);
 // const cellHeight = totalCellHeight / totalCellHeightCount;
 // const connRadius = 5.6791458;
-// const cellPxWidth = 413;
+// const cellPxWidth = 392;
 // const cellPxHeight = (cellHeight / (imageEndY - imageStartY)) * imageSizeY;
+
+const ic = "ic9"
+const svgPath =
+  "/Users/giuliozausa/personal/programming/rdpiano/ic9_trace.svg";
+const totalCellWidthMinusOne = 7335;
+const totalCellHeight = 6780;
+const totalCellWidthCount = 22;
+const totalCellHeightCount = 120;
+const cellsStartX = -3642;
+const cellsStartY = -3232;
+const cellWidth = 146;
+const imageSizeX = 30259;
+const imageSizeY = 29895;
+const imageStartX = -5067.734;
+const imageStartY = -5000;
+const imageEndX = 5433.70;
+const imageEndY = 5388.29;
+const cellWidthWithMargin = totalCellWidthMinusOne / (totalCellWidthCount-1);
+const cellHeight = totalCellHeight / totalCellHeightCount;
+const connRadius = 5.6791458;
+const cellPxWidth = 413;
+const cellPxHeight = (cellHeight / (imageEndY - imageStartY)) * imageSizeY;
 
 // const ic = "ic8";
 // const svgPath = "/Users/giuliozausa/personal/programming/rdpiano/ic8_trace.svg";
@@ -393,6 +393,7 @@ async function process() {
       item.value = { type: "op", op: "||", values: inputsExpr };
     } else if (
       item.cellCode === "R2N" || // 2-input NOR
+      item.cellCode === "R4N" || // 4-input NOR
       item.cellCode === "R2B" || // Power 2-input NOR
       item.cellCode === "R3B" // Power 3-input NOR
     ) {

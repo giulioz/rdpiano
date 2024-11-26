@@ -1,219 +1,247 @@
-// 21 instances
-module cell_LT4 ( // 4-bit Data Latch
-  input wire G,
-  input wire DA,
-  input wire DB,
-  input wire DC,
-  input wire DD,
-  output wire NA,
-  output wire PA,
-  output wire NB,
-  output wire PB,
-  output wire NC,
-  output wire PC,
-  output wire ND,
-  output wire PD
-);
-endmodule
+// =============================================================================
+// SYNC generator (XTAL/2)
 
-// 2 instances
-module cell_DE3 ( // 3:8 Decoder
-  input wire B,
-  input wire A,
-  input wire C,
-  output wire X0,
-  output wire X1,
-  output wire X2,
-  output wire X3,
-  output wire X4,
-  output wire X5,
-  output wire X6,
-  output wire X7
-);
-endmodule
-
-// 15 instances
-module cell_FDQ ( // 4-bit DFF
-  input wire CK,
-  input wire DA,
-  input wire DB,
-  input wire DC,
-  input wire DD,
-  output wire QA,
-  output wire QB,
-  output wire QC,
-  output wire QD
-);
-endmodule
-
-// 2 instances
-module cell_R4N ( // 4-input NOR
-  input wire A1,
-  input wire A2,
-  input wire A3,
-  input wire A4,
-  output wire X
-);
-endmodule
-
-// 4 instances
-module cell_C45 ( // 4-bit Binary Synchronous Up Counter
-  input wire DA,
-  input wire EN,
-  input wire CI,
-  input wire CL,
-  input wire DB,
-  input wire L,
-  input wire CK,
-  input wire DC,
-  input wire DD,
-  output wire QA,
-  output wire QB,
-  output wire CO,
-  output wire QC,
-  output wire QD
-);
-endmodule
-
-// 4 instances
-module cell_LT2 ( // 1-bit Data Latch
-  input wire G,
-  input wire D,
-  output wire Q,
-  output wire XQ
-);
-endmodule
-
-// 8 instances
-module cell_A4H ( // 4-bit Full Adder
-  input wire A4,
-  input wire B4,
-  input wire A3,
-  input wire B3,
-  input wire A2,
-  input wire B2,
-  input wire A1,
-  input wire B1,
-  input wire CI,
-  output wire CO,
-  output wire S4,
-  output wire S3,
-  output wire S2,
-  output wire S1
-);
-endmodule
-
-// 4 instances
-module cell_FDM ( // DFF
-  input wire CK,
-  input wire D,
-  output wire XQ,
-  output wire Q
-);
-endmodule
-
-// 2 instances
-module cell_FDN ( // DFF with Set
-  input wire CK,
-  input wire D,
-  input wire S,
-  output wire Q,
-  output wire XQ
-);
-endmodule
-
-// 2 instances
-module cell_FDO ( // DFF with Reset
-  input wire CK,
-  input wire D,
-  input wire R,
-  output wire Q,
-  output wire XQ
-);
-endmodule
-
-
-
-
-cell_LT4 A107 ( // 4-bit Data Latch
-  path902, // INPUT G
-  BUS0_IN, // INPUT DA
-  BUS1_IN, // INPUT DB
-  BUS2_IN, // INPUT DC
-  BUS3_IN, // INPUT DD
-  unconnected_A107_NA, // OUTPUT NA
-  ROM_A9_OUT, // OUTPUT PA
-  unconnected_A107_NB, // OUTPUT NB
-  ROM_A10_OUT, // OUTPUT PB
-  unconnected_A107_NC, // OUTPUT NC
-  ROM_A11_OUT, // OUTPUT PC
-  unconnected_A107_ND, // OUTPUT ND
-  ROM_A12_OUT, // OUTPUT PD
+cell_FDO N109 ( // DFF with Reset
+  XTAL_IN, // INPUT CK
+  path631, // INPUT D
+  UNK34_IN, // INPUT R
+  SYNCO_OUT, // OUTPUT Q
+  path631, // OUTPUT XQ
 );
 
-cell_LT4 A61 ( // 4-bit Data Latch
-  path902, // INPUT G
-  BUS4_IN, // INPUT DA
-  BUS5_IN, // INPUT DB
-  BUS6_IN, // INPUT DC
-  BUS7_IN, // INPUT DD
-  unconnected_A61_NA, // OUTPUT NA
-  path803, // OUTPUT PA
-  unconnected_A61_NB, // OUTPUT NB
-  path230, // OUTPUT PB
-  unconnected_A61_NC, // OUTPUT NC
-  path821, // OUTPUT PC
-  unconnected_A61_ND, // OUTPUT ND
-  path229, // OUTPUT PD
+
+
+// =============================================================================
+// Internal cycle counter
+
+cell_C45 R61 ( // 4-bit Binary Synchronous Up Counter
+  GND, // INPUT DA
+  VCC, // INPUT EN
+  bus1_cycle3_xor, // INPUT CI
+  FSYNC_IN, // INPUT CL
+  GND, // INPUT DB
+  VCC, // INPUT L
+  SYNC_IN, // INPUT CK
+  GND, // INPUT DC
+  GND, // INPUT DD
+  cycle_cnt_a, // OUTPUT QA
+  cycle_cnt_b, // OUTPUT QB
+  unconnected_R61_CO, // OUTPUT CO
+  cycle_cnt_c, // OUTPUT QC
+  cycle_cnt_d, // OUTPUT QD
 );
 
-cell_LT4 A76 ( // 4-bit Data Latch
-  path12, // INPUT G
-  BUS4_IN, // INPUT DA
-  BUS5_IN, // INPUT DB
-  BUS6_IN, // INPUT DC
-  BUS7_IN, // INPUT DD
-  unconnected_A76_NA, // OUTPUT NA
-  ROM_A5_OUT, // OUTPUT PA
-  unconnected_A76_NB, // OUTPUT NB
-  ROM_A6_OUT, // OUTPUT PB
-  unconnected_A76_NC, // OUTPUT NC
-  ROM_A7_OUT, // OUTPUT PC
-  unconnected_A76_ND, // OUTPUT ND
-  ROM_A8_OUT, // OUTPUT PD
+cell_DE3 T61 ( // 3:8 Decoder
+  cycle_cnt_b, // INPUT B
+  cycle_cnt_a, // INPUT A
+  cycle_cnt_c, // INPUT C
+  cycle_sel_0, // OUTPUT X0
+  cycle_sel_1, // OUTPUT X1
+  cycle_sel_2, // OUTPUT X2
+  cycle_sel_3, // OUTPUT X3
+  cycle_sel_4, // OUTPUT X4
+  cycle_sel_5, // OUTPUT X5
+  cycle_sel_6, // OUTPUT X6
+  cycle_sel_7, // OUTPUT X7
 );
 
-cell_LT4 A94 ( // 4-bit Data Latch
-  path12, // INPUT G
-  BUS0_IN, // INPUT DA
-  BUS1_IN, // INPUT DB
-  BUS2_IN, // INPUT DC
-  BUS3_IN, // INPUT DD
-  unconnected_A94_NA, // OUTPUT NA
-  ROM_A1_OUT, // OUTPUT PA
-  unconnected_A94_NB, // OUTPUT NB
-  ROM_A2_OUT, // OUTPUT PB
-  unconnected_A94_NC, // OUTPUT NC
-  ROM_A3_OUT, // OUTPUT PC
-  unconnected_A94_ND, // OUTPUT ND
-  ROM_A4_OUT, // OUTPUT PD
+assign cycle_0 = cycle_sel_0 || SYNC_IN || cycle_cnt_d;
+assign cycle_1 = cycle_sel_1 || SYNC_IN || cycle_cnt_d;
+assign cycle_2 = cycle_sel_2 || SYNC_IN || cycle_cnt_d;
+assign cycle_3 = cycle_sel_3 || SYNC_IN || cycle_cnt_d;
+assign cycle_4 = cycle_sel_4 || SYNC_IN || cycle_cnt_d;
+assign cycle_5 = cycle_sel_5 || SYNC_IN || cycle_cnt_d;
+assign cycle_6 = cycle_sel_6 || SYNC_IN || cycle_cnt_d;
+assign cycle_7 = cycle_sel_7 || SYNC_IN || cycle_cnt_d;
+assign cycle_8 = cycle_sel_0 || SYNC_IN || ~cycle_cnt_d;
+assign cycle_9 = cycle_sel_1 || SYNC_IN || ~cycle_cnt_d;
+assign cycle_10 = cycle_sel_2 || SYNC_IN || ~cycle_cnt_d;
+assign cycle_11 = cycle_sel_3 || SYNC_IN || ~cycle_cnt_d;
+assign cycle_12 = cycle_sel_4 || SYNC_IN || ~cycle_cnt_d;
+assign cycle_13 = cycle_sel_5 || SYNC_IN || ~cycle_cnt_d;
+assign cycle_14 = cycle_sel_6 || SYNC_IN || ~cycle_cnt_d;
+assign cycle_15 = cycle_sel_7 || SYNC_IN || ~cycle_cnt_d;
+
+assign cycle_odd = ~(cycle_1 && cycle_3 && cycle_5 && cycle_7 && cycle_9 && cycle_11 && cycle_13 && cycle_15);
+assign cycle_between = ~(~(cycle_0 && cycle_2 && cycle_4 && cycle_6 && cycle_8 && cycle_10 && cycle_12 && cycle_14) || cycle_odd);
+
+
+
+// =============================================================================
+// Wave Address Generator
+
+assign adder1_and_0 = adder1_o0 && ~path408;
+assign adder1_and_1 = adder1_o1 && ~path408;
+assign adder1_and_2 = adder1_o2 && ~path408;
+assign adder1_and_3 = adder1_o3 && ~path408;
+assign adder1_and_4 = adder1_o4 && ~path408;
+assign adder1_and_5 = adder1_o5 && ~path408;
+assign adder1_and_6 = adder1_o6 && ~path408;
+assign adder1_and_7 = adder1_o7 && ~path408;
+assign adder1_and_8 = adder1_o8 && ~path408;
+assign adder1_and_9 = adder1_o9 && ~path408;
+assign adder1_and_o10 = adder1_o10 && ~path408;
+assign adder1_and_o11 = adder1_o11 && ~path408;
+assign adder1_and_o12 = adder1_o12 && ~path408;
+assign adder1_and_o13 = adder1_o13 && ~path408;
+assign adder1_and_o14 = adder1_o14 && ~path408;
+assign adder1_and_o15 = adder1_o15 && ~path408;
+
+assign adder1_and_o16_0 = ~(~(adder1_o16 && ~g137) && ~(adder2_o0 && g137)) && ~path408;
+assign adder1_and_o17_1 = ~(~(adder1_o17 && ~g137) && ~(adder2_o1 && g137)) && ~path408;
+assign adder1_and_o18_2 = ~(~(adder1_o18 && g648) && ~(adder2_o2 && g137)) && ~path408;
+assign adder1_and_o19_3 = ~(~(adder1_o19 && ~g137) && ~(adder2_o3 && g137)) && ~path408;
+assign adder1_and_o20_4 = ~(~(adder1_o20 && ~g137) && ~(adder2_o4 && g137)) && ~path408;
+assign adder1_and_o21_5 = ~(~(adder1_o21 && g648) && ~(adder2_o5 && g137)) && ~path408;
+assign adder1_and_o22_6 = ~(~(adder1_o22 && g648) && ~(adder2_o6 && g137)) && ~path408;
+assign adder1_and_o23_7 = ~(~(adder1_o23 && g648) && ~(adder2_o7 && g137)) && ~path408;
+
+// Latches for wave addr 1 every odd cycle
+cell_FDQ R40 ( // 4-bit DFF
+  cycle_odd, // INPUT CK
+  adder1_and_o11, // INPUT DA
+  adder1_and_o10, // INPUT DB
+  adder1_and_9, // INPUT DC
+  adder1_and_8, // INPUT DD
+  wave_ag_a2_tmp1, // OUTPUT QA
+  wave_ag_a1_tmp1, // OUTPUT QB
+  wave_ag_a0_tmp1, // OUTPUT QC
+  path749, // OUTPUT QD
+);
+cell_FDQ T1 ( // 4-bit DFF
+  cycle_odd, // INPUT CK
+  adder1_and_o15, // INPUT DA
+  adder1_and_o14, // INPUT DB
+  adder1_and_o13, // INPUT DC
+  adder1_and_o12, // INPUT DD
+  wave_ag_a6_tmp1, // OUTPUT QA
+  wave_ag_a5_tmp1, // OUTPUT QB
+  wave_ag_a4_tmp1, // OUTPUT QC
+  wave_ag_a3_tmp1, // OUTPUT QD
+);
+cell_FDQ M93 ( // 4-bit DFF
+  cycle_odd, // INPUT CK
+  adder1_and_o19_3, // INPUT DA
+  adder1_and_o18_2, // INPUT DB
+  adder1_and_o17_1, // INPUT DC
+  adder1_and_o16_0, // INPUT DD
+  wave_ag_a10_tmp1, // OUTPUT QA
+  wave_ag_a9_tmp1, // OUTPUT QB
+  wave_ag_a8_tmp1, // OUTPUT QC
+  wave_ag_a7_tmp1, // OUTPUT QD
 );
 
-cell_LT4 M61 ( // 4-bit Data Latch
-  g494, // INPUT G
-  g910, // INPUT DA
-  g950, // INPUT DB
-  g952, // INPUT DC
-  g912, // INPUT DD
-  unconnected_M61_NA, // OUTPUT NA
-  path80, // OUTPUT PA
-  unconnected_M61_NB, // OUTPUT NB
-  path79, // OUTPUT PB
-  unconnected_M61_NC, // OUTPUT NC
-  path953, // OUTPUT PC
-  unconnected_M61_ND, // OUTPUT ND
-  path913, // OUTPUT PD
+// Latches for wave addr 2
+cell_LT4 F4 ( // 4-bit Data Latch
+  path710, // INPUT G
+  ~RAM_D0_IN, // INPUT DA
+  RAM_D1_IN, // INPUT DB
+  RAM_D2_IN, // INPUT DC
+  ~RAM_D3_IN, // INPUT DD
+  unconnected_F4_NA, // OUTPUT NA
+  path177, // OUTPUT PA
+  unconnected_F4_NB, // OUTPUT NB
+  wave_ag_a0_tmp2, // OUTPUT PB
+  unconnected_F4_NC, // OUTPUT NC
+  wave_ag_a1_tmp2, // OUTPUT PC
+  unconnected_F4_ND, // OUTPUT ND
+  wave_ag_a2_tmp2, // OUTPUT PD
 );
+cell_LT4 H3 ( // 4-bit Data Latch
+  path710, // INPUT G
+  ~RAM_D4_IN, // INPUT DA
+  RAM_D5_IN, // INPUT DB
+  RAM_D6_IN, // INPUT DC
+  RAM_D7_IN, // INPUT DD
+  unconnected_H3_NA, // OUTPUT NA
+  wave_ag_a3_tmp2, // OUTPUT PA
+  unconnected_H3_NB, // OUTPUT NB
+  wave_ag_a4_tmp2, // OUTPUT PB
+  unconnected_H3_NC, // OUTPUT NC
+  wave_ag_a5_tmp2, // OUTPUT PC
+  unconnected_H3_ND, // OUTPUT ND
+  wave_ag_a6_tmp2, // OUTPUT PD
+);
+cell_LT4 F36 ( // 4-bit Data Latch
+  path709, // INPUT G
+  ~RAM_D0_IN, // INPUT DA
+  RAM_D1_IN, // INPUT DB
+  RAM_D2_IN, // INPUT DC
+  ~RAM_D3_IN, // INPUT DD
+  unconnected_F36_NA, // OUTPUT NA
+  wave_ag_a7_tmp2, // OUTPUT PA
+  unconnected_F36_NB, // OUTPUT NB
+  wave_ag_a8_tmp2, // OUTPUT PB
+  unconnected_F36_NC, // OUTPUT NC
+  wave_ag_a9_tmp2, // OUTPUT PC
+  unconnected_F36_ND, // OUTPUT ND
+  wave_ag_a10_tmp2, // OUTPUT PD
+);
+
+// 1/2 select
+cell_FDN N64 ( // DFF with Set
+  cycle_7, // INPUT CK
+  RAM_OE_OUT, // INPUT D
+  cycle_4, // INPUT S
+  path117, // OUTPUT Q
+  path118, // OUTPUT XQ
+);
+cell_FDO N83 ( // DFF with Reset
+  cycle_9, // INPUT CK
+  RAM_OE_OUT, // INPUT D
+  cycle_6, // INPUT R
+  path919, // OUTPUT Q
+  path920, // OUTPUT XQ
+);
+assign wave_ag_tmp_1 = path117 || path919;
+assign wave_ag_tmp_2 = path118 && path920;
+
+assign WR_A0_OUT = ~(~(wave_ag_a0_tmp1 && wave_ag_tmp_1) && ~(wave_ag_a0_tmp2 && wave_ag_tmp_2));
+assign WR_A1_OUT = ~(wave_ag_a1_tmp1 && wave_ag_tmp_1) && ~(wave_ag_a1_tmp2 && wave_ag_tmp_2);
+assign WR_A2_OUT = ~(~(wave_ag_a2_tmp1 && wave_ag_tmp_1) && ~(wave_ag_a2_tmp2 && wave_ag_tmp_2));
+assign WR_A3_OUT = ~(wave_ag_a3_tmp1 && wave_ag_tmp_1) && ~(wave_ag_a3_tmp2 && wave_ag_tmp_2);
+assign WR_A4_OUT = ~(~(wave_ag_a4_tmp1 && wave_ag_tmp_1) && ~(wave_ag_a4_tmp2 && wave_ag_tmp_2));
+assign WR_A5_OUT = ~(wave_ag_a5_tmp1 && wave_ag_tmp_1) && ~(wave_ag_a5_tmp2 && wave_ag_tmp_2);
+assign WR_A6_OUT = ~(~(wave_ag_a6_tmp1 && wave_ag_tmp_1) && ~(wave_ag_a6_tmp2 && wave_ag_tmp_2));
+assign WR_A7_OUT = ~(~(wave_ag_a7_tmp1 && wave_ag_tmp_1) && ~(wave_ag_a7_tmp2 && wave_ag_tmp_2));
+assign WR_A8_OUT = ~(wave_ag_a8_tmp1 && wave_ag_tmp_1) && ~(wave_ag_a8_tmp2 && wave_ag_tmp_2);
+assign WR_A9_OUT = ~(wave_ag_a9_tmp1 && wave_ag_tmp_1) && ~(wave_ag_a9_tmp2 && wave_ag_tmp_2);
+assign WR_A10_OUT = ~(~(wave_ag_a10_tmp1 && wave_ag_tmp_1) && ~(wave_ag_a10_tmp2 && wave_ag_tmp_2));
+
+cell_FDQ V61 ( // 4-bit DFF
+  ~cycle_7, // INPUT CK
+  bus0_cycle3_xor, // INPUT DA
+  bus1_cycle3_xor, // INPUT DB
+  bus2_cycle3_xor, // INPUT DC
+  bus3_cycle3_xor, // INPUT DD
+  WR_A11_OUT, // OUTPUT QA
+  WR_A12_OUT, // OUTPUT QB
+  WR_A13_OUT, // OUTPUT QC
+  WR_A14_OUT, // OUTPUT QD
+);
+cell_FDM V16 ( // DFF
+  cycle_7, // INPUT CK
+  path495, // INPUT D
+  unconnected_V16_XQ, // OUTPUT XQ
+  WR_A15_OUT, // OUTPUT Q
+);
+cell_FDM V22 ( // DFF
+  cycle_7, // INPUT CK
+  path449, // INPUT D
+  unconnected_V22_XQ, // OUTPUT XQ
+  WR_A16_OUT, // OUTPUT Q
+);
+
+
+
+// =============================================================================
+// Signal to interpolator (pins 36/37/38)
+
+assign path693 = ~(~(~(~(path749 && wave_ag_tmp_1) && ~(path177 && wave_ag_tmp_2)) && RAM_A0_OUT) && ~(~(~(g413 && wave_ag_tmp_1) && ~(path998 && wave_ag_tmp_2)) && ~RAM_A0_OUT));
+assign path586 = ~(~(~(~(g411 && wave_ag_tmp_1) && ~(path149 && wave_ag_tmp_2)) && RAM_A0_OUT) && ~(~(~(g364 && g820) && ~(~(~(path148 && wave_ag_tmp_1) && ~(path33 && wave_ag_tmp_2)) || ~(~(path962 && wave_ag_tmp_1) && ~(path959 && wave_ag_tmp_2)) || ~(~(path360 && wave_ag_tmp_1) && ~(path706 && wave_ag_tmp_2)) || ~(~(path145 && wave_ag_tmp_1) && ~(path708 && wave_ag_tmp_2))) && ~path408) && ~RAM_A0_OUT));
+assign path587 = ~(~(~(~(g268 && wave_ag_tmp_1) && ~(path265 && wave_ag_tmp_2)) && RAM_A0_OUT) && ~((WR_A16_OUT || WR_A15_OUT || WR_A14_OUT || (VCC && wave_addr_upper_dec_0 && wave_addr_upper_dec_1 && wave_addr_upper_dec_2 && wave_addr_upper_dec_3 && wave_addr_upper_dec_4)) && ~RAM_A0_OUT));
+assign path219 = ~(~(GND && RAM_A0_OUT) && ~(GND && ~RAM_A0_OUT)); // Unused
+
 
 cell_LT4 Q106 ( // 4-bit Data Latch
   SYNC_IN, // INPUT G
@@ -231,12 +259,156 @@ cell_LT4 Q106 ( // 4-bit Data Latch
   unconnected_Q106_PD, // OUTPUT PD
 );
 
+
+
+// =============================================================================
+// Interface with ROM (IC11)
+
+// Address for the ROM comes in two cycles from IC19
+cell_LT4 A107 ( // 4-bit Data Latch
+  path902, // INPUT G
+  BUS0_IN, // INPUT DA
+  BUS1_IN, // INPUT DB
+  BUS2_IN, // INPUT DC
+  BUS3_IN, // INPUT DD
+  unconnected_A107_NA, // OUTPUT NA
+  ROM_A9_OUT, // OUTPUT PA
+  unconnected_A107_NB, // OUTPUT NB
+  ROM_A10_OUT, // OUTPUT PB
+  unconnected_A107_NC, // OUTPUT NC
+  ROM_A11_OUT, // OUTPUT PC
+  unconnected_A107_ND, // OUTPUT ND
+  ROM_A12_OUT, // OUTPUT PD
+);
+cell_LT4 A76 ( // 4-bit Data Latch
+  path12, // INPUT G
+  BUS4_IN, // INPUT DA
+  BUS5_IN, // INPUT DB
+  BUS6_IN, // INPUT DC
+  BUS7_IN, // INPUT DD
+  unconnected_A76_NA, // OUTPUT NA
+  ROM_A5_OUT, // OUTPUT PA
+  unconnected_A76_NB, // OUTPUT NB
+  ROM_A6_OUT, // OUTPUT PB
+  unconnected_A76_NC, // OUTPUT NC
+  ROM_A7_OUT, // OUTPUT PC
+  unconnected_A76_ND, // OUTPUT ND
+  ROM_A8_OUT, // OUTPUT PD
+);
+cell_LT4 A94 ( // 4-bit Data Latch
+  path12, // INPUT G
+  BUS0_IN, // INPUT DA
+  BUS1_IN, // INPUT DB
+  BUS2_IN, // INPUT DC
+  BUS3_IN, // INPUT DD
+  unconnected_A94_NA, // OUTPUT NA
+  ROM_A1_OUT, // OUTPUT PA
+  unconnected_A94_NB, // OUTPUT NB
+  ROM_A2_OUT, // OUTPUT PB
+  unconnected_A94_NC, // OUTPUT NC
+  ROM_A3_OUT, // OUTPUT PC
+  unconnected_A94_ND, // OUTPUT ND
+  ROM_A4_OUT, // OUTPUT PD
+);
+
+
+// ROM data is readt in cycle 3
+cell_LT4 D108 ( // 4-bit Data Latch
+  cycle_3, // INPUT G
+  ROM_D4_IN, // INPUT DA
+  ROM_D5_IN, // INPUT DB
+  ROM_D6_IN, // INPUT DC
+  ROM_D7_IN, // INPUT DD
+  unconnected_D108_NA, // OUTPUT NA
+  rom_d4_cycle3, // OUTPUT PA
+  rom_d5_cycle3, // OUTPUT NB
+  unconnected_D108_PB, // OUTPUT PB
+  rom_d6_cycle3, // OUTPUT NC
+  unconnected_D108_PC, // OUTPUT PC
+  rom_d7_cycle3, // OUTPUT ND
+  unconnected_D108_PD, // OUTPUT PD
+);
+cell_LT4 E108 ( // 4-bit Data Latch
+  cycle_3, // INPUT G
+  ROM_D0_IN, // INPUT DA
+  ROM_D1_IN, // INPUT DB
+  ROM_D2_IN, // INPUT DC
+  ROM_D3_IN, // INPUT DD
+  unconnected_E108_NA, // OUTPUT NA
+  rom_d0_cycle3, // OUTPUT PA
+  unconnected_E108_NB, // OUTPUT NB
+  rom_d1_cycle3, // OUTPUT PB
+  unconnected_E108_NC, // OUTPUT NC
+  rom_d2_cycle3, // OUTPUT PC
+  unconnected_E108_ND, // OUTPUT ND
+  rom_d3_cycle3, // OUTPUT PD
+);
+
+// ROM data is readt again in cycle 5 (lower 5 bits)
+cell_LT4 E90 ( // 4-bit Data Latch
+  cycle_5, // INPUT G
+  ROM_D0_IN, // INPUT DA
+  ROM_D1_IN, // INPUT DB
+  ROM_D2_IN, // INPUT DC
+  ROM_D3_IN, // INPUT DD
+  rom_d0_cycle5, // OUTPUT NA
+  unconnected_E90_PA, // OUTPUT PA
+  rom_d1_cycle5, // OUTPUT NB
+  unconnected_E90_PB, // OUTPUT PB
+  rom_d2_cycle5, // OUTPUT NC
+  unconnected_E90_PC, // OUTPUT PC
+  rom_d3_cycle5, // OUTPUT ND
+  unconnected_E90_PD, // OUTPUT PD
+);
+cell_LT2 E103 ( // 1-bit Data Latch
+  cycle_5, // INPUT G
+  ROM_D4_IN, // INPUT D
+  unconnected_E103_Q, // OUTPUT Q
+  rom_d4_cycle5, // OUTPUT XQ
+);
+
+
+// =============================================================================
+// TODO
+
+cell_LT4 A61 ( // 4-bit Data Latch
+  path902, // INPUT G
+  BUS4_IN, // INPUT DA
+  BUS5_IN, // INPUT DB
+  BUS6_IN, // INPUT DC
+  BUS7_IN, // INPUT DD
+  unconnected_A61_NA, // OUTPUT NA
+  path803, // OUTPUT PA
+  unconnected_A61_NB, // OUTPUT NB
+  path230, // OUTPUT PB
+  unconnected_A61_NC, // OUTPUT NC
+  path821, // OUTPUT PC
+  unconnected_A61_ND, // OUTPUT ND
+  path229, // OUTPUT PD
+);
+
+cell_LT4 M61 ( // 4-bit Data Latch
+  cycle_7, // INPUT G
+  adder1_and_o16_0, // INPUT DA
+  adder1_and_o17_1, // INPUT DB
+  adder1_and_o18_2, // INPUT DC
+  adder1_and_o19_3, // INPUT DD
+  unconnected_M61_NA, // OUTPUT NA
+  path80, // OUTPUT PA
+  unconnected_M61_NB, // OUTPUT NB
+  path79, // OUTPUT PB
+  unconnected_M61_NC, // OUTPUT NC
+  path953, // OUTPUT PC
+  unconnected_M61_ND, // OUTPUT ND
+  path913, // OUTPUT PD
+);
+
 cell_LT4 Q20 ( // 4-bit Data Latch
-  g494, // INPUT G
-  g56, // INPUT DA
-  g854, // INPUT DB
-  g467, // INPUT DC
-  g753, // INPUT DD
+  cycle_7, // INPUT G
+  adder1_and_o12, // INPUT DA
+  adder1_and_o13, // INPUT DB
+  adder1_and_o14, // INPUT DC
+  adder1_and_o15, // INPUT DD
   unconnected_Q20_NA, // OUTPUT NA
   path54, // OUTPUT PA
   unconnected_Q20_NB, // OUTPUT NB
@@ -248,11 +420,11 @@ cell_LT4 Q20 ( // 4-bit Data Latch
 );
 
 cell_LT4 Q38 ( // 4-bit Data Latch
-  g494, // INPUT G
-  g751, // INPUT DA
+  cycle_7, // INPUT G
+  adder1_and_8, // INPUT DA
   g195, // INPUT DB
-  g856, // INPUT DC
-  g970, // INPUT DD
+  adder1_and_o10, // INPUT DC
+  adder1_and_o11, // INPUT DD
   unconnected_Q38_NA, // OUTPUT NA
   path196, // OUTPUT PA
   unconnected_Q38_NB, // OUTPUT NB
@@ -296,75 +468,27 @@ cell_LT4 B74 ( // 4-bit Data Latch
 );
 
 cell_LT4 B87 ( // 4-bit Data Latch
-  g451, // INPUT G
+  cycle_3_xor, // INPUT G
   BUS0_IN, // INPUT DA
   BUS1_IN, // INPUT DB
   BUS2_IN, // INPUT DC
   BUS3_IN, // INPUT DD
   unconnected_B87_NA, // OUTPUT NA
-  g540, // OUTPUT PA
+  bus0_cycle3_xor, // OUTPUT PA
   unconnected_B87_NB, // OUTPUT NB
-  g1049, // OUTPUT PB
+  bus1_cycle3_xor, // OUTPUT PB
   unconnected_B87_NC, // OUTPUT NC
-  g8, // OUTPUT PC
+  bus2_cycle3_xor, // OUTPUT PC
   unconnected_B87_ND, // OUTPUT ND
-  path576, // OUTPUT PD
-);
-
-cell_LT4 D108 ( // 4-bit Data Latch
-  g215, // INPUT G
-  ROM_D4_IN, // INPUT DA
-  ROM_D5_IN, // INPUT DB
-  ROM_D6_IN, // INPUT DC
-  ROM_D7_IN, // INPUT DD
-  unconnected_D108_NA, // OUTPUT NA
-  path60, // OUTPUT PA
-  path305, // OUTPUT NB
-  unconnected_D108_PB, // OUTPUT PB
-  path304, // OUTPUT NC
-  unconnected_D108_PC, // OUTPUT PC
-  path871, // OUTPUT ND
-  unconnected_D108_PD, // OUTPUT PD
-);
-
-cell_LT4 E108 ( // 4-bit Data Latch
-  g215, // INPUT G
-  ROM_D0_IN, // INPUT DA
-  ROM_D1_IN, // INPUT DB
-  ROM_D2_IN, // INPUT DC
-  ROM_D3_IN, // INPUT DD
-  unconnected_E108_NA, // OUTPUT NA
-  path867, // OUTPUT PA
-  unconnected_E108_NB, // OUTPUT NB
-  path277, // OUTPUT PB
-  unconnected_E108_NC, // OUTPUT NC
-  path276, // OUTPUT PC
-  unconnected_E108_ND, // OUTPUT ND
-  path278, // OUTPUT PD
-);
-
-cell_LT4 E90 ( // 4-bit Data Latch
-  g617, // INPUT G
-  ROM_D0_IN, // INPUT DA
-  ROM_D1_IN, // INPUT DB
-  ROM_D2_IN, // INPUT DC
-  ROM_D3_IN, // INPUT DD
-  path843, // OUTPUT NA
-  unconnected_E90_PA, // OUTPUT PA
-  path619, // OUTPUT NB
-  unconnected_E90_PB, // OUTPUT PB
-  path620, // OUTPUT NC
-  unconnected_E90_PC, // OUTPUT PC
-  path628, // OUTPUT ND
-  unconnected_E90_PD, // OUTPUT PD
+  bus3_cycle3_xor, // OUTPUT PD
 );
 
 cell_LT4 F20 ( // 4-bit Data Latch
   g131, // INPUT G
-  g93, // INPUT DA
+  ~RAM_D0_IN, // INPUT DA
   RAM_D1_IN, // INPUT DB
   RAM_D2_IN, // INPUT DC
-  g88, // INPUT DD
+  ~RAM_D3_IN, // INPUT DD
   unconnected_F20_NA, // OUTPUT NA
   path997, // OUTPUT PA
   unconnected_F20_NB, // OUTPUT NB
@@ -375,44 +499,12 @@ cell_LT4 F20 ( // 4-bit Data Latch
   path86, // OUTPUT PD
 );
 
-cell_LT4 F4 ( // 4-bit Data Latch
-  path710, // INPUT G
-  g93, // INPUT DA
-  RAM_D1_IN, // INPUT DB
-  RAM_D2_IN, // INPUT DC
-  g88, // INPUT DD
-  unconnected_F4_NA, // OUTPUT NA
-  path177, // OUTPUT PA
-  unconnected_F4_NB, // OUTPUT NB
-  path965, // OUTPUT PB
-  unconnected_F4_NC, // OUTPUT NC
-  path966, // OUTPUT PC
-  unconnected_F4_ND, // OUTPUT ND
-  path89, // OUTPUT PD
-);
-
-cell_LT4 F36 ( // 4-bit Data Latch
-  path709, // INPUT G
-  g93, // INPUT DA
-  RAM_D1_IN, // INPUT DB
-  RAM_D2_IN, // INPUT DC
-  g88, // INPUT DD
-  unconnected_F36_NA, // OUTPUT NA
-  path94, // OUTPUT PA
-  unconnected_F36_NB, // OUTPUT NB
-  path798, // OUTPUT PB
-  unconnected_F36_NC, // OUTPUT NC
-  path799, // OUTPUT PC
-  unconnected_F36_ND, // OUTPUT ND
-  path392, // OUTPUT PD
-);
-
 cell_LT4 G18 ( // 4-bit Data Latch
-  g494, // INPUT G
-  path640, // INPUT DA
-  g642, // INPUT DB
-  g663, // INPUT DC
-  g336, // INPUT DD
+  cycle_7, // INPUT G
+  adder1_and_o20_4, // INPUT DA
+  adder1_and_o21_5, // INPUT DB
+  adder1_and_o22_6, // INPUT DC
+  adder1_and_o23_7, // INPUT DD
   unconnected_G18_NA, // OUTPUT NA
   path141, // OUTPUT PA
   unconnected_G18_NB, // OUTPUT NB
@@ -425,7 +517,7 @@ cell_LT4 G18 ( // 4-bit Data Latch
 
 cell_LT4 H20 ( // 4-bit Data Latch
   g131, // INPUT G
-  g1000, // INPUT DA
+  ~RAM_D4_IN, // INPUT DA
   RAM_D5_IN, // INPUT DB
   RAM_D6_IN, // INPUT DC
   RAM_D7_IN, // INPUT DD
@@ -439,25 +531,9 @@ cell_LT4 H20 ( // 4-bit Data Latch
   path149, // OUTPUT PD
 );
 
-cell_LT4 H3 ( // 4-bit Data Latch
-  path710, // INPUT G
-  g1000, // INPUT DA
-  RAM_D5_IN, // INPUT DB
-  RAM_D6_IN, // INPUT DC
-  RAM_D7_IN, // INPUT DD
-  unconnected_H3_NA, // OUTPUT NA
-  path996, // OUTPUT PA
-  unconnected_H3_NB, // OUTPUT NB
-  path505, // OUTPUT PB
-  unconnected_H3_NC, // OUTPUT NC
-  path506, // OUTPUT PC
-  unconnected_H3_ND, // OUTPUT ND
-  path90, // OUTPUT PD
-);
-
 cell_LT4 H34 ( // 4-bit Data Latch
   path709, // INPUT G
-  g1000, // INPUT DA
+  ~RAM_D4_IN, // INPUT DA
   RAM_D5_IN, // INPUT DB
   RAM_D6_IN, // INPUT DC
   RAM_D7_IN, // INPUT DD
@@ -471,84 +547,20 @@ cell_LT4 H34 ( // 4-bit Data Latch
   path33, // OUTPUT PD
 );
 
-cell_DE3 T61 ( // 3:8 Decoder
-  path185, // INPUT B
-  path186, // INPUT A
-  path194, // INPUT C
-  g160, // OUTPUT X0
-  g162, // OUTPUT X1
-  g188, // OUTPUT X2
-  g193, // OUTPUT X3
-  g330, // OUTPUT X4
-  g191, // OUTPUT X5
-  g328, // OUTPUT X6
-  g100, // OUTPUT X7
-);
-
-cell_DE3 V91 ( // 3:8 Decoder
-  WR_A12_OUT, // INPUT B
-  WR_A11_OUT, // INPUT A
-  WR_A13_OUT, // INPUT C
-  path567, // OUTPUT X0
-  path568, // OUTPUT X1
-  path569, // OUTPUT X2
-  path570, // OUTPUT X3
-  path571, // OUTPUT X4
-  unconnected_V91_X5, // OUTPUT X5
-  unconnected_V91_X6, // OUTPUT X6
-  unconnected_V91_X7, // OUTPUT X7
-);
-
-cell_FDQ M93 ( // 4-bit DFF
-  g563, // INPUT CK
-  g912, // INPUT DA
-  g952, // INPUT DB
-  g950, // INPUT DC
-  g910, // INPUT DD
-  path123, // OUTPUT QA
-  path272, // OUTPUT QB
-  path275, // OUTPUT QC
-  path273, // OUTPUT QD
-);
-
 cell_FDQ O4 ( // 4-bit DFF
-  g563, // INPUT CK
-  path916, // INPUT DA
-  path917, // INPUT DB
-  path760, // INPUT DC
-  path687, // INPUT DD
+  cycle_odd, // INPUT CK
+  adder1_and_3, // INPUT DA
+  adder1_and_2, // INPUT DB
+  adder1_and_1, // INPUT DC
+  adder1_and_0, // INPUT DD
   g915, // OUTPUT QA
   g558, // OUTPUT QB
   g738, // OUTPUT QC
   g658, // OUTPUT QD
 );
 
-cell_FDQ R40 ( // 4-bit DFF
-  g563, // INPUT CK
-  g970, // INPUT DA
-  g856, // INPUT DB
-  path973, // INPUT DC
-  g751, // INPUT DD
-  path977, // OUTPUT QA
-  path971, // OUTPUT QB
-  path974, // OUTPUT QC
-  path749, // OUTPUT QD
-);
-
-cell_FDQ T1 ( // 4-bit DFF
-  g563, // INPUT CK
-  g753, // INPUT DA
-  g467, // INPUT DB
-  g854, // INPUT DC
-  g56, // INPUT DD
-  path754, // OUTPUT QA
-  path465, // OUTPUT QB
-  path852, // OUTPUT QC
-  path533, // OUTPUT QD
-);
-
 cell_FDQ T40 ( // 4-bit DFF
-  g502, // INPUT CK
+  ~cycle_15, // INPUT CK
   path482, // INPUT DA
   path548, // INPUT DB
   path102, // INPUT DC
@@ -560,7 +572,7 @@ cell_FDQ T40 ( // 4-bit DFF
 );
 
 cell_FDQ B100 ( // 4-bit DFF
-  g579, // INPUT CK
+  ~cycle_7, // INPUT CK
   path803, // INPUT DA
   path230, // INPUT DB
   path821, // INPUT DC
@@ -572,7 +584,7 @@ cell_FDQ B100 ( // 4-bit DFF
 );
 
 cell_FDQ V32 ( // 4-bit DFF
-  g502, // INPUT CK
+  ~cycle_15, // INPUT CK
   g526, // INPUT DA
   g530, // INPUT DB
   g535, // INPUT DC
@@ -583,20 +595,8 @@ cell_FDQ V32 ( // 4-bit DFF
   path452, // OUTPUT QD
 );
 
-cell_FDQ V61 ( // 4-bit DFF
-  g579, // INPUT CK
-  g540, // INPUT DA
-  g1049, // INPUT DB
-  g8, // INPUT DC
-  path576, // INPUT DD
-  WR_A11_OUT, // OUTPUT QA
-  WR_A12_OUT, // OUTPUT QB
-  WR_A13_OUT, // OUTPUT QC
-  WR_A14_OUT, // OUTPUT QD
-);
-
 cell_FDQ C67 ( // 4-bit DFF
-  g579, // INPUT CK
+  ~cycle_7, // INPUT CK
   path883, // INPUT DA
   path391, // INPUT DB
   path339, // INPUT DC
@@ -608,7 +608,7 @@ cell_FDQ C67 ( // 4-bit DFF
 );
 
 cell_FDQ C100 ( // 4-bit DFF
-  g579, // INPUT CK
+  ~cycle_7, // INPUT CK
   path223, // INPUT DA
   path224, // INPUT DB
   path804, // INPUT DC
@@ -620,11 +620,11 @@ cell_FDQ C100 ( // 4-bit DFF
 );
 
 cell_FDQ D61 ( // 4-bit DFF
-  g579, // INPUT CK
-  path867, // INPUT DA
-  path277, // INPUT DB
-  path276, // INPUT DC
-  path278, // INPUT DD
+  ~cycle_7, // INPUT CK
+  rom_d0_cycle3, // INPUT DA
+  rom_d1_cycle3, // INPUT DB
+  rom_d2_cycle3, // INPUT DC
+  rom_d3_cycle3, // INPUT DD
   g866, // OUTPUT QA
   g864, // OUTPUT QB
   g606, // OUTPUT QC
@@ -632,11 +632,11 @@ cell_FDQ D61 ( // 4-bit DFF
 );
 
 cell_FDQ D87 ( // 4-bit DFF
-  g579, // INPUT CK
-  path60, // INPUT DA
-  path305, // INPUT DB
-  path304, // INPUT DC
-  path871, // INPUT DD
+  ~cycle_7, // INPUT CK
+  rom_d4_cycle3, // INPUT DA
+  rom_d5_cycle3, // INPUT DB
+  rom_d6_cycle3, // INPUT DC
+  rom_d7_cycle3, // INPUT DD
   g66, // OUTPUT QA
   path802, // OUTPUT QB
   path303, // OUTPUT QC
@@ -644,11 +644,11 @@ cell_FDQ D87 ( // 4-bit DFF
 );
 
 cell_FDQ E61 ( // 4-bit DFF
-  g579, // INPUT CK
-  path843, // INPUT DA
-  path619, // INPUT DB
-  path620, // INPUT DC
-  path628, // INPUT DD
+  ~cycle_7, // INPUT CK
+  rom_d0_cycle5, // INPUT DA
+  rom_d1_cycle5, // INPUT DB
+  rom_d2_cycle5, // INPUT DC
+  rom_d3_cycle5, // INPUT DD
   path842, // OUTPUT QA
   path618, // OUTPUT QB
   path621, // OUTPUT QC
@@ -656,11 +656,11 @@ cell_FDQ E61 ( // 4-bit DFF
 );
 
 cell_FDQ G38 ( // 4-bit DFF
-  g563, // INPUT CK
-  g336, // INPUT DA
-  g663, // INPUT DB
-  g642, // INPUT DC
-  path640, // INPUT DD
+  cycle_odd, // INPUT CK
+  adder1_and_o23_7, // INPUT DA
+  adder1_and_o22_6, // INPUT DB
+  adder1_and_o21_5, // INPUT DC
+  adder1_and_o20_4, // INPUT DD
   path148, // OUTPUT QA
   path962, // OUTPUT QB
   path360, // OUTPUT QC
@@ -668,31 +668,15 @@ cell_FDQ G38 ( // 4-bit DFF
 );
 
 cell_FDQ J40 ( // 4-bit DFF
-  g563, // INPUT CK
-  path409, // INPUT DA
-  path208, // INPUT DB
-  path553, // INPUT DC
-  path171, // INPUT DD
+  cycle_odd, // INPUT CK
+  adder1_and_7, // INPUT DA
+  adder1_and_6, // INPUT DB
+  adder1_and_5, // INPUT DC
+  adder1_and_4, // INPUT DD
   g411, // OUTPUT QA
   g268, // OUTPUT QB
   g413, // OUTPUT QC
   path170, // OUTPUT QD
-);
-
-cell_R4N V53 ( // 4-input NOR
-  WR_A16_OUT, // INPUT A1
-  WR_A15_OUT, // INPUT A2
-  WR_A14_OUT, // INPUT A3
-  path547, // INPUT A4
-  path440, // OUTPUT X
-);
-
-cell_R4N J61 ( // 4-input NOR
-  path31, // INPUT A1
-  path668, // INPUT A2
-  g35, // INPUT A3
-  path146, // INPUT A4
-  path669, // OUTPUT X
 );
 
 cell_C45 P13 ( // 4-bit Binary Synchronous Up Counter
@@ -702,7 +686,7 @@ cell_C45 P13 ( // 4-bit Binary Synchronous Up Counter
   FSYNC_IN, // INPUT CL
   VCC, // INPUT DB
   VCC, // INPUT L
-  path175, // INPUT CK
+  cycle_between, // INPUT CK
   g1031, // INPUT DC
   VCC, // INPUT DD
   RAM_A0_OUT, // OUTPUT QA
@@ -712,31 +696,14 @@ cell_C45 P13 ( // 4-bit Binary Synchronous Up Counter
   RAM_OE_OUT, // OUTPUT QD
 );
 
-cell_C45 R61 ( // 4-bit Binary Synchronous Up Counter
-  GND, // INPUT DA
-  VCC, // INPUT EN
-  g1049, // INPUT CI
-  FSYNC_IN, // INPUT CL
-  GND, // INPUT DB
-  VCC, // INPUT L
-  SYNC_IN, // INPUT CK
-  GND, // INPUT DC
-  GND, // INPUT DD
-  path186, // OUTPUT QA
-  path185, // OUTPUT QB
-  unconnected_R61_CO, // OUTPUT CO
-  path194, // OUTPUT QC
-  path220, // OUTPUT QD
-);
-
 cell_C45 S66 ( // 4-bit Binary Synchronous Up Counter
   VCC, // INPUT DA
   VCC, // INPUT EN
   path323, // INPUT CI
   FSYNC_IN, // INPUT CL
-  g592, // INPUT DB
-  g592, // INPUT L
-  path175, // INPUT CK
+  cycle_9, // INPUT DB
+  cycle_9, // INPUT L
+  cycle_between, // INPUT CK
   GND, // INPUT DC
   GND, // INPUT DD
   path482, // OUTPUT QA
@@ -750,10 +717,10 @@ cell_C45 U73 ( // 4-bit Binary Synchronous Up Counter
   GND, // INPUT DA
   g1044, // INPUT EN
   g1044, // INPUT CI
-  path608, // INPUT CL
+  rom_d4_cycle38, // INPUT CL
   GND, // INPUT DB
   VCC, // INPUT L
-  path175, // INPUT CK
+  cycle_between, // INPUT CK
   GND, // INPUT DC
   GND, // INPUT DD
   g526, // OUTPUT QA
@@ -764,14 +731,14 @@ cell_C45 U73 ( // 4-bit Binary Synchronous Up Counter
 );
 
 cell_LT2 A89 ( // 1-bit Data Latch
-  g451, // INPUT G
+  cycle_3_xor, // INPUT G
   BUS4_IN, // INPUT D
   path495, // OUTPUT Q
   unconnected_A89_XQ, // OUTPUT XQ
 );
 
 cell_LT2 C63 ( // 1-bit Data Latch
-  g451, // INPUT G
+  cycle_3_xor, // INPUT G
   BUS5_IN, // INPUT D
   path449, // OUTPUT Q
   unconnected_C63_XQ, // OUTPUT XQ
@@ -784,13 +751,8 @@ cell_LT2 C91 ( // 1-bit Data Latch
   unconnected_C91_XQ, // OUTPUT XQ
 );
 
-cell_LT2 E103 ( // 1-bit Data Latch
-  g617, // INPUT G
-  ROM_D4_IN, // INPUT D
-  unconnected_E103_Q, // OUTPUT Q
-  path878, // OUTPUT XQ
-);
 
+// Adder 1 (24 bit)
 cell_A4H N11 ( // 4-bit Full Adder
   path932, // INPUT A4
   path931, // INPUT B4
@@ -802,97 +764,11 @@ cell_A4H N11 ( // 4-bit Full Adder
   path758, // INPUT B1
   GND, // INPUT CI
   path656, // OUTPUT CO
-  path167, // OUTPUT S4
-  path686, // OUTPUT S3
-  path166, // OUTPUT S2
-  path759, // OUTPUT S1
+  adder1_o3, // OUTPUT S4
+  adder1_o2, // OUTPUT S3
+  adder1_o1, // OUTPUT S2
+  adder1_o0, // OUTPUT S1
 );
-
-cell_A4H P68 ( // 4-bit Full Adder
-  GND, // INPUT A4
-  WR_A10_OUT, // INPUT B4
-  g75, // INPUT A3
-  path573, // INPUT B3
-  path942, // INPUT A2
-  path418, // INPUT B2
-  path214, // INPUT A1
-  WR_A7_OUT, // INPUT B1
-  path574, // INPUT CI
-  path138, // OUTPUT CO
-  g947, // OUTPUT S4
-  path221, // OUTPUT S3
-  path943, // OUTPUT S2
-  path575, // OUTPUT S1
-);
-
-cell_A4H S3 ( // 4-bit Full Adder
-  path688, // INPUT A4
-  WR_A2_OUT, // INPUT B4
-  g1028, // INPUT A3
-  path549, // INPUT B3
-  path207, // INPUT A2
-  WR_A0_OUT, // INPUT B2
-  path857, // INPUT A1
-  g691, // INPUT B1
-  g1031, // INPUT CI
-  path181, // OUTPUT CO
-  path550, // OUTPUT S4
-  path972, // OUTPUT S3
-  path978, // OUTPUT S2
-  path468, // OUTPUT S1
-);
-
-cell_A4H U1 ( // 4-bit Full Adder
-  path580, // INPUT A4
-  WR_A6_OUT, // INPUT B4
-  path582, // INPUT A3
-  path463, // INPUT B3
-  path594, // INPUT A2
-  WR_A4_OUT, // INPUT B2
-  path850, // INPUT A1
-  path531, // INPUT B1
-  path181, // INPUT CI
-  path574, // OUTPUT CO
-  path581, // OUTPUT S4
-  path2, // OUTPUT S3
-  path593, // OUTPUT S2
-  path182, // OUTPUT S1
-);
-
-cell_A4H F71 ( // 4-bit Full Adder
-  g782, // INPUT A4
-  path783, // INPUT B4
-  g667, // INPUT A3
-  path389, // INPUT B3
-  path881, // INPUT A2
-  path390, // INPUT B2
-  path807, // INPUT A1
-  path882, // INPUT B1
-  path654, // INPUT CI
-  g137, // OUTPUT CO
-  path879, // OUTPUT S4
-  path801, // OUTPUT S3
-  path880, // OUTPUT S2
-  path653, // OUTPUT S1
-);
-
-cell_A4H H69 ( // 4-bit Full Adder
-  GND, // INPUT A4
-  path31, // INPUT B4
-  GND, // INPUT A3
-  path668, // INPUT B3
-  GND, // INPUT A2
-  g35, // INPUT B2
-  GND, // INPUT A1
-  path146, // INPUT B1
-  path138, // INPUT CI
-  unconnected_H69_CO, // OUTPUT CO
-  g782, // OUTPUT S4
-  g667, // OUTPUT S3
-  path881, // OUTPUT S2
-  path807, // OUTPUT S1
-);
-
 cell_A4H I7 ( // 4-bit Full Adder
   path583, // INPUT A4
   path584, // INPUT B4
@@ -904,90 +780,148 @@ cell_A4H I7 ( // 4-bit Full Adder
   path655, // INPUT B1
   path656, // INPUT CI
   g1031, // OUTPUT CO
-  path414, // OUTPUT S4
-  path269, // OUTPUT S3
-  path266, // OUTPUT S2
-  path46, // OUTPUT S1
+  adder1_o7, // OUTPUT S4
+  adder1_o6, // OUTPUT S3
+  adder1_o5, // OUTPUT S2
+  adder1_o4, // OUTPUT S1
+);
+cell_A4H S3 ( // 4-bit Full Adder
+  path688, // INPUT A4
+  WR_A2_OUT, // INPUT B4
+  g1028, // INPUT A3
+  path549, // INPUT B3
+  path207, // INPUT A2
+  WR_A0_OUT, // INPUT B2
+  path857, // INPUT A1
+  g691, // INPUT B1
+  g1031, // INPUT CI
+  path181, // OUTPUT CO
+  adder1_o11, // OUTPUT S4
+  adder1_o10, // OUTPUT S3
+  adder1_o9, // OUTPUT S2
+  adder1_o8, // OUTPUT S1
+);
+cell_A4H U1 ( // 4-bit Full Adder
+  path580, // INPUT A4
+  WR_A6_OUT, // INPUT B4
+  path582, // INPUT A3
+  path463, // INPUT B3
+  path594, // INPUT A2
+  WR_A4_OUT, // INPUT B2
+  path850, // INPUT A1
+  path531, // INPUT B1
+  path181, // INPUT CI
+  path574, // OUTPUT CO
+  adder1_o15, // OUTPUT S4
+  adder1_o14, // OUTPUT S3
+  adder1_o13, // OUTPUT S2
+  adder1_o12, // OUTPUT S1
+);
+cell_A4H P68 ( // 4-bit Full Adder
+  GND, // INPUT A4
+  WR_A10_OUT, // INPUT B4
+  g75, // INPUT A3
+  path573, // INPUT B3
+  path942, // INPUT A2
+  path418, // INPUT B2
+  path214, // INPUT A1
+  WR_A7_OUT, // INPUT B1
+  path574, // INPUT CI
+  path138, // OUTPUT CO
+  adder1_o19, // OUTPUT S4
+  adder1_o18, // OUTPUT S3
+  adder1_o17, // OUTPUT S2
+  adder1_o16, // OUTPUT S1
+);
+cell_A4H H69 ( // 4-bit Full Adder
+  GND, // INPUT A4
+  path31, // INPUT B4
+  GND, // INPUT A3
+  path668, // INPUT B3
+  GND, // INPUT A2
+  g35, // INPUT B2
+  GND, // INPUT A1
+  path146, // INPUT B1
+  path138, // INPUT CI
+  unconnected_H69_CO, // OUTPUT CO
+  adder1_o23, // OUTPUT S4
+  adder1_o22, // OUTPUT S3
+  adder1_o21, // OUTPUT S2
+  adder1_o20, // OUTPUT S1
 );
 
+
+// Adder 2 (8 bit)
 cell_A4H I61 ( // 4-bit Full Adder
-  g947, // INPUT A4
+  adder1_o19, // INPUT A4
   path337, // INPUT B4
-  path221, // INPUT A3
+  adder1_o18, // INPUT A3
   path59, // INPUT B3
-  path943, // INPUT A2
+  adder1_o17, // INPUT A2
   path225, // INPUT B2
-  path575, // INPUT A1
+  adder1_o16, // INPUT A1
   path226, // INPUT B1
   VCC, // INPUT CI
   path654, // OUTPUT CO
-  path30, // OUTPUT S4
-  path58, // OUTPUT S3
-  path944, // OUTPUT S2
-  path36, // OUTPUT S1
+  adder2_o3, // OUTPUT S4
+  adder2_o2, // OUTPUT S3
+  adder2_o1, // OUTPUT S2
+  adder2_o0, // OUTPUT S1
+);
+cell_A4H F71 ( // 4-bit Full Adder
+  adder1_o23, // INPUT A4
+  path783, // INPUT B4
+  adder1_o22, // INPUT A3
+  path389, // INPUT B3
+  adder1_o21, // INPUT A2
+  path390, // INPUT B2
+  adder1_o20, // INPUT A1
+  path882, // INPUT B1
+  path654, // INPUT CI
+  g137, // OUTPUT CO
+  adder2_o7, // OUTPUT S4
+  adder2_o6, // OUTPUT S3
+  adder2_o5, // OUTPUT S2
+  adder2_o4, // OUTPUT S1
 );
 
+
 cell_FDM K84 ( // DFF
-  g494, // INPUT CK
-  path878, // INPUT D
+  cycle_7, // INPUT CK
+  rom_d4_cycle5, // INPUT D
   unconnected_K84_XQ, // OUTPUT XQ
   path795, // OUTPUT Q
 );
 
 cell_FDM L91 ( // DFF
-  g494, // INPUT CK
+  cycle_7, // INPUT CK
   path44, // INPUT D
   path408, // OUTPUT XQ
   unconnected_L91_Q, // OUTPUT Q
 );
 
-cell_FDM V16 ( // DFF
-  g494, // INPUT CK
-  path495, // INPUT D
-  unconnected_V16_XQ, // OUTPUT XQ
-  WR_A15_OUT, // OUTPUT Q
-);
-
-cell_FDM V22 ( // DFF
-  g494, // INPUT CK
-  path449, // INPUT D
-  unconnected_V22_XQ, // OUTPUT XQ
-  WR_A16_OUT, // OUTPUT Q
-);
-
-cell_FDN N64 ( // DFF with Set
-  g494, // INPUT CK
-  g115, // INPUT D
-  g164, // INPUT S
-  path117, // OUTPUT Q
-  path118, // OUTPUT XQ
+cell_DE3 V91 ( // 3:8 Decoder
+  WR_A12_OUT, // INPUT B
+  WR_A11_OUT, // INPUT A
+  WR_A13_OUT, // INPUT C
+  wave_addr_upper_dec_0, // OUTPUT X0
+  wave_addr_upper_dec_1, // OUTPUT X1
+  wave_addr_upper_dec_2, // OUTPUT X2
+  wave_addr_upper_dec_3, // OUTPUT X3
+  wave_addr_upper_dec_4, // OUTPUT X4
+  unconnected_V91_X5, // OUTPUT X5
+  unconnected_V91_X6, // OUTPUT X6
+  unconnected_V91_X7, // OUTPUT X7
 );
 
 cell_FDN Q77 ( // DFF with Set
   path544, // INPUT CK
-  g115, // INPUT D
+  RAM_OE_OUT, // INPUT D
   FSYNC_IN, // INPUT S
   path545, // OUTPUT Q
   path546, // OUTPUT XQ
 );
 
-cell_FDO N109 ( // DFF with Reset
-  XTAL_IN, // INPUT CK
-  path631, // INPUT D
-  UNK34_IN, // INPUT R
-  SYNCO_OUT, // OUTPUT Q
-  path631, // OUTPUT XQ
-);
-
-cell_FDO N83 ( // DFF with Reset
-  g592, // INPUT CK
-  g115, // INPUT D
-  path173, // INPUT R
-  path919, // OUTPUT Q
-  path920, // OUTPUT XQ
-);
-
-assign RAM_A10_OUT = ~(~(path57 && ~path546) && ~(path184 && ~path545));
 assign RAM_A3_OUT = ~(~(g526 && ~path546) && ~(path527 && ~path545));
 assign RAM_A4_OUT = ~(~(g530 && ~path546) && ~(path499 && ~path545));
 assign RAM_A5_OUT = ~(~(g535 && ~path546) && ~(path500 && ~path545));
@@ -995,6 +929,8 @@ assign RAM_A6_OUT = ~(~(g488 && ~path546) && ~(path452 && ~path545));
 assign RAM_A7_OUT = ~(~(path482 && ~path546) && ~(path851 && ~path545));
 assign RAM_A8_OUT = ~(~(path548 && ~path546) && ~(path484 && ~path545));
 assign RAM_A9_OUT = ~(~(path102 && ~path546) && ~(path183 && ~path545));
+assign RAM_A10_OUT = ~(~(path57 && ~path546) && ~(path184 && ~path545));
+
 assign RAM_D_IOM = UNK34_IN && ~(~RAM_A2_ROM_A0_OUT && RAM_OE_OUT);
 assign RAM_D0_OUT = ~(g658 && ~RAM_A0_OUT && ~RAM_A1_OUT) && ~(path196 && RAM_A0_OUT && ~RAM_A1_OUT) && ~(path80 && ~RAM_A0_OUT && RAM_A1_OUT);
 assign RAM_D1_OUT = ~(~(g738 && ~RAM_A0_OUT && ~RAM_A1_OUT) && ~(path197 && RAM_A0_OUT && ~RAM_A1_OUT) && ~(path79 && ~RAM_A0_OUT && RAM_A1_OUT));
@@ -1004,107 +940,58 @@ assign RAM_D4_OUT = ~(path170 && ~RAM_A0_OUT && ~RAM_A1_OUT) && ~(path54 && RAM_
 assign RAM_D5_OUT = ~(~(g413 && ~RAM_A0_OUT && ~RAM_A1_OUT) && ~(path51 && RAM_A0_OUT && ~RAM_A1_OUT) && ~(path129 && ~RAM_A0_OUT && RAM_A1_OUT));
 assign RAM_D6_OUT = ~(~(g268 && ~RAM_A0_OUT && ~RAM_A1_OUT) && ~(path700 && RAM_A0_OUT && ~RAM_A1_OUT) && ~(path742 && ~RAM_A0_OUT && RAM_A1_OUT));
 assign RAM_D7_OUT = ~(~(g411 && ~RAM_A0_OUT && ~RAM_A1_OUT) && ~(path701 && RAM_A0_OUT && ~RAM_A1_OUT) && ~(path741 && ~RAM_A0_OUT && RAM_A1_OUT));
-assign RAM_WR_OUT = (g160 || SYNC_IN || ~path220) && (g162 || SYNC_IN || ~path220) && (g188 || SYNC_IN || ~path220) && (g330 || SYNC_IN || ~path220) && (g191 || SYNC_IN || ~path220) && (g328 || SYNC_IN || ~path220) && (g100 || SYNC_IN || ~path220) && VCC;
-assign WR_A0_OUT = ~(~(path974 && (path117 || path919)) && ~(path965 && path118 && path920));
-assign WR_A1_OUT = ~(path971 && (path117 || path919)) && ~(path966 && path118 && path920);
-assign WR_A10_OUT = ~(~(path123 && (path117 || path919)) && ~(path392 && path118 && path920));
-assign WR_A2_OUT = ~(~(path977 && (path117 || path919)) && ~(path89 && path118 && path920));
-assign WR_A3_OUT = ~(path533 && (path117 || path919)) && ~(path996 && path118 && path920);
-assign WR_A4_OUT = ~(~(path852 && (path117 || path919)) && ~(path505 && path118 && path920));
-assign WR_A5_OUT = ~(path465 && (path117 || path919)) && ~(path506 && path118 && path920);
-assign WR_A6_OUT = ~(~(path754 && (path117 || path919)) && ~(path90 && path118 && path920));
-assign WR_A7_OUT = ~(~(path273 && (path117 || path919)) && ~(path94 && path118 && path920));
-assign WR_A8_OUT = ~(path275 && (path117 || path919)) && ~(path798 && path118 && path920);
-assign WR_A9_OUT = ~(path272 && (path117 || path919)) && ~(path799 && path118 && path920);
-assign g1000 = ~RAM_D4_IN;
+assign RAM_WR_OUT = cycle_8 && cycle_9 && cycle_10 && cycle_12 && cycle_13 && cycle_14 && cycle_15 && VCC;
+
+assign g35 = ~(~(path360 && wave_ag_tmp_1) && ~(path706 && wave_ag_tmp_2));
+assign g691 = ~(~(path749 && wave_ag_tmp_1) && ~(path177 && wave_ag_tmp_2));
+assign g928 = ~(~(g413 && wave_ag_tmp_1) && ~(path998 && wave_ag_tmp_2));
+assign path139 = ~(~(g268 && wave_ag_tmp_1) && ~(path265 && wave_ag_tmp_2));
+assign path146 = ~(~(path145 && wave_ag_tmp_1) && ~(path708 && wave_ag_tmp_2));
+assign path165 = ~(~(g738 && wave_ag_tmp_1) && ~(path661 && wave_ag_tmp_2));
+assign path31 = ~(~(path148 && wave_ag_tmp_1) && ~(path33 && wave_ag_tmp_2));
+assign path418 = ~(~(wave_ag_a8_tmp1 && wave_ag_tmp_1) && ~(wave_ag_a8_tmp2 && wave_ag_tmp_2));
+assign path463 = ~(~(wave_ag_a5_tmp1 && wave_ag_tmp_1) && ~(wave_ag_a5_tmp2 && wave_ag_tmp_2));
+assign path531 = ~(~(wave_ag_a3_tmp1 && wave_ag_tmp_1) && ~(wave_ag_a3_tmp2 && wave_ag_tmp_2));
+assign path549 = ~(~(wave_ag_a1_tmp1 && wave_ag_tmp_1) && ~(wave_ag_a1_tmp2 && wave_ag_tmp_2));
+assign path573 = ~(~(wave_ag_a9_tmp1 && wave_ag_tmp_1) && ~(wave_ag_a9_tmp2 && wave_ag_tmp_2));
+assign path584 = ~(~(g411 && wave_ag_tmp_1) && ~(path149 && wave_ag_tmp_2));
+assign path655 = ~(~(path170 && wave_ag_tmp_1) && ~(path142 && wave_ag_tmp_2));
+assign path668 = ~(~(path962 && wave_ag_tmp_1) && ~(path959 && wave_ag_tmp_2));
+assign path685 = ~(~(g558 && wave_ag_tmp_1) && ~(path334 && wave_ag_tmp_2));
+assign path758 = ~(~(g658 && wave_ag_tmp_1) && ~(path997 && wave_ag_tmp_2));
+assign path931 = ~(~(g915 && wave_ag_tmp_1) && ~(path86 && wave_ag_tmp_2));
+
+assign path902 = ~(bus2_cycle3_xor ^ ~(VCC ^ cycle_0));
+assign g131 = ~(bus0_cycle3_xor ^ path902);
+assign cycle_3_xor = ~(~(cycle_3 ^ VCC) ^ VCC);
+assign path12 = ~(UNK_VCC? ^ ~(VCC ^ cycle_1));
+assign path231 = ~(bus0_cycle3_xor ^ ~(VCC ^ cycle_2));
+assign path544 = cycle_15 && cycle_7;
+assign path709 = ~(bus0_cycle3_xor ^ ~(bus0_cycle3_xor ^ ~(VCC ^ cycle_2)));
+assign path710 = ~(~path795 ^ ~(UNK_VCC? ^ ~(VCC ^ cycle_1)));
+assign path808 = ~(~(cycle_6 ^ VCC) ^ VCC);
+
 assign g1028 = ~(~((VCC && g377 && g995 && ~g820 && ~g364) || (~path795 && ~g377 && ~g995 && g820 && ~g364) || (~path627 && g377 && ~g995 && g820 && ~g364) || (~path621 && ~g377 && g995 && g820 && ~g364) || (~path618 && g377 && g995 && g820 && ~g364) || (~path842 && ~g377 && ~g995 && ~g820 && g364) || (~path227 && g377 && ~g995 && ~g820 && g364) || (~path303 && ~g377 && g995 && ~g820 && g364)) && ~(~path802 && g377 && g995 && ~g820 && g364));
-assign g1044 = path22 || ~UNK34_IN;
-assign g115 = RAM_OE_OUT;
-assign g131 = ~(g540 ^ ~(g8 ^ ~(VCC ^ (g160 || SYNC_IN || path220))));
-assign g164 = g330 || SYNC_IN || path220;
-assign g215 = g193 || SYNC_IN || path220;
-assign g336 = ~(~(g782 && g648) && ~(path879 && g137)) && ~path408;
-assign g35 = ~(~(path360 && (path117 || path919)) && ~(path706 && path118 && path920));
-assign g451 = ~(~((g193 || SYNC_IN || path220) ^ VCC) ^ VCC);
-assign g467 = path2 && ~path408;
-assign g494 = g100 || SYNC_IN || path220;
-assign g502 = ~(g100 || SYNC_IN || ~path220);
-assign g56 = path182 && ~path408;
-assign g563 = ~((g162 || SYNC_IN || path220) && (g193 || SYNC_IN || path220) && (g191 || SYNC_IN || path220) && (g100 || SYNC_IN || path220) && (g162 || SYNC_IN || ~path220) && (g193 || SYNC_IN || ~path220) && (g191 || SYNC_IN || ~path220) && (g100 || SYNC_IN || ~path220));
-assign g579 = ~(g100 || SYNC_IN || path220);
-assign g592 = g162 || SYNC_IN || ~path220;
-assign g617 = g191 || SYNC_IN || path220;
-assign g642 = ~(~(path881 && g648) && ~(path880 && g137)) && ~path408;
-assign g663 = ~(~(g667 && g648) && ~(path801 && g137)) && ~path408;
-assign g691 = ~(~(path749 && (path117 || path919)) && ~(path177 && path118 && path920));
-assign g75 = g377 && g995 && ~g820 && g364;
-assign g751 = path468 && ~path408;
-assign g753 = path581 && ~path408;
-assign g854 = path593 && ~path408;
-assign g856 = path972 && ~path408;
-assign g88 = ~RAM_D3_IN;
-assign g910 = ~(~(path575 && ~g137) && ~(path36 && g137)) && ~path408;
-assign g912 = ~(~(g947 && ~g137) && ~(path30 && g137)) && ~path408;
-assign g928 = ~(~(g413 && (path117 || path919)) && ~(path998 && path118 && path920));
-assign g93 = ~RAM_D0_IN;
-assign g950 = ~(~(path943 && ~g137) && ~(path944 && g137)) && ~path408;
-assign g952 = ~(~(path221 && g648) && ~(path58 && g137)) && ~path408;
-assign g970 = path550 && ~path408;
 assign path119 = (~path303 && ~g377 && ~g995 && ~g820 && ~g364) || (~path802 && g377 && ~g995 && ~g820 && ~g364) || (g66 && ~g377 && g995 && ~g820 && ~g364) || (g601 && g377 && g995 && ~g820 && ~g364) || (g606 && ~g377 && ~g995 && g820 && ~g364) || (g864 && g377 && ~g995 && g820 && ~g364) || (g866 && ~g377 && g995 && g820 && ~g364) || (g377 && ~g995 && ~g820 && g364 && g377 && g995 && g820 && ~g364);
-assign path12 = ~(UNK_VCC? ^ ~(VCC ^ (g162 || SYNC_IN || path220)));
-assign path139 = ~(~(g268 && (path117 || path919)) && ~(path265 && path118 && path920));
-assign path146 = ~(~(path145 && (path117 || path919)) && ~(path708 && path118 && path920));
-assign path165 = ~(~(g738 && (path117 || path919)) && ~(path661 && path118 && path920));
-assign path171 = path46 && ~path408;
-assign path173 = g328 || SYNC_IN || path220;
-assign path175 = ~(~((g160 || SYNC_IN || path220) && (g188 || SYNC_IN || path220) && (g330 || SYNC_IN || path220) && (g328 || SYNC_IN || path220) && (g160 || SYNC_IN || ~path220) && (g188 || SYNC_IN || ~path220) && (g330 || SYNC_IN || ~path220) && (g328 || SYNC_IN || ~path220)) || ~((g162 || SYNC_IN || path220) && (g193 || SYNC_IN || path220) && (g191 || SYNC_IN || path220) && (g100 || SYNC_IN || path220) && (g162 || SYNC_IN || ~path220) && (g193 || SYNC_IN || ~path220) && (g191 || SYNC_IN || ~path220) && (g100 || SYNC_IN || ~path220)));
 assign path207 = ~(~((VCC && ~g377 && g995 && ~g820 && ~g364) || (~path795 && g377 && g995 && ~g820 && ~g364) || (~path627 && ~g377 && ~g995 && g820 && ~g364) || (~path621 && g377 && ~g995 && g820 && ~g364) || (~path618 && ~g377 && g995 && g820 && ~g364) || (~path842 && g377 && g995 && g820 && ~g364) || (~path227 && ~g377 && ~g995 && ~g820 && g364) || (~path303 && g377 && ~g995 && ~g820 && g364)) && ~((~path802 && ~g377 && g995 && ~g820 && g364) || (g66 && g377 && g995 && ~g820 && g364)));
-assign path208 = path269 && ~path408;
 assign path209 = ~(~((~path627 && ~g377 && ~g995 && ~g820 && ~g364) || (~path621 && g377 && ~g995 && ~g820 && ~g364) || (~path618 && ~g377 && g995 && ~g820 && ~g364) || (~path842 && g377 && g995 && ~g820 && ~g364) || (~path227 && ~g377 && ~g995 && g820 && ~g364) || (~path303 && g377 && ~g995 && g820 && ~g364) || (~path802 && ~g377 && g995 && g820 && ~g364) || (g66 && g377 && g995 && g820 && ~g364)) && ~((g601 && ~g377 && ~g995 && ~g820 && g364) || (g606 && g377 && ~g995 && ~g820 && g364) || (g864 && ~g377 && g995 && ~g820 && g364) || (g866 && g377 && g995 && ~g820 && g364)));
 assign path214 = ~(~(g377 && ~g995 && ~g820 && g364) && ~(~path795 && ~g377 && g995 && ~g820 && g364) && ~(~path627 && g377 && g995 && ~g820 && g364));
-assign path219 = ~(~(GND && RAM_A0_OUT) && ~(GND && ~RAM_A0_OUT));
-assign path231 = ~(g540 ^ ~(VCC ^ (g188 || SYNC_IN || path220)));
 assign path264 = ~(~((~path795 && ~g377 && ~g995 && ~g820 && ~g364) || (~path627 && g377 && ~g995 && ~g820 && ~g364) || (~path621 && ~g377 && g995 && ~g820 && ~g364) || (~path618 && g377 && g995 && ~g820 && ~g364) || (~path842 && ~g377 && ~g995 && g820 && ~g364) || (~path227 && g377 && ~g995 && g820 && ~g364) || (~path303 && ~g377 && g995 && g820 && ~g364) || (~path802 && g377 && g995 && g820 && ~g364)) && ~((g66 && ~g377 && ~g995 && ~g820 && g364) || (g601 && g377 && ~g995 && ~g820 && g364) || (g606 && ~g377 && g995 && ~g820 && g364) || (g864 && g377 && g995 && ~g820 && g364)));
-assign path31 = ~(~(path148 && (path117 || path919)) && ~(path33 && path118 && path920));
-assign path323 = g488 && g526 && (path22 || ~UNK34_IN);
 assign path332 = (~path227 && ~g377 && ~g995 && ~g820 && ~g364) || (~path303 && g377 && ~g995 && ~g820 && ~g364) || (~path802 && ~g377 && g995 && ~g820 && ~g364) || (g66 && g377 && g995 && ~g820 && ~g364) || (g601 && ~g377 && ~g995 && g820 && ~g364) || (g606 && g377 && ~g995 && g820 && ~g364) || (g864 && ~g377 && g995 && g820 && ~g364) || (g866 && g377 && g995 && g820 && ~g364);
 assign path358 = ~(~((~path621 && ~g377 && ~g995 && ~g820 && ~g364) || (~path618 && g377 && ~g995 && ~g820 && ~g364) || (~path842 && ~g377 && g995 && ~g820 && ~g364) || (~path227 && g377 && g995 && ~g820 && ~g364) || (~path303 && ~g377 && ~g995 && g820 && ~g364) || (~path802 && g377 && ~g995 && g820 && ~g364) || (g66 && ~g377 && g995 && g820 && ~g364) || (g601 && g377 && g995 && g820 && ~g364)) && ~((g606 && ~g377 && ~g995 && ~g820 && g364) || (g864 && g377 && ~g995 && ~g820 && g364) || (g866 && ~g377 && g995 && ~g820 && g364) || (GND && g377 && g995 && ~g820 && g364)));
 assign path393 = ~(~((~path842 && ~g377 && ~g995 && ~g820 && ~g364) || (~path227 && g377 && ~g995 && ~g820 && ~g364) || (~path303 && ~g377 && g995 && ~g820 && ~g364) || (~path802 && g377 && g995 && ~g820 && ~g364) || (g66 && ~g377 && ~g995 && g820 && ~g364) || (g601 && g377 && ~g995 && g820 && ~g364) || (g606 && ~g377 && g995 && g820 && ~g364) || (g864 && g377 && g995 && g820 && ~g364)) && ~(g866 && ~g377 && ~g995 && ~g820 && g364));
-assign path409 = path414 && ~path408;
-assign path418 = ~(~(path275 && (path117 || path919)) && ~(path798 && path118 && path920));
-assign path463 = ~(~(path465 && (path117 || path919)) && ~(path506 && path118 && path920));
-assign path531 = ~(~(path533 && (path117 || path919)) && ~(path996 && path118 && path920));
-assign path544 = (g100 || SYNC_IN || ~path220) && (g100 || SYNC_IN || path220);
-assign path547 = VCC && path567 && path568 && path569 && path570 && path571;
-assign path549 = ~(~(path971 && (path117 || path919)) && ~(path966 && path118 && path920));
-assign path553 = path266 && ~path408;
-assign path573 = ~(~(path272 && (path117 || path919)) && ~(path799 && path118 && path920));
 assign path580 = ~(~(~g377 && ~g995 && ~g820 && g364) && ~(~path795 && g377 && ~g995 && ~g820 && g364) && ~(~path627 && ~g377 && g995 && ~g820 && g364) && ~(~path621 && g377 && g995 && ~g820 && g364));
 assign path582 = ~(VCC && ~(VCC && g377 && g995 && g820 && ~g364) && ~(~path795 && ~g377 && ~g995 && ~g820 && g364) && ~(~path627 && g377 && ~g995 && ~g820 && g364) && ~(~path621 && ~g377 && g995 && ~g820 && g364) && ~(~path618 && g377 && g995 && ~g820 && g364));
 assign path583 = ~(~((VCC && ~g377 && ~g995 && ~g820 && ~g364) || (~path795 && g377 && ~g995 && ~g820 && ~g364) || (~path627 && ~g377 && g995 && ~g820 && ~g364) || (~path621 && g377 && g995 && ~g820 && ~g364) || (~path618 && ~g377 && ~g995 && g820 && ~g364) || (~path842 && g377 && ~g995 && g820 && ~g364) || (~path227 && ~g377 && g995 && g820 && ~g364) || (~path303 && g377 && g995 && g820 && ~g364)) && ~((~path802 && ~g377 && ~g995 && ~g820 && g364) || (g66 && g377 && ~g995 && ~g820 && g364) || (g601 && ~g377 && g995 && ~g820 && g364) || (g606 && g377 && g995 && ~g820 && g364)));
-assign path584 = ~(~(g411 && (path117 || path919)) && ~(path149 && path118 && path920));
-assign path586 = ~(~(~(~(g411 && (path117 || path919)) && ~(path149 && path118 && path920)) && RAM_A0_OUT) && ~(~(~(g364 && g820) && path669 && ~path408) && ~RAM_A0_OUT));
-assign path587 = ~(~(~(~(g268 && (path117 || path919)) && ~(path265 && path118 && path920)) && RAM_A0_OUT) && ~(~path440 && ~RAM_A0_OUT));
 assign path594 = (VCC && ~g377 && g995 && g820 && ~g364) || (~path795 && g377 && g995 && g820 && ~g364) || (~path627 && ~g377 && ~g995 && ~g820 && g364) || (~path621 && g377 && ~g995 && ~g820 && g364) || (~path618 && ~g377 && g995 && ~g820 && g364) || (~path842 && g377 && g995 && ~g820 && g364);
-assign path608 = FSYNC_IN && ~(g488 && g526 && (path22 || ~UNK34_IN));
-assign path640 = ~(~(path807 && ~g137) && ~(path653 && g137)) && ~path408;
-assign path655 = ~(~(path170 && (path117 || path919)) && ~(path142 && path118 && path920));
-assign path668 = ~(~(path962 && (path117 || path919)) && ~(path959 && path118 && path920));
-assign path685 = ~(~(g558 && (path117 || path919)) && ~(path334 && path118 && path920));
-assign path687 = path759 && ~path408;
 assign path688 = (VCC && ~g377 && ~g995 && g820 && ~g364) || (~path795 && g377 && ~g995 && g820 && ~g364) || (~path627 && ~g377 && g995 && g820 && ~g364) || (~path621 && g377 && g995 && g820 && ~g364) || (~path618 && ~g377 && ~g995 && ~g820 && g364) || (~path842 && g377 && ~g995 && ~g820 && g364) || (~path227 && ~g377 && g995 && ~g820 && g364) || (~path303 && g377 && g995 && ~g820 && g364);
-assign path693 = ~(~(~(~(path749 && (path117 || path919)) && ~(path177 && path118 && path920)) && RAM_A0_OUT) && ~(~(~(g413 && (path117 || path919)) && ~(path998 && path118 && path920)) && ~RAM_A0_OUT));
-assign path709 = ~(g540 ^ ~(g540 ^ ~(VCC ^ (g188 || SYNC_IN || path220))));
-assign path710 = ~(~path795 ^ ~(UNK_VCC? ^ ~(VCC ^ (g162 || SYNC_IN || path220))));
-assign path758 = ~(~(g658 && (path117 || path919)) && ~(path997 && path118 && path920));
-assign path760 = path166 && ~path408;
-assign path808 = ~(~((g328 || SYNC_IN || path220) ^ VCC) ^ VCC);
 assign path850 = (GND && ~g377 && ~g995 && g820 && ~g364) || (VCC && g377 && ~g995 && g820 && ~g364) || (~path795 && ~g377 && g995 && g820 && ~g364) || (~path627 && g377 && g995 && g820 && ~g364) || (~path621 && ~g377 && ~g995 && ~g820 && g364) || (~path618 && g377 && ~g995 && ~g820 && g364) || (~path842 && ~g377 && g995 && ~g820 && g364) || (~path227 && g377 && g995 && ~g820 && g364);
 assign path857 = ~(~((GND && ~g377 && ~g995 && ~g820 && ~g364) || (VCC && g377 && ~g995 && ~g820 && ~g364) || (~path795 && ~g377 && g995 && ~g820 && ~g364) || (~path627 && g377 && g995 && ~g820 && ~g364) || (~path621 && ~g377 && ~g995 && g820 && ~g364) || (~path618 && g377 && ~g995 && g820 && ~g364) || (~path842 && ~g377 && g995 && g820 && ~g364) || (~path227 && g377 && g995 && g820 && ~g364)) && ~((~path303 && ~g377 && ~g995 && ~g820 && g364) || (~path802 && g377 && ~g995 && ~g820 && g364) || (g66 && ~g377 && g995 && ~g820 && g364) || (g601 && g377 && g995 && ~g820 && g364)));
-assign path902 = ~(g8 ^ ~(VCC ^ (g160 || SYNC_IN || path220)));
-assign path916 = path167 && ~path408;
-assign path917 = path686 && ~path408;
-assign path931 = ~(~(g915 && (path117 || path919)) && ~(path86 && path118 && path920));
 assign path932 = ~(~((~path618 && ~g377 && ~g995 && ~g820 && ~g364) || (~path842 && g377 && ~g995 && ~g820 && ~g364) || (~path227 && ~g377 && g995 && ~g820 && ~g364) || (~path303 && g377 && g995 && ~g820 && ~g364) || (~path802 && ~g377 && ~g995 && g820 && ~g364) || (g66 && g377 && ~g995 && g820 && ~g364) || (g601 && ~g377 && g995 && g820 && ~g364) || (g606 && g377 && g995 && g820 && ~g364)) && ~((g864 && ~g377 && ~g995 && ~g820 && g364) || (g866 && g377 && ~g995 && ~g820 && g364)));
+
+assign g75 = g377 && g995 && ~g820 && g364;
 assign path942 = ~(~(~g377 && g995 && ~g820 && g364) && ~(~path795 && g377 && g995 && ~g820 && g364));
-assign path973 = path978 && ~path408;
+
+assign g1044 = path22 || ~UNK34_IN;
+assign path323 = g488 && g526 && (path22 || ~UNK34_IN);
+assign rom_d4_cycle38 = FSYNC_IN && ~(path323);
