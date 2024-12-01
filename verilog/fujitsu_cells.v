@@ -11,13 +11,18 @@ module cell_FJD ( // Positive Edge Clocked Power JKFF with CLEAR
 );
 	always @(posedge CK or negedge nCL) begin
 		if (~nCL)
-			Q <= #1 1'b0;					// tmax = 5.1ns
+			// Q <= #1 1'b0;					// tmax = 5.1ns
+			Q <= 1'b0;					// tmax = 5.1ns
 		else begin
 			case({J, K})
-				2'b00 : Q <= #2 Q;		// tmax = 7.9ns
-				2'b01 : Q <= #2 1'b0;
-				2'b10 : Q <= #2 1'b1;
-				2'b11 : Q <= #2 ~Q;
+				// 2'b00 : Q <= #2 Q;		// tmax = 7.9ns
+				// 2'b01 : Q <= #2 1'b0;
+				// 2'b10 : Q <= #2 1'b1;
+				// 2'b11 : Q <= #2 ~Q;
+				2'b00 : Q <= Q;		// tmax = 7.9ns
+				2'b01 : Q <= 1'b0;
+				2'b10 : Q <= 1'b1;
+				2'b11 : Q <= ~Q;
 			endcase
 		end
 	end
@@ -164,7 +169,8 @@ module cell_FDP ( // DFF with SET and RESET
 		else if (!R)
 			Q <= 1'b0;	// tmax = 2.9ns
 		else
-			Q <= #1 D;	// tmax = 6.1ns
+			// Q <= #1 D;	// tmax = 6.1ns
+			Q <= D;	// tmax = 6.1ns
 	end
 	assign nQ = ~Q;
 endmodule
