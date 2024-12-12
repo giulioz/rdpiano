@@ -497,7 +497,6 @@ cell_FDO O39 ( // DFF with Reset
   ric12_ac0_stage_cycle9_x // OUTPUT XQ
 );
 
-assign tmp1 = ~ric12_ac0_stage_cycle7 && ~ric12_ac0_stage_cycle9;
 assign tmp2 = ric12_ac0_stage_cycle7 || ric12_ac0_stage_cycle9;
 
 // Cycle 7 delayed: latch data from IC13 lower nibble
@@ -550,14 +549,14 @@ cell_FDM K87 ( // DFF
   ric12_d0_cycle6_7 // OUTPUT Q
 );
 
-assign adder1_a20 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d4_cycle6 && tmp1) || (adder1_o20_or_prev && tmp2)));
-assign adder1_a21 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d5_cycle6 && tmp1) || (adder1_o21_or_prev && tmp2)));
-assign adder1_a22 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d6_cycle6 && tmp1) || (adder1_o22_or_prev && tmp2)));
-assign adder1_a23 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d7_cycle6 && tmp1) || (adder1_o23_or_prev && tmp2)));
-assign adder1_a24 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d0_cycle7_2 && tmp1) || (adder1_o24_or_prev && tmp2)));
-assign adder1_a25 = ~(ric12_d0_cycle6_7_x && ~((ric13_d1_cycle7_2 && tmp1) || (adder1_o25_or_prev && tmp2)));
-assign adder1_a26 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d2_cycle7_2 && tmp1) || (adder1_o26_or_prev && tmp2)));
-assign adder1_a27 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d3_cycle7_2 && tmp1) || (adder1_o27_or_prev && tmp2)));
+assign adder1_a20 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d4_cycle6 && ~tmp2) || (adder1_o20_or_prev && tmp2)));
+assign adder1_a21 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d5_cycle6 && ~tmp2) || (adder1_o21_or_prev && tmp2)));
+assign adder1_a22 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d6_cycle6 && ~tmp2) || (adder1_o22_or_prev && tmp2)));
+assign adder1_a23 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d7_cycle6 && ~tmp2) || (adder1_o23_or_prev && tmp2)));
+assign adder1_a24 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d0_cycle7_2 && ~tmp2) || (adder1_o24_or_prev && tmp2)));
+assign adder1_a25 = ~(ric12_d0_cycle6_7_x && ~((ric13_d1_cycle7_2 && ~tmp2) || (adder1_o25_or_prev && tmp2)));
+assign adder1_a26 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d2_cycle7_2 && ~tmp2) || (adder1_o26_or_prev && tmp2)));
+assign adder1_a27 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d3_cycle7_2 && ~tmp2) || (adder1_o27_or_prev && tmp2)));
 
 // 8-bit adder 3, used for output to IC8
 cell_A4H C71 ( // 4-bit Full Adder
@@ -593,12 +592,12 @@ cell_A4H E61 ( // 4-bit Full Adder
   adder3_o4 // OUTPUT S1
 );
 
-assign path257_io3_out_unsync = ~((adder3_o1 && ric12_ac_0) || (~(~ric12_d0_cycle6_7_x || ~((ric13_d6_cycle5 && tmp1) || (adder1_o14_or_prev && tmp2))) && ~ric12_ac_0));
-assign path256_io4_out_unsync = ~((~adder3_o2 && ric12_ac_0) || ((~ric12_d0_cycle6_7_x || ~((ric13_d7_cycle5 && tmp1) || (adder1_o15_or_prev && tmp2))) && ~ric12_ac_0));
-assign path255_io5_out_unsync = ~((adder3_o3 && ric12_ac_0) || (~(~ric12_d0_cycle6_7_x || ~((ric13_d0_cycle6 && tmp1) || (adder1_o16_or_prev && tmp2))) && ~ric12_ac_0));
-assign path270_io6_out_unsync = ~((~(adder3_of && adder3_o4) && ric12_ac_0) || ((~ric12_d0_cycle6_7_x || ~((ric13_d1_cycle6 && tmp1) || (adder1_o17_or_prev && tmp2))) && ~ric12_ac_0));
-assign path269_io8_out_unsync = ~((adder3_of && adder3_o5 && ric12_ac_0) || (~(~ric12_d0_cycle6_7_x || ~((ric13_d2_cycle6 && tmp1) || (adder1_o18_or_prev && tmp2))) && ~ric12_ac_0));
-assign path268_io7_out_unsync = ~((adder3_of && adder3_o6 && ric12_ac_0) || (~(~ric12_d0_cycle6_7_x || ~((ric13_d3_cycle6 && tmp1) || (adder1_o18_or_prev && tmp2))) && ~ric12_ac_0));
+assign path257_io3_out_unsync = ~((adder3_o1 && ric12_ac_0) || (~(~ric12_d0_cycle6_7_x || ~((ric13_d6_cycle5 && ~tmp2) || (adder1_o14_or_prev && tmp2))) && ~ric12_ac_0));
+assign path256_io4_out_unsync = ~((~adder3_o2 && ric12_ac_0) || ((~ric12_d0_cycle6_7_x || ~((ric13_d7_cycle5 && ~tmp2) || (adder1_o15_or_prev && tmp2))) && ~ric12_ac_0));
+assign path255_io5_out_unsync = ~((adder3_o3 && ric12_ac_0) || (~(~ric12_d0_cycle6_7_x || ~((ric13_d0_cycle6 && ~tmp2) || (adder1_o16_or_prev && tmp2))) && ~ric12_ac_0));
+assign path270_io6_out_unsync = ~((~(adder3_of && adder3_o4) && ric12_ac_0) || ((~ric12_d0_cycle6_7_x || ~((ric13_d1_cycle6 && ~tmp2) || (adder1_o17_or_prev && tmp2))) && ~ric12_ac_0));
+assign path269_io8_out_unsync = ~((adder3_of && adder3_o5 && ric12_ac_0) || (~(~ric12_d0_cycle6_7_x || ~((ric13_d2_cycle6 && ~tmp2) || (adder1_o18_or_prev && tmp2))) && ~ric12_ac_0));
+assign path268_io7_out_unsync = ~((adder3_of && adder3_o6 && ric12_ac_0) || (~(~ric12_d0_cycle6_7_x || ~((ric13_d3_cycle6 && ~tmp2) || (adder1_o18_or_prev && tmp2))) && ~ric12_ac_0));
 assign path267_io2_out_unsync = ~((~(adder3_of && adder3_o7) && ric12_ac_0) || (~adder3_o0 && ~ric12_ac_0));
 
 // Outputs IO 2-7 every sync
@@ -1060,26 +1059,26 @@ cell_FDQ D66 ( // 4-bit DFF
 assign tmp_irq_1 = (ric12_d6_cycle5_7_not || ric12_d5_cycle5_7_not || ric12_d4_cycle5_7_not || ric12_d3_cycle5_7_not) && (ric12_d2_cycle5_7_not || ric12_d1_cycle5_7_not || ric12_d0_cycle5_7_not || GND);
 assign adder1_ci = tmp_irq_1 && ric12_d7_cycle5_7_not;
 
-assign adder1_a0 = ~(ric12_d0_cycle6_7 || ~((ric13_d0_cycle4 && tmp1) || (adder1_o0_or_prev && tmp2)));
-assign adder1_a1 = ~(ric12_d0_cycle6_7 || ~((ric13_d1_cycle4 && tmp1) || (adder1_o1_or_prev && tmp2)));
-assign adder1_a2 = ~(ric12_d0_cycle6_7 || ~((ric13_d2_cycle4 && tmp1) || (adder1_o2_or_prev && tmp2)));
-assign adder1_a3 = ~(ric12_d0_cycle6_7 || ~((ric13_d3_cycle4 && tmp1) || (adder1_o3_or_prev && tmp2)));
-assign adder1_a4 = ~(ric12_d0_cycle6_7 || ~((ric13_d4_cycle4 && tmp1) || (adder1_o4_or_prev && tmp2)));
-assign adder1_a5 = ~(ric12_d0_cycle6_7 || ~((ric13_d5_cycle4 && tmp1) || (adder1_o5_or_prev && tmp2)));
-assign adder1_a6 = ~(ric12_d0_cycle6_7 || ~((ric13_d6_cycle4 && tmp1) || (adder1_o6_or_prev && tmp2)));
-assign adder1_a7 = ~(ric12_d0_cycle6_7 || ~((ric13_d7_cycle4 && tmp1) || (adder1_o7_or_prev && tmp2)));
-assign adder1_a8 = ~(ric12_d0_cycle6_7 || ~((ric13_d0_cycle5 && tmp1) || (adder1_o8_or_prev && tmp2)));
-assign adder1_a9 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d1_cycle5 && tmp1) || (adder1_o9_or_prev && tmp2)));
-assign adder1_a10 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d2_cycle5 && tmp1) || (adder1_o10_or_prev && tmp2)));
-assign adder1_a11 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d3_cycle5 && tmp1) || (adder1_o11_or_prev && tmp2)));
-assign adder1_a12 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d4_cycle5 && tmp1) || (adder1_o12_or_prev && tmp2)));
-assign adder1_a13 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d5_cycle5 && tmp1) || (adder1_o13_or_prev && tmp2)));
-assign adder1_a14 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d6_cycle5 && tmp1) || (adder1_o14_or_prev && tmp2)));
-assign adder1_a15 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d7_cycle5 && tmp1) || (adder1_o15_or_prev && tmp2)));
-assign adder1_a16 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d0_cycle6 && tmp1) || (adder1_o16_or_prev && tmp2)));
-assign adder1_a17 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d1_cycle6 && tmp1) || (adder1_o17_or_prev && tmp2)));
-assign adder1_a18 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d2_cycle6 && tmp1) || (adder1_o18_or_prev && tmp2)));
-assign adder1_a19 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d3_cycle6 && tmp1) || (adder1_o18_or_prev && tmp2)));
+assign adder1_a0 = ~(ric12_d0_cycle6_7 || ~((ric13_d0_cycle4 && ~tmp2) || (adder1_o0_or_prev && tmp2)));
+assign adder1_a1 = ~(ric12_d0_cycle6_7 || ~((ric13_d1_cycle4 && ~tmp2) || (adder1_o1_or_prev && tmp2)));
+assign adder1_a2 = ~(ric12_d0_cycle6_7 || ~((ric13_d2_cycle4 && ~tmp2) || (adder1_o2_or_prev && tmp2)));
+assign adder1_a3 = ~(ric12_d0_cycle6_7 || ~((ric13_d3_cycle4 && ~tmp2) || (adder1_o3_or_prev && tmp2)));
+assign adder1_a4 = ~(ric12_d0_cycle6_7 || ~((ric13_d4_cycle4 && ~tmp2) || (adder1_o4_or_prev && tmp2)));
+assign adder1_a5 = ~(ric12_d0_cycle6_7 || ~((ric13_d5_cycle4 && ~tmp2) || (adder1_o5_or_prev && tmp2)));
+assign adder1_a6 = ~(ric12_d0_cycle6_7 || ~((ric13_d6_cycle4 && ~tmp2) || (adder1_o6_or_prev && tmp2)));
+assign adder1_a7 = ~(ric12_d0_cycle6_7 || ~((ric13_d7_cycle4 && ~tmp2) || (adder1_o7_or_prev && tmp2)));
+assign adder1_a8 = ~(ric12_d0_cycle6_7 || ~((ric13_d0_cycle5 && ~tmp2) || (adder1_o8_or_prev && tmp2)));
+assign adder1_a9 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d1_cycle5 && ~tmp2) || (adder1_o9_or_prev && tmp2)));
+assign adder1_a10 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d2_cycle5 && ~tmp2) || (adder1_o10_or_prev && tmp2)));
+assign adder1_a11 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d3_cycle5 && ~tmp2) || (adder1_o11_or_prev && tmp2)));
+assign adder1_a12 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d4_cycle5 && ~tmp2) || (adder1_o12_or_prev && tmp2)));
+assign adder1_a13 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d5_cycle5 && ~tmp2) || (adder1_o13_or_prev && tmp2)));
+assign adder1_a14 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d6_cycle5 && ~tmp2) || (adder1_o14_or_prev && tmp2)));
+assign adder1_a15 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d7_cycle5 && ~tmp2) || (adder1_o15_or_prev && tmp2)));
+assign adder1_a16 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d0_cycle6 && ~tmp2) || (adder1_o16_or_prev && tmp2)));
+assign adder1_a17 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d1_cycle6 && ~tmp2) || (adder1_o17_or_prev && tmp2)));
+assign adder1_a18 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d2_cycle6 && ~tmp2) || (adder1_o18_or_prev && tmp2)));
+assign adder1_a19 = ~(~ric12_d0_cycle6_7_x || ~((ric13_d3_cycle6 && ~tmp2) || (adder1_o18_or_prev && tmp2)));
 
 assign tmp_adder_1 = ~(~ric12_d2_cycle5_7_not || ric12_d1_cycle5_7_not) || ric12_d0_cycle5_7_not;
 assign tmp_adder_2 = (~ric12_d2_cycle5_7_not && ~ric12_d1_cycle5_7_not && ric12_d0_cycle5_7_not) || ~((~ric12_d2_cycle5_7_not && ric12_d0_cycle5_7_not) || ~ric12_d1_cycle5_7_not);
@@ -1556,8 +1555,8 @@ cell_FJD G20 ( // Positive Edge Clocked Power JKFF with CLEAR
   tmp_irq_4, // INPUT J
   GND, // INPUT K
   ric12_not_writing, // INPUT CL
-  path1078, // OUTPUT XQ
-  path879 // OUTPUT Q
+  path1078, // OUTPUT Q
+  path879 // OUTPUT XQ
 );
 assign IRQ_OUT = ~(tmp_irq_3 && ~(UNK_75_IN && path879));
 

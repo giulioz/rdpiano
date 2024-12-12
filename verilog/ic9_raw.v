@@ -40,6 +40,13 @@ assign {BUS7_IN, BUS6_IN, BUS5_IN, BUS4_IN, BUS3_IN, BUS2_IN, BUS1_IN, BUS0_IN} 
 
 assign WR_A_OUT = {WR_A16_OUT, WR_A15_OUT, WR_A14_OUT, WR_A13_OUT, WR_A12_OUT, WR_A11_OUT, WR_A10_OUT, WR_A9_OUT, WR_A8_OUT, WR_A7_OUT, WR_A6_OUT, WR_A5_OUT, WR_A4_OUT, WR_A3_OUT, WR_A2_OUT, WR_A1_OUT, WR_A0_OUT};
 
+// always @(posedge SYNCO_OUT) begin
+//   $display("%d", WR_A_OUT);
+// end
+// always @(posedge FSYNC_IN) begin
+//   $display("FSYNC");
+// end
+
 
 
 // =============================================================================
@@ -516,6 +523,25 @@ cell_LT4 H34 ( // 4-bit Data Latch
 // =============================================================================
 // Reads from RIC12 RAM
 
+wire [3:0] current_voice;
+assign current_voice = {ram_a10_wr, ram_a9_wr, ram_a8_wr, ram_a7_wr};
+wire [3:0] current_part;
+assign current_part = {ram_a6_wr, ram_a5_wr, ram_a4_wr, ram_a3_wr};
+// wire [2:0] voice_param_addr;
+// assign voice_param_addr = {RAM_A2_ROM_A0_OUT, RAM_A1_OUT, RAM_A0_OUT};
+wire [7:0] voice_param_0;
+assign voice_param_0 = {bus7_cycle0_7, bus6_cycle0_7, bus5_cycle0_7, bus4_cycle0_7, ROM_A12_OUT, ROM_A11_OUT, ROM_A10_OUT, ROM_A9_OUT};
+wire [7:0] voice_param_1;
+assign voice_param_1 = {ROM_A8_OUT, ROM_A7_OUT, ROM_A6_OUT, ROM_A5_OUT, ROM_A4_OUT, ROM_A3_OUT, ROM_A2_OUT, ROM_A1_OUT};
+initial begin
+  // $monitor(
+  //   "voice=%h part=%h %h %h", current_voice, current_part, voice_param_0, voice_param_1
+  // );
+  // $monitor(
+  //   "%h", ROM_A_OUT
+  // );
+end
+
 cell_LT4 A61 ( // 4-bit Data Latch
   cycle_0_xor1, // INPUT G
   BUS4_IN, // INPUT DA
@@ -748,6 +774,12 @@ cell_FDO N83 ( // DFF with Reset
   ram_oe_cycle9_not // OUTPUT XQ
 );
 assign mult_select = ram_oe_cycle7 || ram_oe_cycle9;
+
+// wire [3:0] current_cycle;
+// assign current_cycle = {cycle_cnt_d, cycle_cnt_c, cycle_cnt_b, cycle_cnt_a};
+// always @(negedge cycle_between) begin
+//   $display("cycle %d mult=%d ramwr=%d", current_cycle, mult_select, RAM_WR_OUT);
+// end
 
 
 // Adder in A

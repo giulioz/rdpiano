@@ -76,6 +76,122 @@ assign RIC13_D_OUT = {RIC13_D7_OUT, RIC13_D6_OUT, RIC13_D5_OUT, RIC13_D4_OUT, RI
 assign P45_IN_INV = ~P45_IN;
 
 
+wire [10:0] tmp_addr;
+// assign tmp_addr = {current_voice_3, current_voice_2, current_voice_1, current_voice_0, current_part_3, current_part_2, current_part_1, current_part_0, voice_param_addr_2, voice_param_addr_1, voice_param_addr_0};
+// always @(posedge RIC12_WE_OUT) begin
+//   $display("writing addr=%h data=%h", tmp_addr, RIC12_D_OUT);
+// end
+// assign tmp_addr = {path482_ric12_a10_rd, path481_ric12_a9_rd, path154_ric12_a8_rd, path480_ric12_a7_rd, path1282_ric12_a6_2, path891_ric12_a5_2, path1077_ric12_a4_2, path890_ric12_a3_2, g158_ric12_a2_rd, g162_ric12_a1_rd, voice_param_addr_0};
+// always @(posedge RIC12_WE_OUT) begin
+//   $display("writing addr=%h %h", tmp_addr, RIC12_D_OUT);
+// end
+
+// data
+cell_LT4 T33 ( // 4-bit Data Latch
+  wr_1000, // INPUT G
+  P33_IN, // INPUT DA
+  P32_IN, // INPUT DB
+  P31_IN, // INPUT DC
+  P30_IN, // INPUT DD
+  path348_ric12_d3_1, // OUTPUT NA
+  unconnected_T33_PA, // OUTPUT PA
+  path364_ric12_d2_1, // OUTPUT NB
+  unconnected_T33_PB, // OUTPUT PB
+  path363_ric12_d1_1, // OUTPUT NC
+  unconnected_T33_PC, // OUTPUT PC
+  path365_ric12_d0_1, // OUTPUT ND
+  unconnected_T33_PD // OUTPUT PD
+);
+cell_LT4 V48 ( // 4-bit Data Latch
+  wr_1000, // INPUT G
+  P37_IN, // INPUT DA
+  P36_IN, // INPUT DB
+  P35_IN, // INPUT DC
+  P34_IN, // INPUT DD
+  path344_ric12_d7_1, // OUTPUT NA
+  unconnected_V48_PA, // OUTPUT PA
+  g345_ric12_d6_1, // OUTPUT NB
+  unconnected_V48_PB, // OUTPUT PB
+  path346_ric12_d5_1, // OUTPUT NC
+  unconnected_V48_PC, // OUTPUT PC
+  path360_ric12_d4_1, // OUTPUT ND
+  unconnected_V48_PD // OUTPUT PD
+);
+cell_LT4 T17 ( // 4-bit Data Latch
+  wr_1001, // INPUT G
+  P33_IN, // INPUT DA
+  P32_IN, // INPUT DB
+  P31_IN, // INPUT DC
+  P30_IN, // INPUT DD
+  path347_ric12_d3_2, // OUTPUT NA
+  unconnected_T17_PA, // OUTPUT PA
+  path361_ric12_d2_2, // OUTPUT NB
+  unconnected_T17_PB, // OUTPUT PB
+  path362_ric12_d1_2, // OUTPUT NC
+  unconnected_T17_PC, // OUTPUT PC
+  g846_ric12_d0_2, // OUTPUT ND
+  unconnected_T17_PD // OUTPUT PD
+);
+cell_LT4 U31 ( // 4-bit Data Latch
+  wr_1001, // INPUT G
+  P37_IN, // INPUT DA
+  P36_IN, // INPUT DB
+  P35_IN, // INPUT DC
+  P34_IN, // INPUT DD
+  path333_ric12_d7_2, // OUTPUT NA
+  unconnected_U31_PA, // OUTPUT PA
+  path367_ric12_d6_2, // OUTPUT NB
+  unconnected_U31_PB, // OUTPUT PB
+  path345_ric12_d5_2, // OUTPUT NC
+  unconnected_U31_PC, // OUTPUT PC
+  g385_ric12_d4_2, // OUTPUT ND
+  unconnected_U31_PD // OUTPUT PD
+);
+
+// addr
+cell_LT4 V61 ( // 4-bit Data Latch
+  wr_1000, // INPUT G
+  P43_IN, // INPUT DA
+  P42_IN, // INPUT DB
+  P41_IN, // INPUT DC
+  P40_IN, // INPUT DD
+  unconnected_V61_NA, // OUTPUT NA
+  path482_ric12_a10_rd, // OUTPUT PA
+  unconnected_V61_NB, // OUTPUT NB
+  path481_ric12_a9_rd, // OUTPUT PB
+  unconnected_V61_NC, // OUTPUT NC
+  path154_ric12_a8_rd, // OUTPUT PC
+  unconnected_V61_ND, // OUTPUT ND
+  path480_ric12_a7_rd // OUTPUT PD
+);
+cell_LT4 K34 ( // 4-bit Data Latch
+  wr_1000, // INPUT G
+  path493, // INPUT DA
+  g350, // INPUT DB
+  path554, // INPUT DC
+  g352, // INPUT DD
+  unconnected_K34_NA, // OUTPUT NA
+  path1282_ric12_a6_2, // OUTPUT PA
+  unconnected_K34_NB, // OUTPUT NB
+  path891_ric12_a5_2, // OUTPUT PB
+  unconnected_K34_NC, // OUTPUT NC
+  path1077_ric12_a4_2, // OUTPUT PC
+  unconnected_K34_ND, // OUTPUT ND
+  path890_ric12_a3_2 // OUTPUT PD
+);
+cell_LT2 K48 ( // 1-bit Data Latch
+  wr_1000, // INPUT G
+  path555, // INPUT D
+  g158_ric12_a2_rd, // OUTPUT Q
+  unconnected_K48_XQ // OUTPUT XQ
+);
+cell_LT2 K52 ( // 1-bit Data Latch
+  wr_1000, // INPUT G
+  path550, // INPUT D
+  g162_ric12_a1_rd, // OUTPUT Q
+  unconnected_K52_XQ // OUTPUT XQ
+);
+
 
 
 cell_FJD G20 ( // Positive Edge Clocked Power JKFF with CLEAR
@@ -83,8 +199,8 @@ cell_FJD G20 ( // Positive Edge Clocked Power JKFF with CLEAR
   g878, // INPUT J
   GND, // INPUT K
   path880, // INPUT CL
-  path1078, // OUTPUT XQ
-  path879 // OUTPUT Q
+  path1078, // OUTPUT Q
+  path879 // OUTPUT XQ
 );
 
 cell_LT4 A20 ( // 4-bit Data Latch
@@ -137,10 +253,10 @@ cell_LT4 A75 ( // 4-bit Data Latch
 
 cell_LT4 K20 ( // 4-bit Data Latch
   g1207_ric12_ad3_10_clock, // INPUT G
-  g1075_ric12_a7_wr, // INPUT DA
-  path153_ric12_a8_wr, // INPUT DB
-  g1142_ric12_a9_wr, // INPUT DC
-  g893_ric12_a10_wr, // INPUT DD
+  current_voice_0, // INPUT DA
+  current_voice_1, // INPUT DB
+  current_voice_2, // INPUT DC
+  current_voice_3, // INPUT DD
   unconnected_K20_NA, // OUTPUT NA
   path499_ric12_a7_latch, // OUTPUT PA
   unconnected_K20_NB, // OUTPUT NB
@@ -153,10 +269,10 @@ cell_LT4 K20 ( // 4-bit Data Latch
 
 cell_LT4 K3 ( // 4-bit Data Latch
   g1207_ric12_ad3_10_clock, // INPUT G
-  g260_ric12_a3_1, // INPUT DA
-  path133_ric12_a4_1, // INPUT DB
-  path134_ric12_a5_1, // INPUT DC
-  path379_ric12_a6_1, // INPUT DD
+  current_part_0, // INPUT DA
+  current_part_1, // INPUT DB
+  current_part_2, // INPUT DC
+  current_part_3, // INPUT DD
   unconnected_K3_NA, // OUTPUT NA
   path701_ric12_a3_latch, // OUTPUT PA
   unconnected_K3_NB, // OUTPUT NB
@@ -165,22 +281,6 @@ cell_LT4 K3 ( // 4-bit Data Latch
   path704_ric12_a5_latch, // OUTPUT PC
   unconnected_K3_ND, // OUTPUT ND
   g706_ric12_a6_latch // OUTPUT PD
-);
-
-cell_LT4 K34 ( // 4-bit Data Latch
-  g487, // INPUT G
-  path493, // INPUT DA
-  g350, // INPUT DB
-  path554, // INPUT DC
-  g352, // INPUT DD
-  unconnected_K34_NA, // OUTPUT NA
-  path1282_ric12_a6_2, // OUTPUT PA
-  unconnected_K34_NB, // OUTPUT NB
-  path891_ric12_a5_2, // OUTPUT PB
-  unconnected_K34_NC, // OUTPUT NC
-  path1077_ric12_a4_2, // OUTPUT PC
-  unconnected_K34_ND, // OUTPUT ND
-  path890_ric12_a3_2 // OUTPUT PD
 );
 
 cell_LT4 N61 ( // 4-bit Data Latch
@@ -391,22 +491,6 @@ cell_LT4 S106 ( // 4-bit Data Latch
   path790 // OUTPUT PD
 );
 
-cell_LT4 T17 ( // 4-bit Data Latch
-  g607, // INPUT G
-  P33_IN, // INPUT DA
-  P32_IN, // INPUT DB
-  P31_IN, // INPUT DC
-  P30_IN, // INPUT DD
-  path347_ric12_d3_2, // OUTPUT NA
-  unconnected_T17_PA, // OUTPUT PA
-  path361_ric12_d2_2, // OUTPUT NB
-  unconnected_T17_PB, // OUTPUT PB
-  path362_ric12_d1_2, // OUTPUT NC
-  unconnected_T17_PC, // OUTPUT PC
-  g846_ric12_d0_2, // OUTPUT ND
-  unconnected_T17_PD // OUTPUT PD
-);
-
 cell_LT4 T4 ( // 4-bit Data Latch
   g491_address_strobe_synced, // INPUT G
   P33_IN, // INPUT DA
@@ -421,22 +505,6 @@ cell_LT4 T4 ( // 4-bit Data Latch
   AL1_OUT, // OUTPUT PC
   unconnected_T4_ND, // OUTPUT ND
   AL0_OUT // OUTPUT PD
-);
-
-cell_LT4 T33 ( // 4-bit Data Latch
-  g487, // INPUT G
-  P33_IN, // INPUT DA
-  P32_IN, // INPUT DB
-  P31_IN, // INPUT DC
-  P30_IN, // INPUT DD
-  path348_ric12_d3_1, // OUTPUT NA
-  unconnected_T33_PA, // OUTPUT PA
-  path364_ric12_d2_1, // OUTPUT NB
-  unconnected_T33_PB, // OUTPUT PB
-  path363_ric12_d1_1, // OUTPUT NC
-  unconnected_T33_PC, // OUTPUT PC
-  path365_ric12_d0_1, // OUTPUT ND
-  unconnected_T33_PD // OUTPUT PD
 );
 
 cell_LT4 B61 ( // 4-bit Data Latch
@@ -487,22 +555,6 @@ cell_LT4 B87 ( // 4-bit Data Latch
   path393 // OUTPUT PD
 );
 
-cell_LT4 U31 ( // 4-bit Data Latch
-  g607, // INPUT G
-  P37_IN, // INPUT DA
-  P36_IN, // INPUT DB
-  P35_IN, // INPUT DC
-  P34_IN, // INPUT DD
-  path333_ric12_d7_2, // OUTPUT NA
-  unconnected_U31_PA, // OUTPUT PA
-  path367_ric12_d6_2, // OUTPUT NB
-  unconnected_U31_PB, // OUTPUT PB
-  path345_ric12_d5_2, // OUTPUT NC
-  unconnected_U31_PC, // OUTPUT PC
-  g385_ric12_d4_2, // OUTPUT ND
-  unconnected_U31_PD // OUTPUT PD
-);
-
 cell_LT4 V33 ( // 4-bit Data Latch
   g491_address_strobe_synced, // INPUT G
   P37_IN, // INPUT DA
@@ -517,38 +569,6 @@ cell_LT4 V33 ( // 4-bit Data Latch
   AL5_OUT, // OUTPUT PC
   unconnected_V33_ND, // OUTPUT ND
   AL4_OUT // OUTPUT PD
-);
-
-cell_LT4 V48 ( // 4-bit Data Latch
-  g487, // INPUT G
-  P37_IN, // INPUT DA
-  P36_IN, // INPUT DB
-  P35_IN, // INPUT DC
-  P34_IN, // INPUT DD
-  path344_ric12_d7_1, // OUTPUT NA
-  unconnected_V48_PA, // OUTPUT PA
-  g345_ric12_d6_1, // OUTPUT NB
-  unconnected_V48_PB, // OUTPUT PB
-  path346_ric12_d5_1, // OUTPUT NC
-  unconnected_V48_PC, // OUTPUT PC
-  path360_ric12_d4_1, // OUTPUT ND
-  unconnected_V48_PD // OUTPUT PD
-);
-
-cell_LT4 V61 ( // 4-bit Data Latch
-  g487, // INPUT G
-  P43_IN, // INPUT DA
-  P42_IN, // INPUT DB
-  P41_IN, // INPUT DC
-  P40_IN, // INPUT DD
-  unconnected_V61_NA, // OUTPUT NA
-  path482_ric12_a10_rd, // OUTPUT PA
-  unconnected_V61_NB, // OUTPUT NB
-  path481_ric12_a9_rd, // OUTPUT PB
-  unconnected_V61_NC, // OUTPUT NC
-  path154_ric12_a8_rd, // OUTPUT PC
-  unconnected_V61_ND, // OUTPUT ND
-  path480_ric12_a7_rd // OUTPUT PD
 );
 
 cell_LT4 V78 ( // 4-bit Data Latch
@@ -687,11 +707,11 @@ cell_C45 B13 ( // 4-bit Binary Synchronous Up Counter
   g377, // INPUT CK
   GND, // INPUT DC
   GND, // INPUT DD
-  g260_ric12_a3_1, // OUTPUT QA
-  path133_ric12_a4_1, // OUTPUT QB
+  current_part_0, // OUTPUT QA
+  current_part_1, // OUTPUT QB
   unconnected_B13_CO, // OUTPUT CO
-  path134_ric12_a5_1, // OUTPUT QC
-  path379_ric12_a6_1 // OUTPUT QD
+  current_part_2, // OUTPUT QC
+  current_part_3 // OUTPUT QD
 );
 
 cell_C45 C13 ( // 4-bit Binary Synchronous Up Counter
@@ -721,11 +741,11 @@ cell_C45 D13 ( // 4-bit Binary Synchronous Up Counter
   g377, // INPUT CK
   GND, // INPUT DC
   GND, // INPUT DD
-  g1075_ric12_a7_wr, // OUTPUT QA
-  path153_ric12_a8_wr, // OUTPUT QB
+  current_voice_0, // OUTPUT QA
+  current_voice_1, // OUTPUT QB
   unconnected_D13_CO, // OUTPUT CO
-  g1142_ric12_a9_wr, // OUTPUT QC
-  g893_ric12_a10_wr // OUTPUT QD
+  current_voice_2, // OUTPUT QC
+  current_voice_3 // OUTPUT QD
 );
 
 cell_C45 E7 ( // 4-bit Binary Synchronous Up Counter
@@ -738,11 +758,11 @@ cell_C45 E7 ( // 4-bit Binary Synchronous Up Counter
   g377, // INPUT CK
   VCC, // INPUT DC
   VCC, // INPUT DD
-  path152_ric12_a0, // OUTPUT QA
-  g160_ric12_a1_wr, // OUTPUT QB
+  voice_param_addr_0, // OUTPUT QA
+  voice_param_addr_1, // OUTPUT QB
   path1005_e7_coverflow, // OUTPUT CO
-  g156_ric12_a2_wr, // OUTPUT QC
-  path1006 // OUTPUT QD
+  voice_param_addr_2, // OUTPUT QC
+  voice_param_addr_stage // OUTPUT QD
 );
 
 cell_C45 F13 ( // 4-bit Binary Synchronous Up Counter
@@ -767,20 +787,6 @@ cell_LT2 A69 ( // 1-bit Data Latch
   RIC12_D0_IN, // INPUT D
   unconnected_A69_Q, // OUTPUT Q
   path356 // OUTPUT XQ
-);
-
-cell_LT2 K48 ( // 1-bit Data Latch
-  g487, // INPUT G
-  path555, // INPUT D
-  g158_ric12_a2_rd, // OUTPUT Q
-  unconnected_K48_XQ // OUTPUT XQ
-);
-
-cell_LT2 K52 ( // 1-bit Data Latch
-  g487, // INPUT G
-  path550, // INPUT D
-  g162_ric12_a1_rd, // OUTPUT Q
-  unconnected_K52_XQ // OUTPUT XQ
 );
 
 cell_A4H M3 ( // 4-bit Full Adder
@@ -1233,7 +1239,7 @@ cell_unkf P28 ( // Unknown F
 );
 
 cell_FDP G12 ( // DFF with SET and RESET
-  g487, // INPUT CK
+  wr_1000, // INPUT CK
   E_IN, // INPUT D
   path914, // INPUT R
   UNK_74_IN, // INPUT S
@@ -1248,38 +1254,39 @@ assign P32_IOM = ~(~(P47_IN || P46_IN) && P45_IN_INV && P44_IN && RW_IN && ~(E_I
 assign PARAM_ROMCS_OUT = ~(P47_IN ^ P46_IN) || RD_OUT;
 assign RAMCS_OUT = ~(~(P47_IN || P46_IN) && P45_IN_INV && ~P44_IN);
 assign RD_OUT = ~(RW_IN && E_IN);
-assign RIC12_A0_OUT = ~((path152_ric12_a0 && ~path852_ric12_wr_1) || (~path152_ric12_a0 && RIC12_OE_OUT));
-assign RIC12_A1_OUT = ~((g160_ric12_a1_wr && ~path852_ric12_wr_1) || (g162_ric12_a1_rd && RIC12_OE_OUT));
-assign RIC12_A10_OUT = ~((g893_ric12_a10_wr && ~path852_ric12_wr_1) || (path482_ric12_a10_rd && RIC12_OE_OUT));
-assign RIC12_A2_OUT = ~((g156_ric12_a2_wr && ~path852_ric12_wr_1) || (g158_ric12_a2_rd && RIC12_OE_OUT));
-assign RIC12_A3_OUT = ~(~(g260_ric12_a3_1 && ~path266_ric12_a3456_ctrl1) && ~(path890_ric12_a3_2 && ~path1133_ric12_a3456_ctrl2));
-assign RIC12_A4_OUT = ~(~(path133_ric12_a4_1 && ~path266_ric12_a3456_ctrl1) && ~(path1077_ric12_a4_2 && ~path1133_ric12_a3456_ctrl2));
-assign RIC12_A5_OUT = ~(~(path134_ric12_a5_1 && ~path266_ric12_a3456_ctrl1) && ~(path891_ric12_a5_2 && ~path1133_ric12_a3456_ctrl2));
-assign RIC12_A6_OUT = ~(~(path379_ric12_a6_1 && ~path266_ric12_a3456_ctrl1) && ~(path1282_ric12_a6_2 && ~path1133_ric12_a3456_ctrl2));
-assign RIC12_A7_OUT = ~((g1075_ric12_a7_wr && ~path852_ric12_wr_1) || (path480_ric12_a7_rd && RIC12_OE_OUT));
-assign RIC12_A8_OUT = ~((path153_ric12_a8_wr && ~path852_ric12_wr_1) || (path154_ric12_a8_rd && RIC12_OE_OUT));
-assign RIC12_A9_OUT = ~((g1142_ric12_a9_wr && ~path852_ric12_wr_1) || (path481_ric12_a9_rd && RIC12_OE_OUT));
-assign RIC12_D0_OUT = ~((path365_ric12_d0_1 && ~path152_ric12_a0) || (g846_ric12_d0_2 && path152_ric12_a0));
-assign RIC12_D1_OUT = ~((path363_ric12_d1_1 && ~path152_ric12_a0) || (path362_ric12_d1_2 && path152_ric12_a0));
-assign RIC12_D2_OUT = ~((path364_ric12_d2_1 && ~path152_ric12_a0) || (path361_ric12_d2_2 && path152_ric12_a0));
-assign RIC12_D3_OUT = ~((path348_ric12_d3_1 && ~path152_ric12_a0) || (path347_ric12_d3_2 && path152_ric12_a0));
-assign RIC12_D4_OUT = ~((path360_ric12_d4_1 && ~path152_ric12_a0) || (g385_ric12_d4_2 && path152_ric12_a0));
-assign RIC12_D5_OUT = ~((path346_ric12_d5_1 && ~path152_ric12_a0) || (path345_ric12_d5_2 && path152_ric12_a0));
-assign RIC12_D6_OUT = ~((g345_ric12_d6_1 && ~path152_ric12_a0) || (path367_ric12_d6_2 && path152_ric12_a0));
+assign RIC12_A0_OUT = ~((voice_param_addr_0 && ~path852_ric12_wr_1) || (~voice_param_addr_0 && RIC12_OE_OUT));
+assign RIC12_A1_OUT = ~((voice_param_addr_1 && ~path852_ric12_wr_1) || (g162_ric12_a1_rd && RIC12_OE_OUT));
+assign RIC12_A2_OUT = ~((voice_param_addr_2 && ~path852_ric12_wr_1) || (g158_ric12_a2_rd && RIC12_OE_OUT));
+assign RIC12_A3_OUT = ~(~(current_part_0 && ~path266_ric12_a3456_ctrl1) && ~(path890_ric12_a3_2 && ~path1133_ric12_a3456_ctrl2));
+assign RIC12_A4_OUT = ~(~(current_part_1 && ~path266_ric12_a3456_ctrl1) && ~(path1077_ric12_a4_2 && ~path1133_ric12_a3456_ctrl2));
+assign RIC12_A5_OUT = ~(~(current_part_2 && ~path266_ric12_a3456_ctrl1) && ~(path891_ric12_a5_2 && ~path1133_ric12_a3456_ctrl2));
+assign RIC12_A6_OUT = ~(~(current_part_3 && ~path266_ric12_a3456_ctrl1) && ~(path1282_ric12_a6_2 && ~path1133_ric12_a3456_ctrl2));
+assign RIC12_A7_OUT = ~((current_voice_0 && ~path852_ric12_wr_1) || (path480_ric12_a7_rd && RIC12_OE_OUT));
+assign RIC12_A8_OUT = ~((current_voice_1 && ~path852_ric12_wr_1) || (path154_ric12_a8_rd && RIC12_OE_OUT));
+assign RIC12_A9_OUT = ~((current_voice_2 && ~path852_ric12_wr_1) || (path481_ric12_a9_rd && RIC12_OE_OUT));
+assign RIC12_A10_OUT = ~((current_voice_3 && ~path852_ric12_wr_1) || (path482_ric12_a10_rd && RIC12_OE_OUT));
+assign RIC12_D0_OUT = ~((path365_ric12_d0_1 && ~voice_param_addr_0) || (g846_ric12_d0_2 && voice_param_addr_0));
+assign RIC12_D1_OUT = ~((path363_ric12_d1_1 && ~voice_param_addr_0) || (path362_ric12_d1_2 && voice_param_addr_0));
+assign RIC12_D2_OUT = ~((path364_ric12_d2_1 && ~voice_param_addr_0) || (path361_ric12_d2_2 && voice_param_addr_0));
+assign RIC12_D3_OUT = ~((path348_ric12_d3_1 && ~voice_param_addr_0) || (path347_ric12_d3_2 && voice_param_addr_0));
+assign RIC12_D4_OUT = ~((path360_ric12_d4_1 && ~voice_param_addr_0) || (g385_ric12_d4_2 && voice_param_addr_0));
+assign RIC12_D5_OUT = ~((path346_ric12_d5_1 && ~voice_param_addr_0) || (path345_ric12_d5_2 && voice_param_addr_0));
+assign RIC12_D6_OUT = ~((g345_ric12_d6_1 && ~voice_param_addr_0) || (path367_ric12_d6_2 && voice_param_addr_0));
 assign RIC12_D7_IOM = ~path852_ric12_wr_1 && UNK_74_IN;
-assign RIC12_D7_OUT = ~((path344_ric12_d7_1 && ~path152_ric12_a0) || (path333_ric12_d7_2 && path152_ric12_a0));
+assign RIC12_D7_OUT = ~((path344_ric12_d7_1 && ~voice_param_addr_0) || (path333_ric12_d7_2 && voice_param_addr_0));
 assign RIC12_OE_OUT = ~path145_ric12_oe_inv;
 assign RIC12_WE_OUT = ~(~((g1057_8dec_out1 || SYNC_IN || ~g300_step_counter_d) && (g1041_8dec_out2 || SYNC_IN || ~g300_step_counter_d)) && g1116);
 assign RIC13_D0_OUT = ~((path787_ric13_d0_0 || g461_ric13_d_0) && (path788 || g455) && (path800 || g448) && (path789 || g444));
 assign RIC13_D1_OUT = ~((path1306_ric13_d1_0 || g461_ric13_d_0) && (path1235 || g455) && (path1234 || g448) && (path1315 || g444));
 assign RIC13_D2_OUT = ~((path1221_ric13_d2_0 || g461_ric13_d_0) && (path1222 || g455) && (path862 || g448) && (path863 || g444));
 assign RIC13_D3_OUT = ~((path1258_ric13_d3_0 || g461_ric13_d_0) && (path1312 || g455) && (path1313 || g448) && (path1317 || g444));
-assign RIC13_D4_IOM = UNK_74_IN && ~(path1006 && g156_ric12_a2_wr);
+assign RIC13_D4_IOM = UNK_74_IN && ~(voice_param_addr_stage && voice_param_addr_2);
 assign RIC13_D4_OUT = ~((path462_ric13_d4_0 || g461_ric13_d_0) && (path456 || g455) && (path450 || g448) && (VCC || g444));
 assign RIC13_D5_OUT = ~((path463_ric13_d5_0 || g461_ric13_d_0) && (path806 || g455) && (path805 || g448) && (VCC || g444));
 assign RIC13_D6_OUT = ~((path464_ric13_d6_0 || g461_ric13_d_0) && (path644 || g455) && (path643 || g448) && (VCC || g444));
 assign RIC13_D7_OUT = ~((path467_ric13_d7_0 || g461_ric13_d_0) && (path804 || g455) && (path803 || g448) && (VCC || g444));
 assign WR_OUT = ~(~RW_IN && E_IN);
+
 
 assign g1034 = g1057_8dec_out1 || SYNC_IN || ~g300_step_counter_d;
 assign g1039 = g1057_8dec_out1 || SYNC_IN || g300_step_counter_d;
@@ -1297,7 +1304,7 @@ assign g1260 = ~(path655 && ~(UNK_75_IN && ~(~((path1165 || path1114 || path1250
 assign g1291 = ~(~UNK_75_IN || path1078);
 assign g1305 = ~(path651 && ~(UNK_75_IN && ~(~((path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND)) || ~((path872 ^ path977) || (path977 ^ path1145)))));
 assign g269 = ~(g1209_8dec_out7 || SYNC_IN || g300_step_counter_d);
-assign g288_path152_ric12_a0 = path152_ric12_a0;
+assign g288_path152_ric12_a0 = voice_param_addr_0;
 assign g325 = ~(~g979 || ~((path944 && g1016 && g1018) || (path919 && (g1014 || g1012))));
 assign g350 = ~(~(AL6_OUT && AL_CT_76_IN) && ~(AL6_IN && ~AL_CT_76_IN));
 assign g352 = ~(~(AL4_OUT && AL_CT_76_IN) && ~(AL4_IN && ~AL_CT_76_IN));
@@ -1313,14 +1320,14 @@ assign g439 = (g1057_8dec_out1 || SYNC_IN || g300_step_counter_d) && (g1215_8dec
 assign g466 = ~(path478 && ~(UNK_75_IN && ~(~((path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND)) || ~((path872 ^ path977) || (path977 ^ path1145)))));
 assign g469 = ~(path640 && ~(UNK_75_IN && ~(~((path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND)) || ~((path872 ^ path977) || (path977 ^ path1145)))));
 assign g476_ric13_d_0_clock = g1209_8dec_out7 || SYNC_IN || g300_step_counter_d;
-assign g487 = ~(~(P47_IN || P46_IN) && P45_IN_INV && P44_IN && ~(~(AL0_OUT && AL_CT_76_IN) && ~(AL0_IN && ~AL_CT_76_IN)) && ~RW_IN && E_IN);
-assign g607 = ~(~(P47_IN || P46_IN) && P45_IN_INV && P44_IN && ~(AL0_OUT && AL_CT_76_IN) && ~(AL0_IN && ~AL_CT_76_IN) && ~RW_IN && E_IN);
+assign wr_1000 = ~(~(P47_IN || P46_IN) && P45_IN_INV && P44_IN && ~(~(AL0_OUT && AL_CT_76_IN) && ~(AL0_IN && ~AL_CT_76_IN)) && ~RW_IN && E_IN);
+assign wr_1001 = ~(~(P47_IN || P46_IN) && P45_IN_INV && P44_IN && ~(AL0_OUT && AL_CT_76_IN) && ~(AL0_IN && ~AL_CT_76_IN) && ~RW_IN && E_IN);
 assign g650 = (path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977;
 assign g7 = ~((path983 && ~(UNK_75_IN && ~(~((path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND)) || ~((path872 ^ path977) || (path977 ^ path1145))))) || (g1163 && UNK_75_IN && ~(~((path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND)) || ~((path872 ^ path977) || (path977 ^ path1145)))));
 assign g755 = ~(path1106 && ~(UNK_75_IN && ~(~((path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND)) || ~((path872 ^ path977) || (path977 ^ path1145)))));
 assign g878 = ~(~((path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND)) || ~((path872 ^ path977) || (path977 ^ path1145)));
 assign g917 = ~(path915 && ~(UNK_75_IN && ~(~((path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND)) || ~((path872 ^ path977) || (path977 ^ path1145)))));
-assign g990 = path1006;
+assign g990 = voice_param_addr_stage;
 assign path1026 = ~(g668 || ~((path1300 && g1016 && g1018) || (path1299 && (g1014 || g1012))));
 assign path1027 = ~(((((~(~g1004 || g1201) || g1094) && path1165 && ~path1114 && ~path1250 && ~path1287) || (((~g1004 && ~g1201 && g1094) || ~((~g1004 && g1094) || ~g1201)) && ~path1165 && path1114 && path1250 && path1287) || (~(~g1004 && ~g1201) && ~g1094 && ~path1165 && path1114 && path1250 && ~path1287) || (((g1004 && ~g1201 && ~g1094) || ~(~g1201 || ~g1094)) && ~path1165 && path1114 && ~path1250 && path1287) || (g1004 && ~(~g1201 && ~g1094) && ~path1165 && path1114 && ~path1250 && ~path1287) || (VCC && ~path1165 && ~path1114 && path1250 && path1287)) && (path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977) || (~(((~(~g1004 || g1201) || g1094) && path1165 && ~path1114 && ~path1250 && ~path1287) || (((~g1004 && ~g1201 && g1094) || ~((~g1004 && g1094) || ~g1201)) && ~path1165 && path1114 && path1250 && path1287) || (~(~g1004 && ~g1201) && ~g1094 && ~path1165 && path1114 && path1250 && ~path1287) || (((g1004 && ~g1201 && ~g1094) || ~(~g1201 || ~g1094)) && ~path1165 && path1114 && ~path1250 && path1287) || (g1004 && ~(~g1201 && ~g1094) && ~path1165 && path1114 && ~path1250 && ~path1287) || (VCC && ~path1165 && ~path1114 && path1250 && path1287)) && ~((path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977)));
 assign path1060_add_m3_a2 = ~(((((~(~g1004 || g1201) || g1094) && path1165 && ~path1114 && path1250 && path1287) || (((~g1004 && ~g1201 && g1094) || ~((~g1004 && g1094) || ~g1201)) && path1165 && ~path1114 && path1250 && ~path1287) || (~(~g1004 && ~g1201) && ~g1094 && path1165 && ~path1114 && ~path1250 && path1287) || (((g1004 && ~g1201 && ~g1094) || ~(~g1201 || ~g1094)) && path1165 && ~path1114 && ~path1250 && ~path1287) || (g1004 && ~(~g1201 && ~g1094) && ~path1165 && path1114 && path1250 && path1287) || (VCC && ~path1165 && path1114 && path1250 && ~path1287)) && (path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977) || (~(((~(~g1004 || g1201) || g1094) && path1165 && ~path1114 && path1250 && path1287) || (((~g1004 && ~g1201 && g1094) || ~((~g1004 && g1094) || ~g1201)) && path1165 && ~path1114 && path1250 && ~path1287) || (~(~g1004 && ~g1201) && ~g1094 && path1165 && ~path1114 && ~path1250 && path1287) || (((g1004 && ~g1201 && ~g1094) || ~(~g1201 || ~g1094)) && path1165 && ~path1114 && ~path1250 && ~path1287) || (g1004 && ~(~g1201 && ~g1094) && ~path1165 && path1114 && path1250 && path1287) || (VCC && ~path1165 && path1114 && path1250 && ~path1287)) && ~((path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977)));
@@ -1360,20 +1367,20 @@ assign path137 = ~(~g979 || ~((path792 && g1016 && g1018) || (path974 && (g1014 
 assign path138 = ~(~g979 || ~((path793 && g1016 && g1018) || (path1253 && (g1014 || g1012))));
 assign path139 = ~(~g979 || ~((path794 && g1016 && g1018) || (path1104 && (g1014 || g1012))));
 assign path140 = ~(~g979 || ~((path795 && g1016 && g1018) || (path965 && (g1014 || g1012))));
-assign path144 = ~(~(path1006 && ~g156_ric12_a2_wr && ~g160_ric12_a1_wr && path152_ric12_a0) && ~(path1006 && ~g156_ric12_a2_wr && ~g160_ric12_a1_wr && ~path152_ric12_a0));
-assign path255_io5_out_unsync = ~((path371 && path152_ric12_a0) || (~(~g979 || ~((path982 && g1016 && g1018) || (path1168 && (g1014 || g1012)))) && ~path152_ric12_a0));
-assign path256_io4_out_unsync = ~((~path319 && path152_ric12_a0) || ((~g979 || ~((path799 && g1016 && g1018) || (path1231 && (g1014 || g1012)))) && ~path152_ric12_a0));
-assign path257_io3_out_unsync = ~((path271 && path152_ric12_a0) || (~(~g979 || ~((path798 && g1016 && g1018) || (path1309 && (g1014 || g1012)))) && ~path152_ric12_a0));
-assign path267_io2_out_unsync = ~((~(g999 && path1000) && path152_ric12_a0) || (~path320 && ~path152_ric12_a0));
-assign path268_io7_out_unsync = ~((g999 && path1122 && path152_ric12_a0) || (~(~g979 || ~((path944 && g1016 && g1018) || (path919 && (g1014 || g1012)))) && ~path152_ric12_a0));
-assign path269_io8_out_unsync = ~((g999 && path1087 && path152_ric12_a0) || (~(~g979 || ~((path933 && g1016 && g1018) || (path918 && (g1014 || g1012)))) && ~path152_ric12_a0));
-assign path270_io6_out_unsync = ~((~(g999 && path1085) && path152_ric12_a0) || ((~g979 || ~((path934 && g1016 && g1018) || (path1169 && (g1014 || g1012)))) && ~path152_ric12_a0));
+assign path144 = ~(~(voice_param_addr_stage && ~voice_param_addr_2 && ~voice_param_addr_1 && voice_param_addr_0) && ~(voice_param_addr_stage && ~voice_param_addr_2 && ~voice_param_addr_1 && ~voice_param_addr_0));
+assign path255_io5_out_unsync = ~((path371 && voice_param_addr_0) || (~(~g979 || ~((path982 && g1016 && g1018) || (path1168 && (g1014 || g1012)))) && ~voice_param_addr_0));
+assign path256_io4_out_unsync = ~((~path319 && voice_param_addr_0) || ((~g979 || ~((path799 && g1016 && g1018) || (path1231 && (g1014 || g1012)))) && ~voice_param_addr_0));
+assign path257_io3_out_unsync = ~((path271 && voice_param_addr_0) || (~(~g979 || ~((path798 && g1016 && g1018) || (path1309 && (g1014 || g1012)))) && ~voice_param_addr_0));
+assign path267_io2_out_unsync = ~((~(g999 && path1000) && voice_param_addr_0) || (~path320 && ~voice_param_addr_0));
+assign path268_io7_out_unsync = ~((g999 && path1122 && voice_param_addr_0) || (~(~g979 || ~((path944 && g1016 && g1018) || (path919 && (g1014 || g1012)))) && ~voice_param_addr_0));
+assign path269_io8_out_unsync = ~((g999 && path1087 && voice_param_addr_0) || (~(~g979 || ~((path933 && g1016 && g1018) || (path918 && (g1014 || g1012)))) && ~voice_param_addr_0));
+assign path270_io6_out_unsync = ~((~(g999 && path1085) && voice_param_addr_0) || ((~g979 || ~((path934 && g1016 && g1018) || (path1169 && (g1014 || g1012)))) && ~voice_param_addr_0));
 assign path290 = ~(~g979 || ~((path798 && g1016 && g1018) || (path1309 && (g1014 || g1012))));
 assign path331 = ~(~(g1209_8dec_out7 || SYNC_IN || g300_step_counter_d) ^ VCC);
 assign path369 = ~(~g979 || ~((path982 && g1016 && g1018) || (path1168 && (g1014 || g1012))));
-assign path378 = ~(~(path1006 && ~g156_ric12_a2_wr && ~g160_ric12_a1_wr && path152_ric12_a0) && ~(path1006 && ~g156_ric12_a2_wr && ~g160_ric12_a1_wr && ~path152_ric12_a0) && ~(~path1006 && g156_ric12_a2_wr && ~g160_ric12_a1_wr && path152_ric12_a0));
-assign path385 = path379_ric12_a6_1 && g260_ric12_a3_1 && (path1005_e7_coverflow || ~UNK_74_IN);
-assign path386 = FSYNC_IN && ~(path379_ric12_a6_1 && g260_ric12_a3_1 && (path1005_e7_coverflow || ~UNK_74_IN));
+assign path378 = ~(~(voice_param_addr_stage && ~voice_param_addr_2 && ~voice_param_addr_1 && voice_param_addr_0) && ~(voice_param_addr_stage && ~voice_param_addr_2 && ~voice_param_addr_1 && ~voice_param_addr_0) && ~(~voice_param_addr_stage && voice_param_addr_2 && ~voice_param_addr_1 && voice_param_addr_0));
+assign path385 = current_part_3 && current_part_0 && (path1005_e7_coverflow || ~UNK_74_IN);
+assign path386 = FSYNC_IN && ~(current_part_3 && current_part_0 && (path1005_e7_coverflow || ~UNK_74_IN));
 assign path493 = ~(~(AL7_OUT && AL_CT_76_IN) && ~(AL7_IN && ~AL_CT_76_IN));
 assign path545 = ~(((((~(~g1004 || g1201) || g1094) && ~path1165 && ~path1114 && path1250 && path1287) || (((~g1004 && ~g1201 && g1094) || ~((~g1004 && g1094) || ~g1201)) && ~path1165 && ~path1114 && path1250 && ~path1287) || (~(~g1004 && ~g1201) && ~g1094 && ~path1165 && ~path1114 && ~path1250 && path1287) || (((g1004 && ~g1201 && ~g1094) || ~(~g1201 || ~g1094)) && ~path1165 && ~path1114 && ~path1250 && ~path1287)) && (path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977) || (~(((~(~g1004 || g1201) || g1094) && ~path1165 && ~path1114 && path1250 && path1287) || (((~g1004 && ~g1201 && g1094) || ~((~g1004 && g1094) || ~g1201)) && ~path1165 && ~path1114 && path1250 && ~path1287) || (~(~g1004 && ~g1201) && ~g1094 && ~path1165 && ~path1114 && ~path1250 && path1287) || (((g1004 && ~g1201 && ~g1094) || ~(~g1201 || ~g1094)) && ~path1165 && ~path1114 && ~path1250 && ~path1287)) && ~((path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977)));
 assign path547 = ~(((~(~g1004 || g1201) || g1094) && ~path1165 && ~path1114 && ~path1250 && ~path1287 && (path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977) || (~((~(~g1004 || g1201) || g1094) && ~path1165 && ~path1114 && ~path1250 && ~path1287) && ~((path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977)));
@@ -1384,7 +1391,7 @@ assign path571 = ~((((VCC && ~path1165 && ~path1114 && path1250 && path1287) || 
 assign path601 = ~(((((~(~g1004 || g1201) || g1094) && ~path1165 && ~path1114 && ~path1250 && path1287) || (((~g1004 && ~g1201 && g1094) || ~((~g1004 && g1094) || ~g1201)) && ~path1165 && ~path1114 && ~path1250 && ~path1287)) && (path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977) || (~(((~(~g1004 || g1201) || g1094) && ~path1165 && ~path1114 && ~path1250 && path1287) || (((~g1004 && ~g1201 && g1094) || ~((~g1004 && g1094) || ~g1201)) && ~path1165 && ~path1114 && ~path1250 && ~path1287)) && ~((path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977)));
 assign path605 = ~(((((~(~g1004 || g1201) || g1094) && ~path1165 && path1114 && path1250 && path1287) || (((~g1004 && ~g1201 && g1094) || ~((~g1004 && g1094) || ~g1201)) && ~path1165 && path1114 && path1250 && ~path1287) || (~(~g1004 && ~g1201) && ~g1094 && ~path1165 && path1114 && ~path1250 && path1287) || (((g1004 && ~g1201 && ~g1094) || ~(~g1201 || ~g1094)) && ~path1165 && path1114 && ~path1250 && ~path1287) || (g1004 && ~(~g1201 && ~g1094) && ~path1165 && ~path1114 && path1250 && path1287) || (VCC && ~path1165 && ~path1114 && path1250 && ~path1287)) && (path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977) || (~(((~(~g1004 || g1201) || g1094) && ~path1165 && path1114 && path1250 && path1287) || (((~g1004 && ~g1201 && g1094) || ~((~g1004 && g1094) || ~g1201)) && ~path1165 && path1114 && path1250 && ~path1287) || (~(~g1004 && ~g1201) && ~g1094 && ~path1165 && path1114 && ~path1250 && path1287) || (((g1004 && ~g1201 && ~g1094) || ~(~g1201 || ~g1094)) && ~path1165 && path1114 && ~path1250 && ~path1287) || (g1004 && ~(~g1201 && ~g1094) && ~path1165 && ~path1114 && path1250 && path1287) || (VCC && ~path1165 && ~path1114 && path1250 && ~path1287)) && ~((path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977)));
 assign path627 = ~((~(~((path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND)) || ~(((~(~g1004 || g1201) || g1094) && ~path1165 && path1114 && ~path1250 && path1287) || (((~g1004 && ~g1201 && g1094) || ~((~g1004 && g1094) || ~g1201)) && ~path1165 && path1114 && ~path1250 && ~path1287) || (~(~g1004 && ~g1201) && ~g1094 && ~path1165 && ~path1114 && path1250 && path1287) || (((g1004 && ~g1201 && ~g1094) || ~(~g1201 || ~g1094)) && ~path1165 && ~path1114 && path1250 && ~path1287) || (g1004 && ~(~g1201 && ~g1094) && ~path1165 && ~path1114 && ~path1250 && path1287) || (VCC && ~path1165 && ~path1114 && ~path1250 && ~path1287))) && (path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977) || ((~((path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND)) || ~(((~(~g1004 || g1201) || g1094) && ~path1165 && path1114 && ~path1250 && path1287) || (((~g1004 && ~g1201 && g1094) || ~((~g1004 && g1094) || ~g1201)) && ~path1165 && path1114 && ~path1250 && ~path1287) || (~(~g1004 && ~g1201) && ~g1094 && ~path1165 && ~path1114 && path1250 && path1287) || (((g1004 && ~g1201 && ~g1094) || ~(~g1201 || ~g1094)) && ~path1165 && ~path1114 && path1250 && ~path1287) || (g1004 && ~(~g1201 && ~g1094) && ~path1165 && ~path1114 && ~path1250 && path1287) || (VCC && ~path1165 && ~path1114 && ~path1250 && ~path1287))) && ~((path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977)));
-assign path631 = ~(((((~(~g1004 || g1201) || g1094) && ~path1165 && path1114 && path1250 && ~path1287) || (((~g1004 && ~g1201 && g1094) || ~((~g1004 && g1094) || ~g1201)) && ~path1165 && path1114 && ~path1250 && path1287) || (~(~g1004 && ~g1201) && ~g1094 && ~path1165 && path1114 && ~path1250 && ~path1287) || (((g1004 && ~g1201 && ~g1094) || ~(~g1201 || ~g1094)) && ~path1165 && ~path1114 && path1250 && path1287) || (g1004 && ~(~g1201 && ~g1094) && ~path1165 && ~path1114 && path1250 && ~path1287) || (g846_ric12_d0_2 && ~path1165 && ~path1114 && ~path1250 && path1287)) && (path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977) || (~(((~(~g1004 || g1201) || g1094) && ~path1165 && path1114 && path1250 && ~path1287) || (((~g1004 && ~g1201 && g1094) || ~((~g1004 && g1094) || ~g1201)) && ~path1165 && path1114 && ~path1250 && path1287) || (~(~g1004 && ~g1201) && ~g1094 && ~path1165 && path1114 && ~path1250 && ~path1287) || (((g1004 && ~g1201 && ~g1094) || ~(~g1201 || ~g1094)) && ~path1165 && ~path1114 && path1250 && path1287) || (g1004 && ~(~g1201 && ~g1094) && ~path1165 && ~path1114 && path1250 && ~path1287) || (g846_ric12_d0_2 && ~path1165 && ~path1114 && ~path1250 && path1287)) && ~((path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977)));
+assign path631 = ~(((((~(~g1004 || g1201) || g1094) && ~path1165 && path1114 && path1250 && ~path1287) || (((~g1004 && ~g1201 && g1094) || ~((~g1004 && g1094) || ~g1201)) && ~path1165 && path1114 && ~path1250 && path1287) || (~(~g1004 && ~g1201) && ~g1094 && ~path1165 && path1114 && ~path1250 && ~path1287) || (((g1004 && ~g1201 && ~g1094) || ~(~g1201 || ~g1094)) && ~path1165 && ~path1114 && path1250 && path1287) || (g1004 && ~(~g1201 && ~g1094) && ~path1165 && ~path1114 && path1250 && ~path1287) || (VCC && ~path1165 && ~path1114 && ~path1250 && path1287)) && (path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977) || (~(((~(~g1004 || g1201) || g1094) && ~path1165 && path1114 && path1250 && ~path1287) || (((~g1004 && ~g1201 && g1094) || ~((~g1004 && g1094) || ~g1201)) && ~path1165 && path1114 && ~path1250 && path1287) || (~(~g1004 && ~g1201) && ~g1094 && ~path1165 && path1114 && ~path1250 && ~path1287) || (((g1004 && ~g1201 && ~g1094) || ~(~g1201 || ~g1094)) && ~path1165 && ~path1114 && path1250 && path1287) || (g1004 && ~(~g1201 && ~g1094) && ~path1165 && ~path1114 && path1250 && ~path1287) || (VCC && ~path1165 && ~path1114 && ~path1250 && path1287)) && ~((path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977)));
 assign path635 = ~((((GND && ~path1165 && path1114 && ~path1250 && path1287) || ((~(~g1004 || g1201) || g1094) && ~path1165 && path1114 && ~path1250 && ~path1287) || (((~g1004 && ~g1201 && g1094) || ~((~g1004 && g1094) || ~g1201)) && ~path1165 && ~path1114 && path1250 && path1287) || (~(~g1004 && ~g1201) && ~g1094 && ~path1165 && ~path1114 && path1250 && ~path1287) || (((g1004 && ~g1201 && ~g1094) || ~(~g1201 || ~g1094)) && ~path1165 && ~path1114 && ~path1250 && path1287) || (g1004 && ~(~g1201 && ~g1094) && ~path1165 && ~path1114 && ~path1250 && ~path1287)) && (path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977) || (~((GND && ~path1165 && path1114 && ~path1250 && path1287) || ((~(~g1004 || g1201) || g1094) && ~path1165 && path1114 && ~path1250 && ~path1287) || (((~g1004 && ~g1201 && g1094) || ~((~g1004 && g1094) || ~g1201)) && ~path1165 && ~path1114 && path1250 && path1287) || (~(~g1004 && ~g1201) && ~g1094 && ~path1165 && ~path1114 && path1250 && ~path1287) || (((g1004 && ~g1201 && ~g1094) || ~(~g1201 || ~g1094)) && ~path1165 && ~path1114 && ~path1250 && path1287) || (g1004 && ~(~g1201 && ~g1094) && ~path1165 && ~path1114 && ~path1250 && ~path1287)) && ~((path1165 || path1114 || path1250 || path1287) && (g1004 || g1201 || g1094 || GND) && path977)));
 assign path637 = ~(g668 || ~((path790 && g1016 && g1018) || (path427 && (g1014 || g1012))));
 assign path638 = ~(g668 || ~((path785 && g1016 && g1018) || (path786 && (g1014 || g1012))));
@@ -1408,8 +1415,8 @@ assign path900 = ~path1121;
 assign path901 = ~g897;
 assign path914 = ~(g1116 && ~(g1057_8dec_out1 || SYNC_IN || ~g300_step_counter_d));
 assign path976 = ~(~g979 || ~((path1257 && g1016 && g1018) || (path1316 && (g1014 || g1012))));
-assign path986_g160_ric12_a1_wr = g160_ric12_a1_wr;
-assign path991 = ~(~(path1006 && ~g156_ric12_a2_wr && ~g160_ric12_a1_wr && path152_ric12_a0) && (~(path1006 && ~g156_ric12_a2_wr && ~g160_ric12_a1_wr && ~path152_ric12_a0) || (g162_ric12_a1_rd && g158_ric12_a2_rd)));
+assign path986_g160_ric12_a1_wr = voice_param_addr_1;
+assign path991 = ~(~(voice_param_addr_stage && ~voice_param_addr_2 && ~voice_param_addr_1 && voice_param_addr_0) && (~(voice_param_addr_stage && ~voice_param_addr_2 && ~voice_param_addr_1 && ~voice_param_addr_0) || (g162_ric12_a1_rd && g158_ric12_a2_rd)));
 
 
 endmodule

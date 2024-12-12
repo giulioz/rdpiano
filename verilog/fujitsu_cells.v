@@ -6,8 +6,8 @@ module cell_FJD ( // Positive Edge Clocked Power JKFF with CLEAR
 	input J, K,
 	input nCL,
   // TODO: inverted?
-	output nQ,
-	output reg Q = 1'b0
+	output reg Q = 1'b0,
+	output nQ
 );
 	always @(posedge CK or negedge nCL) begin
 		if (~nCL)
@@ -99,10 +99,11 @@ endmodule
 module cell_FDM ( // DFF
   input wire CK,
   input wire D,
-  // TODO: inverted?
+  // checked
 	output nQ,
 	output reg Q = 1'b0
 );
+  // checked
   always @(posedge CK) begin
     Q <= D;		// tmax = 6.0ns
   end
@@ -272,6 +273,7 @@ endmodule
 module cell_LT2 ( // 1-bit Data Latch
   input wire nG,
   input wire D,
+  // Could be inverted
   output reg Q = 1'b0,
   output wire nQ
 );

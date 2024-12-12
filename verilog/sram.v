@@ -25,8 +25,10 @@ module Sram (
 	assign data_out = (write_enable && !output_enable) ? mem[address] : 8'bz;
 
 	always @(posedge write_enable) begin
-	  //  if (!write_enable && output_enable)
-		  //  mem[address] <= data_in;
+	   if (output_enable) begin
+		   mem[address] = data_in;
+			//  $display("writing %h %h", address, data_in);
+		 end
 	end
 
 	initial begin
