@@ -20,8 +20,8 @@ module IC9 (
   
   output wire [16:0] WR_A_OUT,
 
-  output wire IPT1_OUT, // 36
-  output wire IPT2_OUT, // 37
+  output wire IPT1_OUT, // 37
+  output wire IPT2_OUT, // 36
   output wire IPT0_OUT  // 38
 );
 
@@ -1076,7 +1076,7 @@ cell_FDM V22 ( // DFF
 );
 
 
-// Lower part comes from the multiplier
+// Lower part comes from the adder
 assign WR_A0_OUT = adder1_b9;
 assign WR_A1_OUT = ~adder1_b10;
 assign WR_A2_OUT = adder1_b11;
@@ -1120,9 +1120,9 @@ assign ipt_out0_2 = (config3b5_romaddr_16_r || config3b4_romaddr_15_r || config3
 assign ipt_out2_2 = ~(~(bus7_cycle0_7 && bus6_cycle0_7) && ~(adder1_b23 || adder1_b22 || adder1_b21 || adder1_b20) && ~bus1_cycle6_cycle7);
 
 // outputs either the phase bit 6/7/8 in alternate cycles
-assign ipt0_out_unsync = ~(~(adder1_b6 && RAM_A0_OUT) && ~(ipt_out0_2 && ~RAM_A0_OUT));
-assign ipt2_out_unsync = ~(~(adder1_b7 && RAM_A0_OUT) && ~(ipt_out_2_2 && ~RAM_A0_OUT));
-assign ipt1_out_unsync = ~(~(adder1_b8 && RAM_A0_OUT) && ~(adder1_b5 && ~RAM_A0_OUT));
+assign ipt0_out_unsync = ~(~(adder1_b6 && RAM_A0_OUT) && ~(ipt_out0_2 && ~RAM_A0_OUT)); // AG3
+assign ipt2_out_unsync = ~(~(adder1_b7 && RAM_A0_OUT) && ~(ipt_out2_2 && ~RAM_A0_OUT)); // AG1
+assign ipt1_out_unsync = ~(~(adder1_b8 && RAM_A0_OUT) && ~(adder1_b5 && ~RAM_A0_OUT));  // AG2
 assign ipt3_out_unsync = ~(~(GND && RAM_A0_OUT) && ~(GND && ~RAM_A0_OUT)); // unused
 
 // initial begin
