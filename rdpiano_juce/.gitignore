@@ -1,0 +1,6 @@
+.DS_Store
+.vscode
+Builds
+JuceLibraryCode
+*.bin
+*.zip
