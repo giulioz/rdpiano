@@ -58,18 +58,7 @@ static constexpr uint16_t addr_table[] = {0x1e0, 0x080, 0x060, 0x04d, 0x040, 0x0
 
 SoundChip::SoundChip(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7)
 {
-    u8 ic5[0x20000];
-    u8 ic6[0x20000];
-    u8 ic7[0x20000];
-    for (size_t srcpos = 0x00; srcpos < 0x20000; srcpos++) {
-		ic5[srcpos] = UNSCRAMBLE_DATA_WAVE(temp_ic5[UNSCRAMBLE_ADDR_WAVE(srcpos)]);
-	}
-	for (size_t srcpos = 0x00; srcpos < 0x20000; srcpos++) {
-		ic6[srcpos] = UNSCRAMBLE_DATA_WAVE(temp_ic6[UNSCRAMBLE_ADDR_WAVE(srcpos)]);
-	}
-	for (size_t srcpos = 0x00; srcpos < 0x20000; srcpos++) {
-		ic7[srcpos] = UNSCRAMBLE_DATA_WAVE(temp_ic7[UNSCRAMBLE_ADDR_WAVE(srcpos)]);
-	}
+    load_samples(temp_ic5, temp_ic6, temp_ic7);
 
     m_irq_id = 0;
     m_irq_triggered = false;
@@ -174,65 +163,6 @@ SoundChip::SoundChip(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7)
             result_b9 << 9 | result_b8 << 8 | result_b7 << 7 | result_b6 << 6 | result_b5 << 5 |
             result_b4 << 4 | result_b3 << 3 | result_b2 << 2 | result_b1 << 1 | result_b0 << 0;
         samples_exp_table[i] = result;
-    }
-
-    // Wave rom values
-    for (size_t i = 0; i < 0x20000; i++)
-    {
-        size_t descrambled_i = (
-            ((i >> 0) & 1) << 0 |
-            ((~i >> 1) & 1) << 1 |
-            ((i >> 2) & 1) << 2 |
-            ((~i >> 3) & 1) << 3 |
-            ((i >> 4) & 1) << 4 |
-            ((~i >> 5) & 1) << 5 |
-            ((i >> 6) & 1) << 6 |
-            ((i >> 7) & 1) << 7 |
-            ((~i >> 8) & 1) << 8 |
-            ((~i >> 9) & 1) << 9 |
-            ((i >> 10) & 1) << 10 |
-            ((i >> 11) & 1) << 11 |
-            ((i >> 12) & 1) << 12 |
-            ((i >> 13) & 1) << 13 |
-            ((i >> 14) & 1) << 14 |
-            ((i >> 15) & 1) << 15 |
-            ((i >> 16) & 1) << 16
-        );
-
-        uint16_t exp_sample = (
-            ((ic5[descrambled_i] >> 0) & 1) << 13 |
-            ((ic6[descrambled_i] >> 4) & 1) << 12 |
-            ((ic7[descrambled_i] >> 4) & 1) << 11 |
-            ((~ic6[descrambled_i] >> 0) & 1) << 10 |
-            ((ic7[descrambled_i] >> 7) & 1) << 9 |
-            ((ic5[descrambled_i] >> 7) & 1) << 8 |
-            ((~ic5[descrambled_i] >> 5) & 1) << 7 |
-            ((ic6[descrambled_i] >> 2) & 1) << 6 |
-            ((ic7[descrambled_i] >> 2) & 1) << 5 |
-            ((ic7[descrambled_i] >> 1) & 1) << 4 |
-            ((~ic5[descrambled_i] >> 1) & 1) << 3 |
-            ((ic5[descrambled_i] >> 3) & 1) << 2 |
-            ((ic6[descrambled_i] >> 5) & 1) << 1 |
-            ((~ic6[descrambled_i] >> 7) & 1) << 0
-        );
-        bool exp_sign = (~ic7[descrambled_i] >> 3) & 1;
-        samples_exp[i] = exp_sample;
-        samples_exp_sign[i] = exp_sign;
-
-        uint16_t delta_sample = (
-            ((~ic7[descrambled_i] >> 6) & 1) << 8 |
-            ((ic5[descrambled_i] >> 4) & 1) << 7 |
-            ((ic7[descrambled_i] >> 0) & 1) << 6 |
-            ((~ic6[descrambled_i] >> 3) & 1) << 5 |
-            ((ic5[descrambled_i] >> 2) & 1) << 4 |
-            ((~ic5[descrambled_i] >> 6) & 1) << 3 |
-            ((ic6[descrambled_i] >> 6) & 1) << 2 |
-            ((ic7[descrambled_i] >> 5) & 1) << 1 |
-            ((~ic6[descrambled_i] >> 7) & 1) << 0
-        );
-        bool delta_sign = (ic6[descrambled_i] >> 1) & 1;
-        samples_delta[i] = delta_sample;
-        samples_delta_sign[i] = delta_sign;
     }
 }
 
@@ -387,4 +317,79 @@ s16 SoundChip::update()
     }
 
     return result >> 2;
+}
+
+void SoundChip::load_samples(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7)
+{
+    u8 ic5[0x20000];
+    u8 ic6[0x20000];
+    u8 ic7[0x20000];
+    for (size_t srcpos = 0x00; srcpos < 0x20000; srcpos++) {
+		ic5[srcpos] = UNSCRAMBLE_DATA_WAVE(temp_ic5[UNSCRAMBLE_ADDR_WAVE(srcpos)]);
+	}
+	for (size_t srcpos = 0x00; srcpos < 0x20000; srcpos++) {
+		ic6[srcpos] = UNSCRAMBLE_DATA_WAVE(temp_ic6[UNSCRAMBLE_ADDR_WAVE(srcpos)]);
+	}
+	for (size_t srcpos = 0x00; srcpos < 0x20000; srcpos++) {
+		ic7[srcpos] = UNSCRAMBLE_DATA_WAVE(temp_ic7[UNSCRAMBLE_ADDR_WAVE(srcpos)]);
+	}
+
+    // Wave rom values
+    for (size_t i = 0; i < 0x20000; i++)
+    {
+        size_t descrambled_i = (
+            ((i >> 0) & 1) << 0 |
+            ((~i >> 1) & 1) << 1 |
+            ((i >> 2) & 1) << 2 |
+            ((~i >> 3) & 1) << 3 |
+            ((i >> 4) & 1) << 4 |
+            ((~i >> 5) & 1) << 5 |
+            ((i >> 6) & 1) << 6 |
+            ((i >> 7) & 1) << 7 |
+            ((~i >> 8) & 1) << 8 |
+            ((~i >> 9) & 1) << 9 |
+            ((i >> 10) & 1) << 10 |
+            ((i >> 11) & 1) << 11 |
+            ((i >> 12) & 1) << 12 |
+            ((i >> 13) & 1) << 13 |
+            ((i >> 14) & 1) << 14 |
+            ((i >> 15) & 1) << 15 |
+            ((i >> 16) & 1) << 16
+        );
+
+        uint16_t exp_sample = (
+            ((ic5[descrambled_i] >> 0) & 1) << 13 |
+            ((ic6[descrambled_i] >> 4) & 1) << 12 |
+            ((ic7[descrambled_i] >> 4) & 1) << 11 |
+            ((~ic6[descrambled_i] >> 0) & 1) << 10 |
+            ((ic7[descrambled_i] >> 7) & 1) << 9 |
+            ((ic5[descrambled_i] >> 7) & 1) << 8 |
+            ((~ic5[descrambled_i] >> 5) & 1) << 7 |
+            ((ic6[descrambled_i] >> 2) & 1) << 6 |
+            ((ic7[descrambled_i] >> 2) & 1) << 5 |
+            ((ic7[descrambled_i] >> 1) & 1) << 4 |
+            ((~ic5[descrambled_i] >> 1) & 1) << 3 |
+            ((ic5[descrambled_i] >> 3) & 1) << 2 |
+            ((ic6[descrambled_i] >> 5) & 1) << 1 |
+            ((~ic6[descrambled_i] >> 7) & 1) << 0
+        );
+        bool exp_sign = (~ic7[descrambled_i] >> 3) & 1;
+        samples_exp[i] = exp_sample;
+        samples_exp_sign[i] = exp_sign;
+
+        uint16_t delta_sample = (
+            ((~ic7[descrambled_i] >> 6) & 1) << 8 |
+            ((ic5[descrambled_i] >> 4) & 1) << 7 |
+            ((ic7[descrambled_i] >> 0) & 1) << 6 |
+            ((~ic6[descrambled_i] >> 3) & 1) << 5 |
+            ((ic5[descrambled_i] >> 2) & 1) << 4 |
+            ((~ic5[descrambled_i] >> 6) & 1) << 3 |
+            ((ic6[descrambled_i] >> 6) & 1) << 2 |
+            ((ic7[descrambled_i] >> 5) & 1) << 1 |
+            ((~ic6[descrambled_i] >> 7) & 1) << 0
+        );
+        bool delta_sign = (ic6[descrambled_i] >> 1) & 1;
+        samples_delta[i] = delta_sample;
+        samples_delta_sign[i] = delta_sign;
+    }
 }

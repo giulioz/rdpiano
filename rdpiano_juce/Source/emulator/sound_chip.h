@@ -13,6 +13,8 @@ public:
 
   s16 update();
 
+  void load_samples(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7);
+
   // if there is an IRQ currently waiting
   bool m_irq_triggered;
 

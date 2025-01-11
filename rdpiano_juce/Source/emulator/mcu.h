@@ -39,6 +39,7 @@ public:
 	bool current_sample_rate = false;
 
 	void sendMidiCmd(u8 cmd, u8 data1, u8 data2);
+	void loadSounds(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7, const u8 *temp_paramsrom);
 
 private:
   // Board specific
@@ -51,11 +52,6 @@ private:
   u8 program_rom[0x2000];
   u8 params_rom[0x20000];
   u8 ram[0x10000] = {0};
-
-  u8 dac = 0x01;
-  u8 dav = 0x00;
-  bool inited = false;
-	unsigned long initCnt = 0;
 
   // Generic CPU
   void take_trap();

@@ -1116,14 +1116,18 @@ cell_DE3 V91 ( // 3:8 Decoder
   unconnected_V91_X7 // OUTPUT X7  0x3800
 );
 
-assign ipt_out0_2 = (config3b5_romaddr_16_r || config3b4_romaddr_15_r || config3b3_romaddr_14_r || (wr_sel_0000 && wr_sel_0800 && wr_sel_1000 && wr_sel_1800 && wr_sel_2000));
-assign ipt_out2_2 = ~(~(bus7_cycle0_7 && bus6_cycle0_7) && ~(adder1_b23 || adder1_b22 || adder1_b21 || adder1_b20) && ~bus1_cycle6_cycle7);
+assign ag3_sel_sample_type = config3b5_romaddr_16_r
+                          || config3b4_romaddr_15_r
+                          || config3b3_romaddr_14_r
+                          || (wr_sel_0000 && wr_sel_0800 && wr_sel_1000 && wr_sel_1800 && wr_sel_2000);
+assign ag1_phase_hi = (bus7_cycle0_7 && bus6_cycle0_7)
+                   || (adder1_b23 || adder1_b22 || adder1_b21 || adder1_b20) || bus1_cycle6_cycle7;
 
 // outputs either the phase bit 6/7/8 in alternate cycles
-assign ipt0_out_unsync = ~(~(adder1_b6 && RAM_A0_OUT) && ~(ipt_out0_2 && ~RAM_A0_OUT)); // AG3
-assign ipt2_out_unsync = ~(~(adder1_b7 && RAM_A0_OUT) && ~(ipt_out2_2 && ~RAM_A0_OUT)); // AG1
-assign ipt1_out_unsync = ~(~(adder1_b8 && RAM_A0_OUT) && ~(adder1_b5 && ~RAM_A0_OUT));  // AG2
-assign ipt3_out_unsync = ~(~(GND && RAM_A0_OUT) && ~(GND && ~RAM_A0_OUT)); // unused
+assign ipt0_out_unsync = (adder1_b6 && RAM_A0_OUT) || (ag3_sel_sample_type && ~RAM_A0_OUT); // AG3
+assign ipt2_out_unsync = (adder1_b7 && RAM_A0_OUT) || (ag1_phase_hi && ~RAM_A0_OUT); // AG1
+assign ipt1_out_unsync = (adder1_b8 && RAM_A0_OUT) || (adder1_b5 && ~RAM_A0_OUT); // AG2
+assign ipt3_out_unsync = (GND && RAM_A0_OUT) || (GND && ~RAM_A0_OUT); // unused
 
 // initial begin
 //   $monitor(

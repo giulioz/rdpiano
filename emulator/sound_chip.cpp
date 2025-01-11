@@ -46,8 +46,31 @@ static constexpr uint32_t env_table[] = {
 static constexpr uint16_t addr_table[] = {0x1e0, 0x080, 0x060, 0x04d, 0x040, 0x036, 0x02d, 0x026,
                                           0x020, 0x01b, 0x016, 0x011, 0x00d, 0x00a, 0x006, 0x003};
 
-SoundChip::SoundChip(u8 *ic5, u8 *ic6, u8 *ic7)
+#define UNSCRAMBLE_ADDR_WAVE(i) \
+	((BIT(i, 16) << 16) | (BIT(i, 15) << 15) | (BIT(i, 14) << 14) | \
+	(BIT(i, 1) << 13)   | (BIT(i, 4) << 12)  | (BIT(i, 9) << 11)  | \
+	(BIT(i, 5) << 10)   | (BIT(i, 10) << 9)  | (BIT(i, 3) << 8)   | \
+	(BIT(i, 0) << 7)    | (BIT(i, 6) << 6)   | (BIT(i, 11) << 5)  | \
+	(BIT(i, 7) << 4)    | (BIT(i, 2) << 3)   | (BIT(i, 12) << 2)  | \
+	(BIT(i, 8) << 1)    | (BIT(i, 13) << 0))
+#define UNSCRAMBLE_DATA_WAVE(_data) \
+	bitswap<8>(_data,7,6,5,4,3,2,1,0)
+
+SoundChip::SoundChip(u8 *temp_ic5, u8 *temp_ic6, u8 *temp_ic7)
 {
+    u8 ic5[0x20000];
+    u8 ic6[0x20000];
+    u8 ic7[0x20000];
+    for (size_t srcpos = 0x00; srcpos < 0x20000; srcpos++) {
+		ic5[srcpos] = UNSCRAMBLE_DATA_WAVE(temp_ic5[UNSCRAMBLE_ADDR_WAVE(srcpos)]);
+	}
+	for (size_t srcpos = 0x00; srcpos < 0x20000; srcpos++) {
+		ic6[srcpos] = UNSCRAMBLE_DATA_WAVE(temp_ic6[UNSCRAMBLE_ADDR_WAVE(srcpos)]);
+	}
+	for (size_t srcpos = 0x00; srcpos < 0x20000; srcpos++) {
+		ic7[srcpos] = UNSCRAMBLE_DATA_WAVE(temp_ic7[UNSCRAMBLE_ADDR_WAVE(srcpos)]);
+	}
+
     m_irq_id = 0;
     m_irq_triggered = false;
 
@@ -220,19 +243,16 @@ u8 SoundChip::read(size_t offset)
 
 void SoundChip::write(size_t offset, u8 data)
 {
-    m_irq_triggered = false;
+    // m_irq_triggered = false;
 
     m_ctrl_mem[offset] = data;
     // printf("SA write %04x=%02x\n", offset, data);
     // fflush(stdout);
-
-    // if (offset == 0x07)
-    //     printf("here\n");
 }
 
 s16 SoundChip::update()
 {
-    s16 result = 0;
+    s32 result = 0;
     
     for (size_t voiceI = 0; voiceI < NUM_VOICES; voiceI++)
     {
@@ -366,6 +386,5 @@ s16 SoundChip::update()
         }
     }
 
-    // printf("%04x\n", result);
-    return result;
+    return result >> 2;
 }

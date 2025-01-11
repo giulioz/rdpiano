@@ -280,8 +280,8 @@
         <input name="J" xpos="0" ypos="6" type="missing"/>
         <input name="K" xpos="0" ypos="10" type="missing"/>
         <input name="CL" xpos="0" ypos="22" type="missing"/>
-        <output name="XQ" xpos="0" ypos="41" type="missing"/>
-        <output name="Q" xpos="0" ypos="45" type="missing"/>
+        <output name="Q" xpos="0" ypos="41" type="missing"/>
+        <output name="XQ" xpos="0" ypos="45" type="missing"/>
     </cell>
 
     <cell name="G14" size="2" description="2-wide 3-OR 4-input OR-AND-Inverter">
@@ -589,7 +589,7 @@
         <input name="A6" xpos="0" ypos="10" type="line"/>
         <output name="X" xpos="0" ypos="17" type="line"/>
     </cell>
-    <cell name="R8B" size="3" description="Power 8-input NOR">
+    <cell name="R8B" size="6" description="Power 8-input NOR">
         <input name="A1" xpos="0" ypos="0" type="line"/>
         <input name="A2" xpos="0" ypos="2" type="line"/>
         <input name="A3" xpos="0" ypos="4" type="line"/>

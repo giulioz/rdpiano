@@ -10,25 +10,45 @@
 #include "PluginEditor.h"
 
 const char* rd200PatchNames[] = {
-    "Piano 1",
-    "Piano 2",
-    "Piano 3",
-    "Harpsichord",
-    "Clavi",
-    "Vibraphone",
-    "E-Piano 1",
-    "E-Piano 2"
+    "RD300: Piano 1",
+    "RD300: Piano 2",
+    "RD300: Piano 3",
+    "RD300: Harpsichord",
+    "RD300: Clavi",
+    "RD300: Vibraphone",
+    "RD300: E-Piano 1",
+    "RD300: E-Piano 2"
 };
 
 const char* mk80PatchNames[] = {
-    "Classic",
-    "Special",
-    "Blend",
-    "Contemporary",
-    "A. Piano 1",
-    "A. Piano 2",
-    "Clavi",
-    "Vibraphone"
+    "MK-80: Classic",
+    "MK-80: Special",
+    "MK-80: Blend",
+    "MK-80: Contemporary",
+    "MK-80: A. Piano 1",
+    "MK-80: A. Piano 2",
+    "MK-80: Clavi",
+    "MK-80: Vibraphone"
+};
+
+const int sampleRates[] = {
+    20000,
+    20000,
+    20000,
+    32000,
+    32000,
+    20000,
+    20000,
+    32000,
+    
+    20000,
+    20000,
+    20000,
+    32000,
+    20000,
+    20000,
+    32000,
+    20000
 };
 
 //==============================================================================
@@ -39,8 +59,8 @@ RdPiano_juceAudioProcessor::RdPiano_juceAudioProcessor()
                       )
 {
     mcu = new Mcu(
-        (const uint8_t*) BinaryData::MK80_IC5_bin, (const uint8_t*) BinaryData::MK80_IC6_bin, (const uint8_t*) BinaryData::MK80_IC7_bin,
-        (const uint8_t*) BinaryData::RD200_B_bin, (const uint8_t*) BinaryData::MK80_IC18_bin
+        (const uint8_t*) BinaryData::RD200_IC5_bin, (const uint8_t*) BinaryData::RD200_IC6_bin, (const uint8_t*) BinaryData::RD200_IC7_bin,
+        (const uint8_t*) BinaryData::RD200_B_bin, (const uint8_t*) BinaryData::RD200_IC18_bin
     );
 }
 
@@ -78,7 +98,7 @@ double RdPiano_juceAudioProcessor::getTailLengthSeconds() const
 
 int RdPiano_juceAudioProcessor::getNumPrograms()
 {
-    return 8;
+    return 8 + 8;
 }
 
 int RdPiano_juceAudioProcessor::getCurrentProgram()
@@ -91,13 +111,24 @@ void RdPiano_juceAudioProcessor::setCurrentProgram (int index)
     if (index < 0 || index >= getNumPrograms())
         return;
     
+    if (index / 8 != status.currentPatch / 8)
+    {
+        mcu->loadSounds(
+            index / 8 == 0 ? (const uint8_t*) BinaryData::RD200_IC5_bin : (const uint8_t*) BinaryData::MK80_IC5_bin,
+            index / 8 == 0 ? (const uint8_t*) BinaryData::RD200_IC6_bin : (const uint8_t*) BinaryData::MK80_IC6_bin,
+            index / 8 == 0 ? (const uint8_t*) BinaryData::RD200_IC7_bin : (const uint8_t*) BinaryData::MK80_IC7_bin,
+            index / 8 == 0 ? (const uint8_t*) BinaryData::RD200_IC18_bin : (const uint8_t*) BinaryData::MK80_IC18_bin
+        );
+    }
+
     status.currentPatch = index;
     mcu->commands_queue.push(0x30 | (status.currentPatch & 0xF));
+    sourceSampleRate = sampleRates[status.currentPatch];
 }
 
 const juce::String RdPiano_juceAudioProcessor::getProgramName (int index)
 {
-    return juce::String(mk80PatchNames[index]);
+    return juce::String(index >= 8 ? mk80PatchNames[index - 8] : rd200PatchNames[index]);
 }
 
 void RdPiano_juceAudioProcessor::changeProgramName (int index, const juce::String& newName)
@@ -135,7 +166,7 @@ void RdPiano_juceAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         buffer.clear (i, 0, buffer.getNumSamples());
     
 
-    int sourceSampleRate = mcu->current_sample_rate ? 32000 : 20000;
+    // int sourceSampleRate = mcu->current_sample_rate ? 32000 : 20000;
     double destSampleRate = getSampleRate();
     float* channelDataL = buffer.getWritePointer(0);
     float* channelDataR = buffer.getWritePointer(1);
@@ -149,7 +180,7 @@ void RdPiano_juceAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         // printf("compensating neg %d\n", limit);
         renderBufferFrames -= limit;
         currentError -= limit;
-    }else if (-samplesError > limit) {
+    } else if (-samplesError > limit) {
         // printf("compensating pos %d\n", limit);
         renderBufferFrames += limit;
         currentError += limit;
@@ -228,12 +259,21 @@ void RdPiano_juceAudioProcessor::getStateInformation (juce::MemoryBlock& destDat
 {
     destData.ensureSize(sizeof(DataToSave));
     destData.replaceAll(&status, sizeof(DataToSave));
-    mcu->commands_queue.push(0x30 | (status.currentPatch & 0xF));
 }
 
 void RdPiano_juceAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     memcpy(&status, data, sizeof(DataToSave));
+
+    mcu->loadSounds(
+        status.currentPatch / 8 == 0 ? (const uint8_t*) BinaryData::RD200_IC5_bin : (const uint8_t*) BinaryData::MK80_IC5_bin,
+        status.currentPatch / 8 == 0 ? (const uint8_t*) BinaryData::RD200_IC6_bin : (const uint8_t*) BinaryData::MK80_IC6_bin,
+        status.currentPatch / 8 == 0 ? (const uint8_t*) BinaryData::RD200_IC7_bin : (const uint8_t*) BinaryData::MK80_IC7_bin,
+        status.currentPatch / 8 == 0 ? (const uint8_t*) BinaryData::RD200_IC18_bin : (const uint8_t*) BinaryData::MK80_IC18_bin
+    );
+
+    mcu->commands_queue.push(0x30 | (status.currentPatch & 0xF));
+    sourceSampleRate = sampleRates[status.currentPatch];
 }
 
 //==============================================================================

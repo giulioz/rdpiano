@@ -213,23 +213,23 @@ const Mcu::op_func Mcu::hd63701_insn[0x100] = {
 #define XX 4 // illegal opcode unknown cycle count
 const u8 Mcu::cycles_63701[256] =
 {
-		/* 0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F */
-	/*0*/ XX, 1,XX,XX, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	/*1*/  1, 1,XX,XX,XX,XX, 1, 1, 2, 2, 4, 1,XX,XX,XX,XX,
-	/*2*/  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	/*3*/  1, 1, 3, 3, 1, 1, 4, 4, 4, 5, 1,10, 5, 7, 9,12,
-	/*4*/  1,XX,XX, 1, 1,XX, 1, 1, 1, 1, 1,XX, 1, 1,XX, 1,
-	/*5*/  1,XX,XX, 1, 1,XX, 1, 1, 1, 1, 1,XX, 1, 1,XX, 1,
-	/*6*/  6, 7, 7, 6, 6, 7, 6, 6, 6, 6, 6, 5, 6, 4, 3, 5,
-	/*7*/  6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 4, 6, 4, 3, 5,
-	/*8*/  2, 2, 2, 3, 2, 2, 2,XX, 2, 2, 2, 2, 3, 5, 3,XX,
-	/*9*/  3, 3, 3, 4, 3, 3, 3, 3, 3, 3, 3, 3, 4, 5, 4, 4,
-	/*A*/  4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5,
-	/*B*/  4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 5, 6, 5, 5,
-	/*C*/  2, 2, 2, 3, 2, 2, 2,XX, 2, 2, 2, 2, 3,XX, 3,XX,
-	/*D*/  3, 3, 3, 4, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4,
-	/*E*/  4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5,
-	/*F*/  4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5
+    /* 0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F */
+  /*0*/ XX, 1,XX,XX, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  /*1*/  1, 1,XX,XX,XX,XX, 1, 1, 2, 2, 4, 1,XX,XX,XX,XX,
+  /*2*/  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+  /*3*/  1, 1, 3, 3, 1, 1, 4, 4, 4, 5, 1,10, 5, 7, 9,12,
+  /*4*/  1,XX,XX, 1, 1,XX, 1, 1, 1, 1, 1,XX, 1, 1,XX, 1,
+  /*5*/  1,XX,XX, 1, 1,XX, 1, 1, 1, 1, 1,XX, 1, 1,XX, 1,
+  /*6*/  6, 7, 7, 6, 6, 7, 6, 6, 6, 6, 6, 5, 6, 4, 3, 5,
+  /*7*/  6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 4, 6, 4, 3, 5,
+  /*8*/  2, 2, 2, 3, 2, 2, 2,XX, 2, 2, 2, 2, 3, 5, 3,XX,
+  /*9*/  3, 3, 3, 4, 3, 3, 3, 3, 3, 3, 3, 3, 4, 5, 4, 4,
+  /*A*/  4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5,
+  /*B*/  4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 5, 6, 5, 5,
+  /*C*/  2, 2, 2, 3, 2, 2, 2,XX, 2, 2, 2, 2, 3,XX, 3,XX,
+  /*D*/  3, 3, 3, 4, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4,
+  /*E*/  4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5,
+  /*F*/  4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5
 };
 
 #define TCSR_IEDG   0x02
@@ -239,207 +239,212 @@ const u8 Mcu::cycles_63701[256] =
 
 // Can be 13 bit or 14 bit depending on the model
 #define UNSCRAMBLE_ADDR_CPUB(i) \
-	bitswap<14>(i,13,12,11,8,9,10,7,6,5,4,3,2,1,0)
+  bitswap<14>(i,13,12,11,8,9,10,7,6,5,4,3,2,1,0)
 #define UNSCRAMBLE_DATA_CPUB(_data) \
-	bitswap<8>(_data,7,0,6,1,5,2,4,3)
+  bitswap<8>(_data,7,0,6,1,5,2,4,3)
 
 #define UNSCRAMBLE_ADDR_PARAMS(i) \
-	bitswap<17>(i,16,15,13,12,14,11,8,9,10,7,6,5,4,3,2,1,0)
+  bitswap<17>(i,16,15,13,12,14,11,8,9,10,7,6,5,4,3,2,1,0)
 #define UNSCRAMBLE_DATA_PARAMS(_data) \
-	bitswap<8>(_data,7,0,6,1,5,2,4,3)
+  bitswap<8>(_data,7,0,6,1,5,2,4,3)
 
 Mcu::Mcu(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7, const u8 *temp_progrom, const u8 *temp_paramsrom)
-	: sound_chip(temp_ic5, temp_ic6, temp_ic7)
+  : sound_chip(temp_ic5, temp_ic6, temp_ic7)
 {
-	for (size_t srcpos = 0x00; srcpos < 0x2000; srcpos++) {
-		program_rom[srcpos] = UNSCRAMBLE_DATA_CPUB(temp_progrom[UNSCRAMBLE_ADDR_CPUB(srcpos)]);
-	}
-	for (size_t srcpos = 0x00; srcpos < 0x20000; srcpos++) {
-		params_rom[srcpos] = UNSCRAMBLE_DATA_CPUB(temp_paramsrom[srcpos]);
-	}
+  for (size_t srcpos = 0x00; srcpos < 0x2000; srcpos++) {
+    program_rom[srcpos] = UNSCRAMBLE_DATA_CPUB(temp_progrom[UNSCRAMBLE_ADDR_CPUB(srcpos)]);
+  }
+  for (size_t srcpos = 0x00; srcpos < 0x20000; srcpos++) {
+    params_rom[srcpos] = UNSCRAMBLE_DATA_CPUB(temp_paramsrom[srcpos]);
+  }
 
   m_ppc.d = 0;
-	m_pc.d = 0;
-	m_s.d = 0;
-	m_x.d = 0;
-	m_d.d = 0;
-	m_cc = 0;
-	m_wai_state = 0;
-	m_nmi_state = 0;
-	m_nmi_pending = 0;
-	std::fill(std::begin(m_irq_state), std::end(m_irq_state), 0);
+  m_pc.d = 0;
+  m_s.d = 0;
+  m_x.d = 0;
+  m_d.d = 0;
+  m_cc = 0;
+  m_wai_state = 0;
+  m_nmi_state = 0;
+  m_nmi_pending = 0;
+  std::fill(std::begin(m_irq_state), std::end(m_irq_state), 0);
 
   m_cc = 0xc0;
-	SEI; /* IRQ disabled */
-	PCD = RM16(0xfffe);
+  SEI; /* IRQ disabled */
+  PCD = RM16(0xfffe);
 
-	m_wai_state = 0;
-	m_nmi_state = 0;
-	m_nmi_pending = 0;
+  m_wai_state = 0;
+  m_nmi_state = 0;
+  m_nmi_pending = 0;
+
+  // Preload
+  for (size_t i = 0; i < 1024 * 8; i++)
+    execute_one();
 }
 
 Mcu::~Mcu() {}
 
 void Mcu::take_trap()
 {
-	enter_interrupt("TRAP", 0xffee);
+  enter_interrupt("TRAP", 0xffee);
 }
 
 /* check the IRQ lines for pending interrupts */
 void Mcu::check_irq_lines()
 {
-	if (m_nmi_pending)
-	{
-		m_wai_state &= ~M6800_SLP;
-		m_nmi_pending = false;
-		enter_interrupt("NMI", 0xfffc);
-	}
-	else if (m_irq_state[M6800_IRQ_LINE] != CLEAR_LINE)
-	{
-		/* standard IRQ */
-		m_wai_state &= ~M6800_SLP;
-
-		if (!(CC & 0x10))
-		{
-			// standard_irq_callback(M6800_IRQ_LINE, m_pc.w.l);
-			enter_interrupt("IRQ1", 0xfff8);
-		}
-	}
-	else if ((m_tcsr & (TCSR_EICI|TCSR_ICF)) == (TCSR_EICI|TCSR_ICF))
-	{
-		// if (!(m_cc & 0x10))
-		// 	standard_irq_callback(M6801_TIN_LINE, m_pc.w.l);
-		
+  if (m_nmi_pending)
+  {
+    m_wai_state &= ~M6800_SLP;
+    m_nmi_pending = false;
+    enter_interrupt("NMI", 0xfffc);
+  }
+  else if (m_irq_state[M6800_IRQ_LINE] != CLEAR_LINE)
+  {
+    /* standard IRQ */
     m_wai_state &= ~M6800_SLP;
 
-		if (!(CC & 0x10))
-			enter_interrupt("ICI", 0xfff6);
-	}
+    if (!(CC & 0x10))
+    {
+      // standard_irq_callback(M6800_IRQ_LINE, m_pc.w.l);
+      enter_interrupt("IRQ1", 0xfff8);
+    }
+  }
+  else if ((m_tcsr & (TCSR_EICI|TCSR_ICF)) == (TCSR_EICI|TCSR_ICF))
+  {
+    // if (!(m_cc & 0x10))
+    // 	standard_irq_callback(M6801_TIN_LINE, m_pc.w.l);
+    
+    m_wai_state &= ~M6800_SLP;
+
+    if (!(CC & 0x10))
+      enter_interrupt("ICI", 0xfff6);
+  }
 }
 
 void Mcu::eat_cycles()
 {
-	if (m_icount > 0)
-		increment_counter(m_icount);
+  if (m_icount > 0)
+    increment_counter(m_icount);
 }
 
 u32 Mcu::RM16(u32 Addr)
 {
-	u32 result = RM(Addr) << 8;
-	return result | RM((Addr+1) & 0xffff);
+  u32 result = RM(Addr) << 8;
+  return result | RM((Addr+1) & 0xffff);
 }
 
 void Mcu::WM16(u32 Addr, PAIR *p)
 {
-	WM(Addr, p->b.h);
-	WM((Addr+1) & 0xffff, p->b.l);
+  WM(Addr, p->b.h);
+  WM((Addr+1) & 0xffff, p->b.l);
 }
 
 /* IRQ enter */
 void Mcu::enter_interrupt(const char *message, u16 irq_vector)
 {
-	int cycles_to_eat = 0;
+  int cycles_to_eat = 0;
 
-	if (m_wai_state & M6800_WAI)
-	{
-		cycles_to_eat = 4;
-		m_wai_state &= ~M6800_WAI;
-	}
-	else
-	{
-		PUSHWORD(pPC);
-		PUSHWORD(pX);
-		PUSHBYTE(A);
-		PUSHBYTE(B);
-		PUSHBYTE(CC);
-		cycles_to_eat = 12;
-	}
-	SEI;
-	PCD = RM16(irq_vector);
+  if (m_wai_state & M6800_WAI)
+  {
+    cycles_to_eat = 4;
+    m_wai_state &= ~M6800_WAI;
+  }
+  else
+  {
+    PUSHWORD(pPC);
+    PUSHWORD(pX);
+    PUSHBYTE(A);
+    PUSHBYTE(B);
+    PUSHBYTE(CC);
+    cycles_to_eat = 12;
+  }
+  SEI;
+  PCD = RM16(irq_vector);
 
-	increment_counter(cycles_to_eat);
+  increment_counter(cycles_to_eat);
 }
 
 void Mcu::increment_counter(int amount)
 {
-	m_icount -= amount;
+  m_icount -= amount;
 }
 
 void Mcu::execute_set_input(int irqline, int state)
 {
-	switch (irqline)
-	{
-	case INPUT_LINE_NMI:
-		if (!m_nmi_state && state != CLEAR_LINE)
-			m_nmi_pending = true;
-		m_nmi_state = state;
-		break;
+  switch (irqline)
+  {
+  case INPUT_LINE_NMI:
+    if (!m_nmi_state && state != CLEAR_LINE)
+      m_nmi_pending = true;
+    m_nmi_state = state;
+    break;
 
   case M6801_TIN_LINE:
-		if (state != m_irq_state[M6801_TIN_LINE])
-		{
-			// printf("irq state %x\n", m_irq_state[irqline]);
-			m_irq_state[M6801_TIN_LINE] = state;
-			//edge = (state == CLEAR_LINE) ? 2 : 0;
-			if (((m_tcsr & TCSR_IEDG) ^ (state == CLEAR_LINE ? TCSR_IEDG : 0)) == 0)
-				return;
-			/* active edge in */
-			m_tcsr |= TCSR_ICF;
-			m_pending_tcsr |= TCSR_ICF;
-			m_input_capture = CT;
-		}
-		break;
+    if (state != m_irq_state[M6801_TIN_LINE])
+    {
+      // printf("irq state %x\n", m_irq_state[irqline]);
+      m_irq_state[M6801_TIN_LINE] = state;
+      //edge = (state == CLEAR_LINE) ? 2 : 0;
+      if (((m_tcsr & TCSR_IEDG) ^ (state == CLEAR_LINE ? TCSR_IEDG : 0)) == 0)
+        return;
+      /* active edge in */
+      m_tcsr |= TCSR_ICF;
+      m_pending_tcsr |= TCSR_ICF;
+      m_input_capture = CT;
+    }
+    break;
 
-	default:
-		m_irq_state[irqline] = state;
-		break;
-	}
+  default:
+    m_irq_state[irqline] = state;
+    break;
+  }
 }
 
 void Mcu::execute_run()
 {
-  if (inited && !commands_queue.empty())
-  {
+  if (!commands_queue.empty())
     execute_set_input(M6801_TIN_LINE, ASSERT_LINE);
-    dav = 1;
-  }
 
-	if (sound_chip.m_irq_triggered)
+  if (sound_chip.m_irq_triggered)
       execute_set_input(0, ASSERT_LINE);
-	check_irq_lines();
+  check_irq_lines();
 
-	do
-	{
-		if (m_wai_state & (M6800_WAI | M6800_SLP))
-			eat_cycles();
-		else
-			execute_one();
-	} while (m_icount > 0);
+  do
+  {
+    // failsafe
+    if (m_icount > 10000)
+      m_icount = 0;
+    
+    if (m_wai_state & (M6800_WAI | M6800_SLP))
+      eat_cycles();
+    else
+      execute_one();
+  } while (m_icount > 0);
 }
 
 void Mcu::execute_one()
 {
-	pPPC = pPC;
-	u8 ireg = M_RDOP(PCD);
-	PC++;
+  pPPC = pPC;
+  u8 ireg = M_RDOP(PCD);
+  PC++;
   // printf("PC: %04x, ireg: %02x\n", PCD, ireg);
-	(this->*hd63701_insn[ireg])();
-	increment_counter(cycles_63701[ireg]);
+  (this->*hd63701_insn[ireg])();
+  increment_counter(cycles_63701[ireg]);
 }
 
 u8 Mcu::tcsr_r()
 {
   m_pending_tcsr = 0;
-	return m_tcsr;
+  return m_tcsr;
 }
 
 void Mcu::tcsr_w(u8 data)
 {
-	data &= 0x1f;
+  data &= 0x1f;
 
-	m_tcsr = data | (m_tcsr & 0xe0);
-	m_pending_tcsr &= m_tcsr;
-	check_irq_lines();
+  m_tcsr = data | (m_tcsr & 0xe0);
+  m_pending_tcsr &= m_tcsr;
+  check_irq_lines();
 }
 
 
@@ -451,36 +456,33 @@ u8 Mcu::read_byte(u16 addr)
 
     if (!commands_queue.empty() && (PCD == 0xE12B || PCD == 0xE15E || PCD == 0xE168))
     {
-      // execute_set_input(M6801_TIN_LINE, CLEAR_LINE);
-
       data_comm_bus = commands_queue.front();
       commands_queue.pop();
-			// printf("data\n");
+      // printf("data\n");
     }
 
-		// printf("%04x: read port1 %02x\n", PCD, data_comm_bus);
-
+    // printf("%04x: read port1 %02x\n", PCD, data_comm_bus);
     return data_comm_bus;
   }
   
   // port 2 CONTROL
   else if (addr == 0x0003) {
-		// printf("%04x: read port2\n", PCD);
+    // printf("%04x: read port2\n", PCD);
 
-		if (PCD == 0xE15A) return 0xFF;
+    if (PCD == 0xE15A) return 0xFF;
     return 0x00;
   }
 
   // tcsr
   else if (addr == 0x0008)
     return tcsr_r();
-	else if (addr == 0x000d) {
-		if (!(m_pending_tcsr & TCSR_ICF))
-			m_tcsr &= ~TCSR_ICF;
-		return (m_input_capture >> 0) & 0xff;
-	}
-	else if (addr == 0x000e)
-		return (m_input_capture >> 8) & 0xff;
+  else if (addr == 0x000d) {
+    if (!(m_pending_tcsr & TCSR_ICF))
+      m_tcsr &= ~TCSR_ICF;
+    return (m_input_capture >> 0) & 0xff;
+  }
+  else if (addr == 0x000e)
+    return (m_input_capture >> 8) & 0xff;
   
   else if (addr < 0x20) {
     printf("%04x: unk device read %04x\n", addr, PCD);
@@ -529,7 +531,7 @@ void Mcu::write_byte(u16 addr, u8 data)
 
     current_sample_rate = (data >> 2) & 1;
 
-		execute_set_input(M6801_TIN_LINE, CLEAR_LINE);
+    execute_set_input(M6801_TIN_LINE, CLEAR_LINE);
   }
   
   // tcsr
@@ -549,68 +551,67 @@ void Mcu::write_byte(u16 addr, u8 data)
   // sound chip
   else if (addr < 0x2000) {
     sound_chip.write(addr - 0x1000, data);
-		// printf("%04x: SA write %04x=%02x\n", PCD, addr, data);
-		// fflush(stdout);
+    // printf("%04x: SA write %04x=%02x\n", PCD, addr, data);
+    // fflush(stdout);
 
-		if (sound_chip.m_irq_triggered) {
-			sound_chip.m_irq_triggered = false;
-			execute_set_input(0, CLEAR_LINE);
-		}
+    if (sound_chip.m_irq_triggered) {
+      sound_chip.m_irq_triggered = false;
+      execute_set_input(0, CLEAR_LINE);
+    }
   }
   
   // latch
   else {
     latch_val = data;
-    inited = true;
     // printf("latch write %04x=%02x\n", addr, data);
   }
 }
 
 s16 Mcu::generate_next_sample()
 {
-	// handshake
-	if (initCnt == 100) {
-    commands_queue.push(0x30);
+  s16 sample = sound_chip.update();
+
+  // 20kHz sample rate, 2000kHz CPU clock
+  for (size_t cycle = 0; cycle < 100; cycle++) {
+    execute_run();
   }
-	initCnt++;
 
-	s16 sample = sound_chip.update();
-
-	// 20kHz sample rate, 2000kHz CPU clock
-	for (size_t cycle = 0; cycle < 100; cycle++) {
-		execute_run();
-	}
-
-	return sample;
+  return sample;
 }
 
 void Mcu::sendMidiCmd(u8 data1, u8 data2, u8 data3)
 {
-	uint8_t command = data1 >> 4;
+  uint8_t command = data1 >> 4;
 
-	// program change
-	if (command == 0xC) {
-		commands_queue.push(0x30 | (data2 & 0xF));
-	}
+  // program change
+  if (command == 0xC) {
+    commands_queue.push(0x30 | (data2 & 0xF));
+  }
 
-	// note off
-	else if (command == 0x8 || (command == 0x9 && data3 == 0)) {
-		commands_queue.push(0xB0);
-		commands_queue.push(data2);
-		commands_queue.push(0x00);
-		printf("note off %02x\n", data2);
-	}
-	
-	// note on
-	else if (command == 0x9) {
-		commands_queue.push(0xC0);
-		commands_queue.push(data2);
-		commands_queue.push(data3);
-		printf("note on %02x %02x\n", data2, data3);
-	}
-	
-	// sustain
-	else if (command == 0xB && data2 == 64) {
-		 commands_queue.push(0x50 | (data3 >= 64 ? 0xF : 0x0));
-	}
+  // note off
+  else if (command == 0x8 || (command == 0x9 && data3 == 0)) {
+    commands_queue.push(0xB0);
+    commands_queue.push(data2);
+    commands_queue.push(0x00);
+  }
+  
+  // note on
+  else if (command == 0x9) {
+    commands_queue.push(0xC0);
+    commands_queue.push(data2);
+    commands_queue.push(data3);
+  }
+  
+  // sustain
+  else if (command == 0xB && data2 == 64) {
+     commands_queue.push(0x50 | (data3 >= 64 ? 0xF : 0x0));
+  }
+}
+
+void Mcu::loadSounds(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7, const u8 *temp_paramsrom)
+{
+  sound_chip.load_samples(temp_ic5, temp_ic6, temp_ic7);
+  for (size_t srcpos = 0x00; srcpos < 0x20000; srcpos++) {
+    params_rom[srcpos] = UNSCRAMBLE_DATA_CPUB(temp_paramsrom[srcpos]);
+  }
 }

@@ -15,13 +15,13 @@ module IC8 (
   input wire AG2_IN, // 70
   input wire AG3_IN, // 69
 
-  input wire IC19_1_IN, // 3
-  input wire IC19_2_IN, // 2
-  input wire IC19_3_IN, // 1
-  input wire IC19_4_IN, // 80
-  input wire IC19_5_IN, // 79
-  input wire IC19_6_IN, // 78
-  input wire IC19_7_IN, // 77
+  input wire IC19_P2_IN, // 2=>3
+  input wire IC19_P3_IN, // 3=>2
+  input wire IC19_P4_IN, // 4=>1
+  input wire IC19_P5_IN, // 5=>80
+  input wire IC19_P6_IN, // 6=>79
+  input wire IC19_P7_IN, // 7=>78
+  input wire IC19_P8_IN, // 8=>77
 
   input wire [7:0] R5_D_IN,
   input wire [7:0] R6_D_IN,
@@ -238,8 +238,8 @@ cell_C45 D1 ( // 4-bit Binary Synchronous Up Counter
 );
 
 assign not_first_sample = ~(
-  ((~SR_SEL_IN && cnt_d1_a) || cnt_d1_b || cnt_d1_c || cnt_d1_d) &&
-  (cnt_samplegroup_a_enable || cnt_samplegroup_b || cnt_samplegroup_c || cnt_samplegroup_d)
+  (~SR_SEL_IN && cnt_d1_a) || cnt_d1_b || cnt_d1_c || cnt_d1_d ||
+  cnt_samplegroup_a_enable || cnt_samplegroup_b || cnt_samplegroup_c || cnt_samplegroup_d
 );
 cell_FDM A17 ( // DFF
   ~cycle_11, // INPUT CK
@@ -316,8 +316,8 @@ cell_A4H L27 ( // 4-bit Full Adder
   adder1_b8, // INPUT B1
   path2137, // INPUT CI
   path2252, // OUTPUT CO
-  r10_adder_o12, // OUTPUT S4
-  r10_adder_o11, // OUTPUT S3
+  r10_adder_o11, // OUTPUT S4
+  r10_adder_o10, // OUTPUT S3
   r10_ff_a10, // OUTPUT S2
   r10_ff_a9 // OUTPUT S1
 );
@@ -328,14 +328,14 @@ cell_A2N L2 ( // 2-bit Full Adder
   adder1_a12, // INPUT A1
   path2252, // INPUT CI
   r10_adder_co, // OUTPUT CO
-  r10_adder_o14, // OUTPUT S2
-  r10_adder_o13 // OUTPUT S1
+  r10_adder_o13, // OUTPUT S2
+  r10_adder_o12 // OUTPUT S1
 );
 
+assign adder1_o10_or_15 = r10_adder_o10 || r10_adder_co;
 assign adder1_o11_or_15 = r10_adder_o11 || r10_adder_co;
 assign adder1_o12_or_15 = r10_adder_o12 || r10_adder_co;
 assign adder1_o13_or_15 = r10_adder_o13 || r10_adder_co;
-assign adder1_o14_or_15 = r10_adder_o14 || r10_adder_co;
 
 
 // Adder 3 (9 bit) aux for adder 1
@@ -427,51 +427,51 @@ cell_FDQ O16 ( // 4-bit DFF
 // ==============================================================================
 // Envelope control from IC19
 
-assign ic19_1_or = ~((~IC19_1_IN && test_mode_inv_waverom) || (IC19_1_IN && ~test_mode_inv_waverom));
-assign ic19_3_or = ~((~IC19_3_IN && test_mode_inv_waverom) || (IC19_3_IN && ~test_mode_inv_waverom));
-assign ic19_5_or = ~((~IC19_5_IN && test_mode_inv_waverom) || (IC19_5_IN && ~test_mode_inv_waverom));
+assign volume_6_13 = ~((~IC19_P2_IN && test_mode_inv_waverom) || (IC19_P2_IN && ~test_mode_inv_waverom));
+assign volume_1_8 = ~((~IC19_P4_IN && test_mode_inv_waverom) || (IC19_P4_IN && ~test_mode_inv_waverom));
+assign volume_3_10 = ~((~IC19_P6_IN && test_mode_inv_waverom) || (IC19_P6_IN && ~test_mode_inv_waverom));
 cell_LT4 I3 ( // 4-bit Data Latch
   cycle_even_pos, // INPUT G
   AG3_IN, // INPUT DA
-  ic19_1_or, // INPUT DB
-  IC19_6_IN, // INPUT DC
-  IC19_7_IN, // INPUT DD
+  volume_6_13, // INPUT DB
+  IC19_P7_IN, // INPUT DC
+  IC19_P8_IN, // INPUT DD
   unconnected_I3_NA, // OUTPUT NA
   ag3_sel_sample_type, // OUTPUT PA
   unconnected_I3_NB, // OUTPUT NB
-  ic19_1_or_latch_even, // OUTPUT PB
+  volume_6, // OUTPUT PB
   unconnected_I3_NC, // OUTPUT NC
-  ic19_6_latch_even, // OUTPUT PC
+  volume_5, // OUTPUT PC
   unconnected_I3_ND, // OUTPUT ND
-  ic19_7_latch_even // OUTPUT PD
+  volume_4 // OUTPUT PD
 );
 cell_LT4 B1 ( // 4-bit Data Latch
   cycle_even_pos, // INPUT G
-  ic19_5_or, // INPUT DA
-  IC19_4_IN, // INPUT DB
-  ic19_3_or, // INPUT DC
-  IC19_2_IN, // INPUT DD
+  volume_3_10, // INPUT DA
+  IC19_P5_IN, // INPUT DB
+  volume_1_8, // INPUT DC
+  IC19_P3_IN, // INPUT DD
   unconnected_B1_NA, // OUTPUT NA
-  ic19_5_or_latch_even, // OUTPUT PA
+  volume_3, // OUTPUT PA
   unconnected_B1_NB, // OUTPUT NB
-  ic19_4_latch_even, // OUTPUT PB
+  volume_2, // OUTPUT PB
   unconnected_B1_NC, // OUTPUT NC
-  ic19_3_or_latch_even, // OUTPUT PC
+  volume_1, // OUTPUT PC
   unconnected_B1_ND, // OUTPUT ND
-  ic19_2_latch_even // OUTPUT PD
+  volume_0 // OUTPUT PD
 );
 
 
-assign path2420 = ic19_1_or || ag1_phase_hi;
-assign g2784 = IC19_6_IN || ag1_phase_hi;
-assign path2131 = IC19_7_IN || ag1_phase_hi;
-assign path2321 = ic19_5_or || ag1_phase_hi;
+assign volume_13 = volume_6_13 || ag1_phase_hi;
+assign volume_12 = IC19_P7_IN || ag1_phase_hi;
+assign volume_11 = IC19_P8_IN || ag1_phase_hi;
+assign volume_10 = volume_3_10 || ag1_phase_hi;
 cell_FDQ K50 ( // 4-bit DFF
   cycle_odd, // INPUT CK
   GND, // INPUT DA
-  path2420, // INPUT DB
-  g2784, // INPUT DC
-  path2131, // INPUT DD
+  volume_13, // INPUT DB
+  volume_12, // INPUT DC
+  volume_11, // INPUT DD
   unconnected_K50_QA, // OUTPUT QA
   adder1_b13, // OUTPUT QB
   adder1_b12, // OUTPUT QC
@@ -479,10 +479,10 @@ cell_FDQ K50 ( // 4-bit DFF
 );
 cell_FDQ B16 ( // 4-bit DFF
   cycle_odd, // INPUT CK
-  path2321, // INPUT DA
-  IC19_4_IN, // INPUT DB
-  ic19_3_or, // INPUT DC
-  IC19_2_IN, // INPUT DD
+  volume_10, // INPUT DA
+  IC19_P5_IN, // INPUT DB
+  volume_1_8, // INPUT DC
+  IC19_P3_IN, // INPUT DD
   adder1_a10, // OUTPUT QA
   adder1_a9, // OUTPUT QB
   adder1_a8, // OUTPUT QC
@@ -490,10 +490,10 @@ cell_FDQ B16 ( // 4-bit DFF
 );
 cell_FDQ J1 ( // 4-bit DFF
   cycle_odd, // INPUT CK
-  ic19_1_or_latch_even, // INPUT DA
-  ic19_6_latch_even, // INPUT DB
-  ic19_7_latch_even, // INPUT DC
-  ic19_5_or_latch_even, // INPUT DD
+  volume_6, // INPUT DA
+  volume_5, // INPUT DB
+  volume_4, // INPUT DC
+  volume_3, // INPUT DD
   adder1_a6, // OUTPUT QA
   adder1_a5, // OUTPUT QB
   adder1_a4, // OUTPUT QC
@@ -737,9 +737,9 @@ cell_FDQ X56 ( // 4-bit DFF
 
 cell_FDQ O56 ( // 4-bit DFF
   cycle_odd, // INPUT CK
-  ic19_4_latch_even, // INPUT DA
-  ic19_3_or_latch_even, // INPUT DB
-  ic19_2_latch_even, // INPUT DC
+  volume_2, // INPUT DA
+  volume_1, // INPUT DB
+  volume_0, // INPUT DC
   R6_D1_IN, // INPUT DD
   adder1_a2, // OUTPUT QA
   adder1_a1, // OUTPUT QB
@@ -757,8 +757,8 @@ assign wavein_sign = (wavein_b14_sign && ~cnt_g29_a) || (wavein_r6d1_sign && cnt
 
 cell_FDQ M44 ( // 4-bit DFF
   cycle_between, // INPUT CK
-  adder1_o12_or_15, // INPUT DA
-  adder1_o11_or_15, // INPUT DB
+  adder1_o11_or_15, // INPUT DA
+  adder1_o10_or_15, // INPUT DB
   GND, // INPUT DC
   GND, // INPUT DD
   path2406, // OUTPUT QA
@@ -770,8 +770,8 @@ cell_FDQ N56 ( // 4-bit DFF
   cycle_between, // INPUT CK
   GND, // INPUT DA
   wavein_sign, // INPUT DB
-  adder1_o13_or_15, // INPUT DC
-  adder1_o14_or_15, // INPUT DD
+  adder1_o12_or_15, // INPUT DC
+  adder1_o13_or_15, // INPUT DD
   unconnected_N56_QA, // OUTPUT QA
   path2403, // OUTPUT QB
   g2256, // OUTPUT QC
@@ -797,7 +797,7 @@ cell_LT4 P32 ( // 4-bit Data Latch
 // LUT
 // Inputs:
 // p32 (wavein_sign, adder1_o12/14_or_15)
-// h57_adder1_o11_or_15 (adder1_o11_or_15)
+// h57_adder1_o11_or_15 (adder1_o10_or_15)
 // r10_d (r10 lsb?)
 // h57_r10_d1_ncybtwn (r10_d1_ncybtwn msb?)
 // h57_r10_d0_ncybtwn (r10_d0_ncybtwn msb?)

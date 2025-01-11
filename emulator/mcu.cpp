@@ -237,9 +237,26 @@ const u8 Mcu::cycles_63701[256] =
 #define TCSR_ICF    0x80
 #define CT      m_counter.w.l
 
-Mcu::Mcu(SoundChip *sound_chip) : sound_chip(sound_chip)
+// Can be 13 bit or 14 bit depending on the model
+#define UNSCRAMBLE_ADDR_CPUB(i) \
+	bitswap<14>(i,13,12,11,8,9,10,7,6,5,4,3,2,1,0)
+#define UNSCRAMBLE_DATA_CPUB(_data) \
+	bitswap<8>(_data,7,0,6,1,5,2,4,3)
+
+#define UNSCRAMBLE_ADDR_PARAMS(i) \
+	bitswap<17>(i,16,15,13,12,14,11,8,9,10,7,6,5,4,3,2,1,0)
+#define UNSCRAMBLE_DATA_PARAMS(_data) \
+	bitswap<8>(_data,7,0,6,1,5,2,4,3)
+
+Mcu::Mcu(u8 *temp_ic5, u8 *temp_ic6, u8 *temp_ic7, u8 *temp_progrom, u8 *temp_paramsrom)
+	: sound_chip(temp_ic5, temp_ic6, temp_ic7)
 {
-  load_roms();
+	for (size_t srcpos = 0x00; srcpos < 0x2000; srcpos++) {
+		program_rom[srcpos] = UNSCRAMBLE_DATA_CPUB(temp_progrom[UNSCRAMBLE_ADDR_CPUB(srcpos)]);
+	}
+	for (size_t srcpos = 0x00; srcpos < 0x20000; srcpos++) {
+		params_rom[srcpos] = UNSCRAMBLE_DATA_CPUB(temp_paramsrom[srcpos]);
+	}
 
   m_ppc.d = 0;
 	m_pc.d = 0;
@@ -295,7 +312,7 @@ void Mcu::check_irq_lines()
 		
     m_wai_state &= ~M6800_SLP;
 
-		if (!(m_cc & 0x10))
+		if (!(CC & 0x10))
 			enter_interrupt("ICI", 0xfff6);
 	}
 }
@@ -341,8 +358,6 @@ void Mcu::enter_interrupt(const char *message, u16 irq_vector)
 	PCD = RM16(irq_vector);
 
 	increment_counter(cycles_to_eat);
-
-	// printf("Entering interrupt %s\n", message);
 }
 
 void Mcu::increment_counter(int amount)
@@ -363,6 +378,7 @@ void Mcu::execute_set_input(int irqline, int state)
   case M6801_TIN_LINE:
 		if (state != m_irq_state[M6801_TIN_LINE])
 		{
+			// printf("irq state %x\n", m_irq_state[irqline]);
 			m_irq_state[M6801_TIN_LINE] = state;
 			//edge = (state == CLEAR_LINE) ? 2 : 0;
 			if (((m_tcsr & TCSR_IEDG) ^ (state == CLEAR_LINE ? TCSR_IEDG : 0)) == 0)
@@ -388,6 +404,8 @@ void Mcu::execute_run()
     dav = 1;
   }
 
+	if (sound_chip.m_irq_triggered)
+      execute_set_input(0, ASSERT_LINE);
 	check_irq_lines();
 
 	do
@@ -425,17 +443,6 @@ void Mcu::tcsr_w(u8 data)
 }
 
 
-// Can be 13 bit or 14 bit depending on the model
-#define UNSCRAMBLE_ADDR_CPUB(i) \
-	bitswap<14>(i,13,12,11,8,9,10,7,6,5,4,3,2,1,0)
-#define UNSCRAMBLE_DATA_CPUB(_data) \
-	bitswap<8>(_data,7,0,6,1,5,2,4,3)
-
-#define UNSCRAMBLE_ADDR_PARAMS(i) \
-	bitswap<17>(i,16,15,13,12,14,11,8,9,10,7,6,5,4,3,2,1,0)
-#define UNSCRAMBLE_DATA_PARAMS(_data) \
-	bitswap<8>(_data,7,0,6,1,5,2,4,3)
-
 u8 Mcu::read_byte(u16 addr)
 {
   // port 1 DATA
@@ -444,21 +451,21 @@ u8 Mcu::read_byte(u16 addr)
 
     if (!commands_queue.empty() && (PCD == 0xE12B || PCD == 0xE15E || PCD == 0xE168))
     {
-      execute_set_input(M6801_TIN_LINE, CLEAR_LINE);
+      // execute_set_input(M6801_TIN_LINE, CLEAR_LINE);
 
       data_comm_bus = commands_queue.front();
       commands_queue.pop();
-			printf("data\n");
+			// printf("data\n");
     }
 
-		printf("%04x: read port1 %02x\n", PCD, data_comm_bus);
+		// printf("%04x: read port1 %02x\n", PCD, data_comm_bus);
 
     return data_comm_bus;
   }
   
   // port 2 CONTROL
   else if (addr == 0x0003) {
-		printf("%04x: read port2\n", PCD);
+		// printf("%04x: read port2\n", PCD);
 
 		if (PCD == 0xE15A) return 0xFF;
     return 0x00;
@@ -486,7 +493,7 @@ u8 Mcu::read_byte(u16 addr)
   
   // sound chip
   else if (addr < 0x2000)
-    return sound_chip->read(addr - 0x1000);
+    return sound_chip.read(addr - 0x1000);
   
   // params rom
   else if (addr >= 0x4000 && addr <= 0xbfff)
@@ -513,14 +520,16 @@ void Mcu::write_byte(u16 addr, u8 data)
 
   // port 1 DATA
   else if (addr == 0x0002) {
-    printf("%04x: port1 write %04x=%02x\n", PCD, addr, data);
+    // printf("%04x: port1 write %04x=%02x\n", PCD, addr, data);
   }
   
   // port 2 CONTROL
   else if (addr == 0x0003) {
-    printf("%04x: port2 write %04x=%02x\n", PCD, addr, data);
+    // printf("%04x: port2 write %04x=%02x\n", PCD, addr, data);
 
-    // m_sa->set_sr_mode((data >> 2) & 1);
+    current_sample_rate = (data >> 2) & 1;
+
+		execute_set_input(M6801_TIN_LINE, CLEAR_LINE);
   }
   
   // tcsr
@@ -539,9 +548,14 @@ void Mcu::write_byte(u16 addr, u8 data)
   
   // sound chip
   else if (addr < 0x2000) {
-    sound_chip->write(addr - 0x1000, data);
+    sound_chip.write(addr - 0x1000, data);
 		// printf("%04x: SA write %04x=%02x\n", PCD, addr, data);
 		// fflush(stdout);
+
+		if (sound_chip.m_irq_triggered) {
+			sound_chip.m_irq_triggered = false;
+			execute_set_input(0, CLEAR_LINE);
+		}
   }
   
   // latch
@@ -552,27 +566,49 @@ void Mcu::write_byte(u16 addr, u8 data)
   }
 }
 
-void Mcu::load_roms()
+s16 Mcu::generate_next_sample()
 {
-  FILE *f;
+	// handshake
+	if (initCnt == 100) {
+    commands_queue.push(0x30);
+  }
+	initCnt++;
 
-  u8 temp_progrom[0x2000];
-  f = fopen("RD200_B.bin", "rb");
-  if (f == NULL)
-    printf("Error opening RD200_B.bin\n");
-  fread(temp_progrom, 1, 0x2000, f);
-  fclose(f);
-	for (size_t srcpos = 0x00; srcpos < 0x2000; srcpos++) {
-		program_rom[srcpos] = UNSCRAMBLE_DATA_CPUB(temp_progrom[UNSCRAMBLE_ADDR_CPUB(srcpos)]);
+	s16 sample = sound_chip.update();
+
+	// 20kHz sample rate, 2000kHz CPU clock
+	for (size_t cycle = 0; cycle < 100; cycle++) {
+		execute_run();
 	}
 
-  u8 temp_paramsrom[0x20000];
-  f = fopen("RD200_IC18.bin", "rb");
-  if (f == NULL)
-    printf("Error opening RD200_IC18.bin\n");
-  fread(temp_paramsrom, 1, 0x20000, f);
-  fclose(f);
-	for (size_t srcpos = 0x00; srcpos < 0x20000; srcpos++) {
-		params_rom[srcpos] = UNSCRAMBLE_DATA_CPUB(temp_paramsrom[srcpos]);
+	return sample;
+}
+
+void Mcu::sendMidiCmd(u8 data1, u8 data2, u8 data3)
+{
+	uint8_t command = data1 >> 4;
+
+	// program change
+	if (command == 0xC) {
+		commands_queue.push(0x30 | (data2 & 0xF));
+	}
+
+	// note off
+	else if (command == 0x8 || (command == 0x9 && data3 == 0)) {
+		commands_queue.push(0xB0);
+		commands_queue.push(data2);
+		commands_queue.push(data3);
+	}
+	
+	// note on
+	else if (command == 0x9) {
+		commands_queue.push(0xC0);
+		commands_queue.push(data2);
+		commands_queue.push(data3);
+	}
+	
+	// sustain
+	else if (command == 0xB && data2 == 64) {
+		commands_queue.push(0x50 | (data3 >= 64 ? 0xF : 0x0));
 	}
 }

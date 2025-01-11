@@ -67,6 +67,7 @@ public:
     void* resampleL = 0;
     void* resampleR = 0;
     int savedDestSampleRate = 0;
+    int sourceSampleRate = 0;
     int savedSourceSampleRate = 0;
     double samplesError = 0;
 

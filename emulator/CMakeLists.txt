@@ -175,9 +175,9 @@ endif()
 
 find_package(SDL2 REQUIRED)
 
-# if(USE_PORTMIDI)
-#     add_subdirectory(3rdparty/portmidi)
-# endif()
+if(USE_PORTMIDI)
+    add_subdirectory(3rdparty/portmidi)
+endif()
 
 
 set(RDPIANO_SRC
@@ -207,9 +207,9 @@ else()
     target_link_libraries(rdpiano PRIVATE ${SDL2_LIBRARIES})
 endif()
 
-# if(USE_PORTMIDI)
-#     target_link_libraries(rdpiano PRIVATE portmidi)
-# endif()
+if(USE_PORTMIDI)
+    target_link_libraries(rdpiano PRIVATE portmidi)
+endif()
 
 if(WIN32)
     target_link_libraries(rdpiano PRIVATE shlwapi winmm)

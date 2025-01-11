@@ -6,7 +6,7 @@
 
 class SoundChip {
 public:
-  SoundChip(u8 *ic5, u8 *ic6, u8 *ic7);
+  SoundChip(u8 *temp_ic5, u8 *temp_ic6, u8 *temp_ic7);
 
   u8 read(size_t offset);
   void write(size_t offset, u8 data);
@@ -29,8 +29,8 @@ private:
   uint16_t samples_exp_table[0x8000];
 
   struct SA_Part {
-    uint32_t sub_phase;
-    uint32_t env_value;
+    uint32_t sub_phase = 0;
+    uint32_t env_value = 0;
   };
 
   SA_Part m_parts[NUM_VOICES][PARTS_PER_VOICE];    // channel memory

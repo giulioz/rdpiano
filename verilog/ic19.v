@@ -15,7 +15,7 @@ module IC19 (
   input wire AS_IN,
 
   input wire [7:0] CPU_P3_IN,
-  output wire [7:0] CPU_P3_OUT,
+  output reg [7:0] CPU_P3_OUT,
   output wire CPU_P3_IOM,
 
   input wire [7:0] CPU_P4_IN,
@@ -39,13 +39,13 @@ module IC19 (
   output wire [7:0] RIC13_D_OUT,
   output wire RIC13_D_IOM,
 
-  output wire volout_7, // 2
-  output wire volout_1, // 3
-  output wire volout_2, // 4
-  output wire volout_3, // 5
-  output wire volout_4, // 6
-  output wire volout_6, // 7
-  output wire volout_5  // 8
+  output wire volout_7, // 2=>IC19_1_IN
+  output wire volout_1, // 3=>IC19_2_IN
+  output wire volout_2, // 4=>IC19_3_IN
+  output wire volout_3, // 5=>IC19_4_IN
+  output wire volout_4, // 6=>IC19_5_IN
+  output wire volout_6, // 7=>IC19_6_IN
+  output wire volout_5  // 8=>IC19_7_IN
 );
 
 
@@ -225,7 +225,7 @@ end
 
 // read when not in write mode
 assign RIC12_OE_OUT = ram12_write_mode;
-// write during cycle 9 and 10 if pending
+// write if pending, but not during cycle 9 and 10
 assign RIC12_WE_OUT = ~((cycle_9 || cycle_10) && ram12_write_pending);
 
 // output the read or write address
@@ -366,34 +366,36 @@ assign adder_ctrl = cycles_0_to_7 || cycles_9_to_0;
 
 // 28 bit adder
 wire [27:0] adder1_a;
-assign adder1_a[0]  = ~(env_flag0_6_r  || ~((env_prev[0]  && ~adder_ctrl) || (prev_adder_neg[0]  && adder_ctrl)));
-assign adder1_a[1]  = ~(env_flag0_6_r  || ~((env_prev[1]  && ~adder_ctrl) || (prev_adder_neg[1]  && adder_ctrl)));
-assign adder1_a[2]  = ~(env_flag0_6_r  || ~((env_prev[2]  && ~adder_ctrl) || (prev_adder_neg[2]  && adder_ctrl)));
-assign adder1_a[3]  = ~(env_flag0_6_r  || ~((env_prev[3]  && ~adder_ctrl) || (prev_adder_neg[3]  && adder_ctrl)));
-assign adder1_a[4]  = ~(env_flag0_6_r  || ~((env_prev[4]  && ~adder_ctrl) || (prev_adder_neg[4]  && adder_ctrl)));
-assign adder1_a[5]  = ~(env_flag0_6_r  || ~((env_prev[5]  && ~adder_ctrl) || (prev_adder_neg[5]  && adder_ctrl)));
-assign adder1_a[6]  = ~(env_flag0_6_r  || ~((env_prev[6]  && ~adder_ctrl) || (prev_adder_neg[6]  && adder_ctrl)));
-assign adder1_a[7]  = ~(env_flag0_6_r  || ~((env_prev[7]  && ~adder_ctrl) || (prev_adder_neg[7]  && adder_ctrl)));
-assign adder1_a[8]  = ~(env_flag0_6_r  || ~((env_prev[8]  && ~adder_ctrl) || (prev_adder_neg[8]  && adder_ctrl)));
-assign adder1_a[9]  = ~(env_flag0_6_r  || ~((env_prev[9]  && ~adder_ctrl) || (prev_adder_neg[9]  && adder_ctrl)));
-assign adder1_a[10] = ~(env_flag0_6_r  || ~((env_prev[10] && ~adder_ctrl) || (prev_adder_neg[10] && adder_ctrl)));
-assign adder1_a[11] = ~(env_flag0_6_r  || ~((env_prev[11] && ~adder_ctrl) || (prev_adder_neg[11] && adder_ctrl)));
-assign adder1_a[12] = ~(env_flag0_6_r  || ~((env_prev[12] && ~adder_ctrl) || (prev_adder_neg[12] && adder_ctrl)));
-assign adder1_a[13] = ~(env_flag0_6_r  || ~((env_prev[13] && ~adder_ctrl) || (prev_adder_neg[13] && adder_ctrl)));
-assign adder1_a[14] = ~(env_flag0_6_r  || ~((env_prev[14] && ~adder_ctrl) || (prev_adder_neg[14] && adder_ctrl)));
-assign adder1_a[15] = ~(env_flag0_6_r  || ~((env_prev[15] && ~adder_ctrl) || (prev_adder_neg[15] && adder_ctrl)));
-assign adder1_a[16] = ~(env_flag0_6_r  || ~((env_prev[16] && ~adder_ctrl) || (prev_adder_neg[16] && adder_ctrl)));
-assign adder1_a[17] = ~(env_flag0_6_r  || ~((env_prev[17] && ~adder_ctrl) || (prev_adder_neg[17] && adder_ctrl)));
-assign adder1_a[18] = ~(env_flag0_6_r  || ~((env_prev[18] && ~adder_ctrl) || (prev_adder_neg[18] && adder_ctrl)));
-assign adder1_a[19] = ~(env_flag0_6_r  || ~((env_prev[19] && ~adder_ctrl) || (prev_adder_neg[19] && adder_ctrl)));
-assign adder1_a[20] = ~(env_flag0_6_r  || ~((env_prev[20] && ~adder_ctrl) || (prev_adder_neg[20] && adder_ctrl)));
-assign adder1_a[21] = ~(env_flag0_6_r  || ~((env_prev[21] && ~adder_ctrl) || (prev_adder_neg[21] && adder_ctrl)));
-assign adder1_a[22] = ~(env_flag0_6_r  || ~((env_prev[22] && ~adder_ctrl) || (prev_adder_neg[22] && adder_ctrl)));
-assign adder1_a[23] = ~(env_flag0_6_r  || ~((env_prev[23] && ~adder_ctrl) || (prev_adder_neg[23] && adder_ctrl)));
-assign adder1_a[24] = ~(env_flag0_6_r  || ~((env_prev[24] && ~adder_ctrl) || (prev_adder_neg[24] && adder_ctrl)));
-assign adder1_a[25] = ~(~env_flag0_6_r && ~((env_prev[25] && ~adder_ctrl) || (prev_adder_neg[25] && adder_ctrl)));
-assign adder1_a[26] = ~(env_flag0_6_r  || ~((env_prev[26] && ~adder_ctrl) || (prev_adder_neg[26] && adder_ctrl)));
-assign adder1_a[27] = ~(env_flag0_6_r  || ~((env_prev[27] && ~adder_ctrl) || (prev_adder_neg[27] && adder_ctrl)));
+assign adder1_a[0]  = ~env_flag0_6_r && ((env_prev[0]  && ~adder_ctrl) || (prev_adder[0]  && adder_ctrl));
+assign adder1_a[1]  = ~env_flag0_6_r && ((env_prev[1]  && ~adder_ctrl) || (prev_adder[1]  && adder_ctrl));
+assign adder1_a[2]  = ~env_flag0_6_r && ((env_prev[2]  && ~adder_ctrl) || (prev_adder[2]  && adder_ctrl));
+assign adder1_a[3]  = ~env_flag0_6_r && ((env_prev[3]  && ~adder_ctrl) || (prev_adder[3]  && adder_ctrl));
+assign adder1_a[4]  = ~env_flag0_6_r && ((env_prev[4]  && ~adder_ctrl) || (prev_adder[4]  && adder_ctrl));
+assign adder1_a[5]  = ~env_flag0_6_r && ((env_prev[5]  && ~adder_ctrl) || (prev_adder[5]  && adder_ctrl));
+assign adder1_a[6]  = ~env_flag0_6_r && ((env_prev[6]  && ~adder_ctrl) || (prev_adder[6]  && adder_ctrl));
+assign adder1_a[7]  = ~env_flag0_6_r && ((env_prev[7]  && ~adder_ctrl) || (prev_adder[7]  && adder_ctrl));
+assign adder1_a[8]  = ~env_flag0_6_r && ((env_prev[8]  && ~adder_ctrl) || (prev_adder[8]  && adder_ctrl));
+assign adder1_a[9]  = ~env_flag0_6_r && ((env_prev[9]  && ~adder_ctrl) || (prev_adder[9]  && adder_ctrl));
+assign adder1_a[10] = ~env_flag0_6_r && ((env_prev[10] && ~adder_ctrl) || (prev_adder[10] && adder_ctrl));
+assign adder1_a[11] = ~env_flag0_6_r && ((env_prev[11] && ~adder_ctrl) || (prev_adder[11] && adder_ctrl));
+assign adder1_a[12] = ~env_flag0_6_r && ((env_prev[12] && ~adder_ctrl) || (prev_adder[12] && adder_ctrl));
+assign adder1_a[13] = ~env_flag0_6_r && ((env_prev[13] && ~adder_ctrl) || (prev_adder[13] && adder_ctrl));
+assign adder1_a[14] = ~env_flag0_6_r && ((env_prev[14] && ~adder_ctrl) || (prev_adder[14] && adder_ctrl));
+assign adder1_a[15] = ~env_flag0_6_r && ((env_prev[15] && ~adder_ctrl) || (prev_adder[15] && adder_ctrl));
+assign adder1_a[16] = ~env_flag0_6_r && ((env_prev[16] && ~adder_ctrl) || (prev_adder[16] && adder_ctrl));
+assign adder1_a[17] = ~env_flag0_6_r && ((env_prev[17] && ~adder_ctrl) || (prev_adder[17] && adder_ctrl));
+assign adder1_a[18] = ~env_flag0_6_r && ((env_prev[18] && ~adder_ctrl) || (prev_adder[18] && adder_ctrl));
+assign adder1_a[19] = ~env_flag0_6_r && ((env_prev[19] && ~adder_ctrl) || (prev_adder[19] && adder_ctrl));
+assign adder1_a[20] = ~env_flag0_6_r && ((env_prev[20] && ~adder_ctrl) || (prev_adder[20] && adder_ctrl));
+assign adder1_a[21] = ~env_flag0_6_r && ((env_prev[21] && ~adder_ctrl) || (prev_adder[21] && adder_ctrl));
+assign adder1_a[22] = ~env_flag0_6_r && ((env_prev[22] && ~adder_ctrl) || (prev_adder[22] && adder_ctrl));
+assign adder1_a[23] = ~env_flag0_6_r && ((env_prev[23] && ~adder_ctrl) || (prev_adder[23] && adder_ctrl));
+assign adder1_a[24] = ~env_flag0_6_r && ((env_prev[24] && ~adder_ctrl) || (prev_adder[24] && adder_ctrl));
+assign adder1_a[25] = ~(~env_flag0_6_r && ~((env_prev[25] && ~adder_ctrl) || (prev_adder[25] && adder_ctrl)));
+assign adder1_a[26] = ~env_flag0_6_r && ((env_prev[26] && ~adder_ctrl) || (prev_adder[26] && adder_ctrl));
+assign adder1_a[27] = ~env_flag0_6_r && ((env_prev[27] && ~adder_ctrl) || (prev_adder[27] && adder_ctrl));
+
+assign adder1_b_invert = env_speed_some_high && env_speed_r[7];
 
 // Exponential table!
 wire [20:0] adder1_b;
@@ -418,7 +420,6 @@ assign adder1_b[17] = ~((((~(~env_speed_r[2] && ~env_speed_r[1]) && ~env_speed_r
 assign adder1_b[18] = ~((((((env_speed_r[2] && ~env_speed_r[1] && ~env_speed_r[0]) || ~(~env_speed_r[1] || ~env_speed_r[0])) && env_speed_r[6] && env_speed_r[5] && env_speed_r[4] && env_speed_r[3]) || (env_speed_r[2] && ~(~env_speed_r[1] && ~env_speed_r[0]) && env_speed_r[6] && env_speed_r[5] && env_speed_r[4] && ~env_speed_r[3]) || (env_speed_r[6] && env_speed_r[5] && ~env_speed_r[4] && env_speed_r[3])) && adder1_b_invert) || (~((((env_speed_r[2] && ~env_speed_r[1] && ~env_speed_r[0]) || ~(~env_speed_r[1] || ~env_speed_r[0])) && env_speed_r[6] && env_speed_r[5] && env_speed_r[4] && env_speed_r[3]) || (env_speed_r[2] && ~(~env_speed_r[1] && ~env_speed_r[0]) && env_speed_r[6] && env_speed_r[5] && env_speed_r[4] && ~env_speed_r[3]) || (env_speed_r[6] && env_speed_r[5] && ~env_speed_r[4] && env_speed_r[3])) && ~(adder1_b_invert)));
 assign adder1_b[19] = ~((((env_speed_r[2] && ~(~env_speed_r[1] && ~env_speed_r[0]) && env_speed_r[6] && env_speed_r[5] && env_speed_r[4] && env_speed_r[3]) || (env_speed_r[6] && env_speed_r[5] && env_speed_r[4] && ~env_speed_r[3])) && adder1_b_invert) || (~((env_speed_r[2] && ~(~env_speed_r[1] && ~env_speed_r[0]) && env_speed_r[6] && env_speed_r[5] && env_speed_r[4] && env_speed_r[3]) || (env_speed_r[6] && env_speed_r[5] && env_speed_r[4] && ~env_speed_r[3])) && ~(adder1_b_invert)));
 assign adder1_b[20] = ~((env_speed_r[6] && env_speed_r[5] && env_speed_r[4] && env_speed_r[3] && adder1_b_invert) || (~(env_speed_r[6] && env_speed_r[5] && env_speed_r[4] && env_speed_r[3]) && ~(adder1_b_invert)));
-assign adder1_b_invert = env_speed_some_high && env_speed_r[7];
 
 wire [27:0] adder1_o;
 wire adder1_co;
@@ -427,12 +428,12 @@ assign {adder1_co, adder1_o} = adder1_b_invert + adder1_a + {{7{adder1_b_invert}
 assign adder_tmp_1 = UNK_75_IN && should_fire_irq;
 
 wire [27:0] adder1_or;
-assign adder1_or[19:0] = ~(adder1_o[19:0] && ~{20{adder_tmp_1}});
-assign adder1_or[27:20] = ~(adder1_o[27:20] && ~{8{adder_tmp_1}}) && ~(env_dest_r[7:0] && {8{adder_tmp_1}});
+assign adder1_or[19:0] = adder1_o[19:0] && ~{20{adder_tmp_1}};
+assign adder1_or[27:20] = (adder1_o[27:20] && ~{8{adder_tmp_1}}) || (env_dest_r[7:0] && {8{adder_tmp_1}});
 
-reg [27:0] prev_adder_neg;
+reg [27:0] prev_adder;
 always @(posedge cycle_odd) begin
-  prev_adder_neg <= ~adder1_or;
+  prev_adder <= adder1_or;
 end
 
 
@@ -450,10 +451,10 @@ end
 
 // Output in sequence the adder result
 assign RIC13_D_OUT =
-      ram12_addr_low[1:0] == 2'd0 ? ~ric13_out[7:0]   :
-      ram12_addr_low[1:0] == 2'd2 ? ~ric13_out[15:8]  :
-      ram12_addr_low[1:0] == 2'd1 ? ~ric13_out[23:16] :
-      ram12_addr_low[1:0] == 2'd3 ? ~ric13_out[27:24] :
+      ram12_addr_low[1:0] == 2'd0 ? ric13_out[7:0]   :
+      ram12_addr_low[1:0] == 2'd2 ? ric13_out[15:8]  :
+      ram12_addr_low[1:0] == 2'd1 ? ric13_out[23:16] :
+      ram12_addr_low[1:0] == 2'd3 ? ric13_out[27:24] :
       8'd0;
 
 // Output on sub address 12/13/14/15
@@ -476,6 +477,14 @@ assign path270_volout_4_unsync = ~(ram12_addr_low[0] ? (~(adder3_co && adder3_o[
 assign path269_volout_5_unsync = ~(ram12_addr_low[0] ? (adder3_co && adder3_o[5]   ) : (adder1_a[18] ));
 assign path268_volout_6_unsync = ~(ram12_addr_low[0] ? (adder3_co && adder3_o[6]   ) : (adder1_a[19] ));
 assign path267_volout_7_unsync = ~(ram12_addr_low[0] ? (~(adder3_co && adder3_o[7])) : (~adder3_o[0] ));
+
+// volout_1 => IC19_2_IN
+// volout_2 => IC19_3_IN
+// volout_3 => IC19_4_IN
+// volout_4 => IC19_5_IN
+// volout_5 => IC19_7_IN
+// volout_6 => IC19_6_IN
+// volout_7 => IC19_1_IN
 
 always @(*) begin
   if (!SYNC_IN) begin

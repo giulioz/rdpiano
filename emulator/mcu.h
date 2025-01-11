@@ -24,7 +24,7 @@ enum
 
 class Mcu {
 public:
-  Mcu(SoundChip *sound_chip);
+  Mcu(u8 *temp_ic5, u8 *temp_ic6, u8 *temp_ic7, u8 *temp_progrom, u8 *temp_paramsrom);
   ~Mcu();
   
   typedef void (Mcu::*op_func)();
@@ -35,22 +35,27 @@ public:
 
   std::queue<u8> commands_queue;
 
+	s16 generate_next_sample();
+	bool current_sample_rate = false;
+
+	void sendMidiCmd(u8 cmd, u8 data1, u8 data2);
+
 private:
   // Board specific
   u8 read_byte(u16 addr);
   void write_byte(u16 addr, u8 data);
 
-  SoundChip *sound_chip;
+  SoundChip sound_chip;
 
   u8 latch_val;
   u8 program_rom[0x2000];
   u8 params_rom[0x20000];
   u8 ram[0x10000] = {0};
-  void load_roms();
 
   u8 dac = 0x01;
   u8 dav = 0x00;
   bool inited = false;
+	unsigned long initCnt = 0;
 
   // Generic CPU
   void take_trap();
