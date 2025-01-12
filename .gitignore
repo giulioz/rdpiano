@@ -10,6 +10,5 @@ out.json
 out.v
 *.elk
 points.csv
-build
 .vscode
 JUCE
