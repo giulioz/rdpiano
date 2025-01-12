@@ -1,4 +1,4 @@
-#include "sound_chip.h"
+#include "../include/sound_chip.h"
 
 #include <cmath>
 

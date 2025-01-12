@@ -1,4 +1,4 @@
-#include "mcu.h"
+#include "../include/mcu.h"
 
 #include <algorithm>
 
@@ -173,7 +173,7 @@ const u8 Mcu::flags8d[256]= /* decrement */
 #define NXORV  ((CC&0x08)^((CC&0x02)<<2))
 #define NXORC  ((CC&0x08)^((CC&0x01)<<3))
 
-#include "mcu_ops.h"
+#include "../include/mcu_ops.h"
 
 const Mcu::op_func Mcu::hd63701_insn[0x100] = {
 &Mcu::trap,   &Mcu::nop,    &Mcu::trap,   &Mcu::trap,   &Mcu::lsrd,   &Mcu::asld,   &Mcu::tap,    &Mcu::tpa,    // 0

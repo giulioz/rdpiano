@@ -21,8 +21,7 @@
       <GROUP id="{D56957DF-15BA-5C4F-755F-BFC3A28AF14C}" name="emulator">
         <GROUP id="{29986447-1771-8559-9557-861E859F021B}" name="include">
           <FILE id="aLG0ce" name="mame_utils.h" compile="0" resource="0" file="../librdpiano/include/mame_utils.h"/>
-          <FILE id="sJyALN" name="mcu.h" compile="0" resource="0" file="../librdpiano/include/mcu.h"
-                xcodeResource="1"/>
+          <FILE id="sJyALN" name="mcu.h" compile="0" resource="0" file="../librdpiano/include/mcu.h"/>
           <FILE id="rHYnaa" name="mcu_ops.h" compile="0" resource="0" file="../librdpiano/include/mcu_ops.h"/>
           <FILE id="HRZ8GO" name="sound_chip.h" compile="0" resource="0" file="../librdpiano/include/sound_chip.h"/>
         </GROUP>

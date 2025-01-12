@@ -9,7 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "mcu.h"
+#include "../../librdpiano/include/mcu.h"
 #include "resample/libresample.h"
 
 //==============================================================================
