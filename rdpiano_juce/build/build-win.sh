@@ -9,4 +9,4 @@ MSBUILD_EXE=$("$VS_WHERE" -latest -requires Microsoft.Component.MSBuild -find "M
 echo $MSBUILD_EXE
 
 cd "$ROOT/Builds/VisualStudio2022"
-"$MSBUILD_EXE" "rdpiano_juce.sln" "//p:VisualStudioVersion=19.0" "//m" "//t:Build" "//p:Configuration=Release" "//p:PlatformTarget=x64" "//p:PreferredToolArchitecture=x64"
+"$MSBUILD_EXE" "rdpiano.sln" "//p:VisualStudioVersion=19.0" "//m" "//t:Build" "//p:Configuration=Release" "//p:PlatformTarget=x64" "//p:PreferredToolArchitecture=x64"
