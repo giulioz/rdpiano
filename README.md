@@ -1,18 +1,28 @@
-# RdPiano ![Github Build Status](https://github.com/giulioz/rdpiano/actions/workflows/main.yml/badge.svg)
+# RdPiano [![RdPiano](https://github.com/giulioz/rdpiano/actions/workflows/main.yml/badge.svg)](https://github.com/giulioz/rdpiano/actions/workflows/main.yml)
 
 RdPiano accurately emulates SA-synthesis digital pianos, such as the Roland MKS-20, RD1000 and the Rhodes MK-80 electric piano.
 It simulates the CPU-B board reused in different models, emulating the CPU and the custom chips. The emulation of the custom chips is derived from silicon analysis.
 
-## Plugin downloads
+<table>
+<tbody>
+  <tr>
+    <td>
+      <img width="300px" src="docs/rd1000.jpg" />
+    </td>
+    <td>
+      <img width="300px" src="docs/cpu-b.png" />
+    </td>
+  </tr>
+</tbody>
+</table>
 
-## Downloads
+## Plugin downloads
 
 - [MacOS AU](https://github.com/giulioz/rdpiano/releases/download/latest/rdpiano_juce.component.macOS.zip)
 - [MacOS VSTi](https://github.com/giulioz/rdpiano/releases/download/latest/rdpiano_juce.vst3.macOS.zip)
 - [MacOS Standalone](https://github.com/giulioz/rdpiano/releases/download/latest/rdpiano_juce.app.macOS.zip)
 - [Windows VSTi](https://github.com/giulioz/rdpiano/releases/download/latest/rdpiano_juce.vst3)
 - [Windows Standalone](https://github.com/giulioz/rdpiano/releases/download/latest/rdpiano_juce.exe)
-
 
 ## Content
 
