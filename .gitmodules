@@ -1,3 +1,0 @@
-[submodule "emulator/3rdparty/portmidi"]
-	path = emulator/3rdparty/portmidi
-	url = https://github.com/PortMidi/portmidi.git

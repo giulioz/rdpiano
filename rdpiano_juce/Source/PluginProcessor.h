@@ -9,7 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "emulator/mcu.h"
+#include "mcu.h"
 #include "resample/libresample.h"
 
 //==============================================================================

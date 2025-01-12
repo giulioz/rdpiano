@@ -1,0 +1,88 @@
+# Based on https://github.com/OwlPlug/owlplug-scanner/blob/master/.github/workflows/main.yml
+name: RdPiano
+
+on: 
+  push:
+    branches: 
+      - '**'
+
+jobs:
+  build-win:
+    runs-on: windows-2022
+    steps:
+    - uses: actions/checkout@v3.3.0
+      with:
+        fetch-depth: 0
+        submodules: recursive
+    - name: "Download Projucer"
+      run: |
+           cd rdpiano_juce
+           git clone -b 8.0.1 --depth 1 https://github.com/juce-framework/JUCE JUCE
+           bash -ex ./build/download-projucer.sh
+      shell: bash
+      env:
+        OS: windows
+    - name: "Build RdPiano"
+      run: sh -ex ./rdpiano_juce/build/build-win.sh
+      shell: bash
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: RdPiano-win
+        path: |
+              ./rdpiano_juce/Builds/VisualStudio2022/x64/Release/VST3/RdPiano.vst3
+              ./rdpiano_juce/Builds/VisualStudio2022/x64/Release/Standalone Plugin/RdPiano.exe
+  build-osx:
+    runs-on: macos-13
+    steps:
+    - uses: actions/checkout@v3.3.0
+      with:
+        fetch-depth: 0
+        submodules: recursive
+    - name: "Download Projucer"
+      run: |
+           cd rdpiano_juce
+           git clone -b 8.0.1 --depth 1 https://github.com/juce-framework/JUCE JUCE
+           bash -ex ./build/download-projucer.sh
+      shell: bash
+      env:
+        OS: osx
+    - name: "Build macOS"
+      run: sh -ex ./rdpiano_juce/build/build-osx.sh
+      shell: bash
+    - name: "zip macOS"
+      run: |
+           cd ./rdpiano_juce/Builds/MacOSX/build/Release/
+           zip -r RdPiano.vst3.macOS.zip RdPiano.vst3
+           zip -r RdPiano.component.macOS.zip RdPiano.component
+           zip -r RdPiano.app.macOS.zip RdPiano.app
+           cd -
+      shell: bash
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: RdPiano-osx
+        path: |
+              ./rdpiano_juce/Builds/MacOSX/build/Release/RdPiano.vst3.macOS.zip
+              ./rdpiano_juce/Builds/MacOSX/build/Release/RdPiano.component.macOS.zip
+              ./rdpiano_juce/Builds/MacOSX/build/Release/RdPiano.app.macOS.zip
+  release:
+    name: "Release"
+    needs: [build-win, build-osx]
+    if: github.ref == 'refs/heads/main'
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v3.3.0
+      - name: Retrieve artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: ./rdpiano_juce/build
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: true
+          automatic_release_tag: latest
+          title: RdPiano Latest
+          files: |
+                 rdpiano_juce/build/RdPiano-osx
+                 rdpiano_juce/build/RdPiano-win

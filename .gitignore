@@ -2,9 +2,14 @@
 node_modules
 *.zip
 *nikon*
+*nikpa*
 *auto_saved_files*
 *.lck
 *.out
 out.json
 out.v
 *.elk
+points.csv
+build
+.vscode
+JUCE

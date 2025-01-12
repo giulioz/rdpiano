@@ -4,27 +4,32 @@
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
               pluginManufacturerCode="RDPN" pluginCode="RDPN" cppLanguageStandard="20"
               pluginFormats="buildAU,buildAUv3,buildStandalone,buildVST3" pluginName="RdPiano"
-              pluginDesc="RdPiano" companyName="RdPiano">
+              pluginDesc="RdPiano" companyName="RdPiano" headerPath="../librdpiano/include">
   <MAINGROUP id="U4zWTk" name="rdpiano">
     <GROUP id="{088D649C-6BCD-D668-D5F1-8436704FD4B2}" name="roms">
-      <FILE id="oAkw1Q" name="MK80_IC5.bin" compile="0" resource="1" file="roms/MK80_IC5.bin"/>
-      <FILE id="f6dYrj" name="MK80_IC6.bin" compile="0" resource="1" file="roms/MK80_IC6.bin"/>
-      <FILE id="YMCaUe" name="MK80_IC7.bin" compile="0" resource="1" file="roms/MK80_IC7.bin"/>
-      <FILE id="Y976hj" name="MK80_IC18.bin" compile="0" resource="1" file="roms/MK80_IC18.bin"/>
-      <FILE id="OthL6U" name="RD200_B.bin" compile="0" resource="1" file="roms/RD200_B.bin"/>
-      <FILE id="WYfHS8" name="RD200_IC5.bin" compile="0" resource="1" file="roms/RD200_IC5.bin"/>
-      <FILE id="e0OihG" name="RD200_IC6.bin" compile="0" resource="1" file="roms/RD200_IC6.bin"/>
-      <FILE id="kYgq1S" name="RD200_IC7.bin" compile="0" resource="1" file="roms/RD200_IC7.bin"/>
-      <FILE id="JCSWnB" name="RD200_IC18.bin" compile="0" resource="1" file="roms/RD200_IC18.bin"/>
+      <FILE id="oAkw1Q" name="MK80_IC5.bin" compile="0" resource="1" file="../roms/MK80_IC5.bin"/>
+      <FILE id="f6dYrj" name="MK80_IC6.bin" compile="0" resource="1" file="../roms/MK80_IC6.bin"/>
+      <FILE id="YMCaUe" name="MK80_IC7.bin" compile="0" resource="1" file="../roms/MK80_IC7.bin"/>
+      <FILE id="Y976hj" name="MK80_IC18.bin" compile="0" resource="1" file="../roms/MK80_IC18.bin"/>
+      <FILE id="OthL6U" name="RD200_B.bin" compile="0" resource="1" file="../roms/RD200_B.bin"/>
+      <FILE id="WYfHS8" name="RD200_IC5.bin" compile="0" resource="1" file="../roms/RD200_IC5.bin"/>
+      <FILE id="e0OihG" name="RD200_IC6.bin" compile="0" resource="1" file="../roms/RD200_IC6.bin"/>
+      <FILE id="kYgq1S" name="RD200_IC7.bin" compile="0" resource="1" file="../roms/RD200_IC7.bin"/>
+      <FILE id="JCSWnB" name="RD200_IC18.bin" compile="0" resource="1" file="../roms/RD200_IC18.bin"/>
     </GROUP>
     <GROUP id="{A9A4FE8C-A726-5731-A9C6-45A227C17A55}" name="Source">
-      <GROUP id="{94BAC9BD-DE90-5C96-0254-8C0BD36B44EE}" name="emulator">
-        <FILE id="ybOKoJ" name="mame_utils.h" compile="0" resource="0" file="Source/emulator/mame_utils.h"/>
-        <FILE id="qVoUH2" name="mcu.cpp" compile="1" resource="0" file="Source/emulator/mcu.cpp"/>
-        <FILE id="Atl15f" name="mcu.h" compile="0" resource="0" file="Source/emulator/mcu.h"/>
-        <FILE id="AKsT3d" name="mcu_ops.h" compile="0" resource="0" file="Source/emulator/mcu_ops.h"/>
-        <FILE id="MPzVtH" name="sound_chip.cpp" compile="1" resource="0" file="Source/emulator/sound_chip.cpp"/>
-        <FILE id="C98tCI" name="sound_chip.h" compile="0" resource="0" file="Source/emulator/sound_chip.h"/>
+      <GROUP id="{D56957DF-15BA-5C4F-755F-BFC3A28AF14C}" name="emulator">
+        <GROUP id="{29986447-1771-8559-9557-861E859F021B}" name="include">
+          <FILE id="aLG0ce" name="mame_utils.h" compile="0" resource="0" file="../librdpiano/include/mame_utils.h"/>
+          <FILE id="sJyALN" name="mcu.h" compile="0" resource="0" file="../librdpiano/include/mcu.h"
+                xcodeResource="1"/>
+          <FILE id="rHYnaa" name="mcu_ops.h" compile="0" resource="0" file="../librdpiano/include/mcu_ops.h"/>
+          <FILE id="HRZ8GO" name="sound_chip.h" compile="0" resource="0" file="../librdpiano/include/sound_chip.h"/>
+        </GROUP>
+        <GROUP id="{4841733A-2FA6-3B64-6697-19A463ECA7EC}" name="src">
+          <FILE id="PJENE4" name="mcu.cpp" compile="1" resource="0" file="../librdpiano/src/mcu.cpp"/>
+          <FILE id="KW8xd0" name="sound_chip.cpp" compile="1" resource="0" file="../librdpiano/src/sound_chip.cpp"/>
+        </GROUP>
       </GROUP>
       <GROUP id="{5F344C4D-8974-0F43-24EF-59E1852B1A44}" name="resample">
         <FILE id="PvZm34" name="config.h" compile="0" resource="0" file="Source/resample/config.h"/>
@@ -69,19 +74,19 @@
         <CONFIGURATION isDebug="0" name="Release" targetName="rdpiano_juce"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_core" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_graphics" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_events" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_animation" path="../../../../Downloads/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_animation" path="./JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <XCODE_IPHONE targetFolder="Builds/iOS">
@@ -90,60 +95,60 @@
         <CONFIGURATION isDebug="0" name="Release" targetName="rdpiano_juce"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_animation" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_core" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_events" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_graphics" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../../../../Downloads/JUCE/modules"/>
+        <MODULEPATH id="juce_animation" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="./JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_IPHONE>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug"/>
-        <CONFIGURATION isDebug="0" name="Release"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="rdpiano_juce"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="rdpiano_juce"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_animation" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_core" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_events" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_graphics" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../../../../Downloads/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../../../../Downloads/JUCE/modules"/>
+        <MODULEPATH id="juce_animation" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="./JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <VS2022 targetFolder="Builds/VisualStudio2022">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug"/>
-        <CONFIGURATION isDebug="0" name="Release"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="rdpiano_juce"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="rdpiano_juce"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_audio_plugin_client" path="../../Downloads/juce-8.0.1-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../../Downloads/juce-8.0.1-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../../Downloads/juce-8.0.1-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../../Downloads/juce-8.0.1-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_graphics" path="../../Downloads/juce-8.0.1-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_events" path="../../Downloads/juce-8.0.1-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_core" path="../../Downloads/juce-8.0.1-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../../Downloads/juce-8.0.1-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../../Downloads/juce-8.0.1-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../../Downloads/juce-8.0.1-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../../Downloads/juce-8.0.1-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../../Downloads/juce-8.0.1-windows/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="./JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="./JUCE/modules"/>
       </MODULEPATHS>
     </VS2022>
   </EXPORTFORMATS>
