@@ -30,8 +30,8 @@ jobs:
       with:
         name: RdPiano-win
         path: |
-              ./rdpiano_juce/Builds/VisualStudio2022/x64/Release/VST3/RdPiano.vst3
-              ./rdpiano_juce/Builds/VisualStudio2022/x64/Release/Standalone Plugin/RdPiano.exe
+              ./rdpiano_juce/Builds/VisualStudio2022/x64/Release/VST3/rdpiano_juce.vst3
+              ./rdpiano_juce/Builds/VisualStudio2022/x64/Release/Standalone Plugin/rdpiano_juce.exe
   build-osx:
     runs-on: macos-13
     steps:
@@ -53,9 +53,9 @@ jobs:
     - name: "zip macOS"
       run: |
            cd ./rdpiano_juce/Builds/MacOSX/build/Release/
-           zip -r RdPiano.vst3.macOS.zip RdPiano.vst3
-           zip -r RdPiano.component.macOS.zip RdPiano.component
-           zip -r RdPiano.app.macOS.zip RdPiano.app
+           zip -r rdpiano_juce.vst3.macOS.zip rdpiano_juce.vst3
+           zip -r rdpiano_juce.component.macOS.zip rdpiano_juce.component
+           zip -r rdpiano_juce.app.macOS.zip rdpiano_juce.app
            cd -
       shell: bash
     - name: Upload Artifact
@@ -63,9 +63,9 @@ jobs:
       with:
         name: RdPiano-osx
         path: |
-              ./rdpiano_juce/Builds/MacOSX/build/Release/RdPiano.vst3.macOS.zip
-              ./rdpiano_juce/Builds/MacOSX/build/Release/RdPiano.component.macOS.zip
-              ./rdpiano_juce/Builds/MacOSX/build/Release/RdPiano.app.macOS.zip
+              ./rdpiano_juce/Builds/MacOSX/build/Release/rdpiano_juce.vst3.macOS.zip
+              ./rdpiano_juce/Builds/MacOSX/build/Release/rdpiano_juce.component.macOS.zip
+              ./rdpiano_juce/Builds/MacOSX/build/Release/rdpiano_juce.app.macOS.zip
   release:
     name: "Release"
     needs: [build-win, build-osx]
