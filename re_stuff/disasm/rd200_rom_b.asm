@@ -447,7 +447,9 @@ ME16E   ;E16E: 0x00 => 0xEBB7   (test mode)
 
         ; handler 0x0e master tune
         LDD     CMD_PARAMS                    ;E18E: DC E1          '..'
+        ; <<= 1
         ASLB                             ;E190: 58 04          '.'
+        ; test bit 5
         BITA    #$20                     ;E192: 85 20          '. '
         BEQ     ZE198                    ;E194: 27 02          ''.'
         ORAA    #$C0                     ;E196: 8A C0          '..'
