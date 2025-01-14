@@ -17,7 +17,7 @@ It simulates the CPU-B board reused in different models, emulating the CPU and t
 - [Windows VSTi](https://github.com/giulioz/rdpiano/releases/download/latest/rdpiano_juce.vst3)
 - [Windows Standalone](https://github.com/giulioz/rdpiano/releases/download/latest/rdpiano_juce.exe)
 
-**NOTE:** Due to a bug, it's possible for the VST version to produce no sound when first loaded. To fix it, please change the current patch at least once.
+**NOTE:** Due to a bug, it's possible for some versions to produce no sound when first loaded. To fix it, please change the current patch at least once.
 
 ## Content
 
