@@ -97,8 +97,6 @@ private:
   };
   MidiMessageTimer midiMessageTimer;
 
-  juce::Slider alphaDial;
-
   class KnobLF : public juce::LookAndFeel_V3 {
   public:
     KnobLF() {}
@@ -128,6 +126,9 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(KnobLF)
   };
   KnobLF knobLF;
+  juce::Slider alphaDial;
+
+  juce::Slider volumeSlider;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RdPiano_juceAudioProcessorEditor)
 };

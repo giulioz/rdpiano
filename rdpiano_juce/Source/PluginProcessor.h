@@ -58,6 +58,7 @@ public:
   struct DataToSave {
     int16_t masterTune = 0;
     uint8_t currentPatch = 0;
+    float volume = 1.0;
   };
 
   DataToSave status;
@@ -77,6 +78,8 @@ public:
   unsigned long midiMessageCount = 0;
 
   void setMasterTune(int16_t tune);
+
+  juce::SpinLock mcuLock;
 
 private:
   //==============================================================================

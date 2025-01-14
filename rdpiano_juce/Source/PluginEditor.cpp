@@ -49,9 +49,14 @@ RdPiano_juceAudioProcessorEditor::RdPiano_juceAudioProcessorEditor(
   alphaDial.setSliderStyle(juce::Slider::Rotary);
   alphaDial.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
   alphaDial.setRange(-1, 1);
-  // alphaDial.setRotaryParameters(juce::MathConstants<float>::pi * 1.3f,
-  //                               juce::MathConstants<float>::pi * 2.7f, true);
   alphaDial.addListener(this);
+
+  addAndMakeVisible(volumeSlider);
+  volumeSlider.setSliderStyle(juce::Slider::LinearVertical);
+  volumeSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
+  volumeSlider.setRange(0, 1);
+  volumeSlider.addListener(this);
+  volumeSlider.setAlpha(0);
 
   setResizeLimits(uiWidth, uiHeight, uiWidth, uiHeight);
   setSize(uiWidth, uiHeight);
@@ -97,6 +102,7 @@ void RdPiano_juceAudioProcessorEditor::resized() {
   alphaDial.setBounds(
       (204.564) * (6140 / 311.92) / sfC, (24.061) * (6140 / 311.92) / sfC,
       (39.145) * (6140 / 311.92) / sfC, (39.145) * (6140 / 311.92) / sfC);
+  volumeSlider.setBounds(1188 / sfC, 660 / sfC, 100 / sfC, 656 / sfC);
 }
 
 void RdPiano_juceAudioProcessorEditor::paint(juce::Graphics &g) {
@@ -106,17 +112,12 @@ void RdPiano_juceAudioProcessorEditor::paint(juce::Graphics &g) {
                                               BinaryData::background_pngSize),
               getLocalBounds().toFloat());
 
-  // Alpha Dial
-  // g.drawImage(juce::ImageCache::getFromMemory(BinaryData::interactable_png,
-  //                                             BinaryData::interactable_pngSize),
-  //             4000 / sfC, 455 / sfC, 824 / sfC, 807 / sfC, 4000, 455, 824,
-  //             807);
-
   // Volume
+  float volumeY =
+      660 / sfC + (1 - audioProcessor.status.volume) * (656 - 131) / sfC;
   g.drawImage(juce::ImageCache::getFromMemory(BinaryData::interactable_png,
                                               BinaryData::interactable_pngSize),
-              1185 / sfC, 1175 / sfC, 107 / sfC, 142 / sfC, 1185, 1175, 107,
-              142);
+              1188 / sfC, volumeY, 100 / sfC, 131 / sfC, 1188, 1179, 100, 131);
 
   if (audioProcessor.midiMessageCount != lastMidiMessageCount) {
     g.setColour(juce::Colours::greenyellow);
@@ -171,6 +172,8 @@ void RdPiano_juceAudioProcessorEditor::sliderValueChanged(
     } else {
       audioProcessor.setCurrentProgram((alphaDial.getValue() + 1) * 8);
     }
+  } else if (slider == &volumeSlider) {
+    audioProcessor.status.volume = volumeSlider.getValue();
   }
 }
 
@@ -211,7 +214,7 @@ void RdPiano_juceAudioProcessorEditor::updateValues() {
   if (tuneMode) {
     juce::String tuningString =
         "TUNING           " +
-        juce::String(440.0 + audioProcessor.status.masterTune / 32767.0 * 12.0,
+        juce::String(442.0 + audioProcessor.status.masterTune / 32767.0 * 3.85,
                      1) +
         "Hz          ";
     lcd.setText(tuningString);
@@ -222,6 +225,9 @@ void RdPiano_juceAudioProcessorEditor::updateValues() {
     alphaDial.setValue(audioProcessor.status.currentPatch / 16.0 * 2.0 - 1,
                        juce::dontSendNotification);
   }
+
+  volumeSlider.setValue(audioProcessor.status.volume,
+                        juce::dontSendNotification);
 
   this->repaint();
 }

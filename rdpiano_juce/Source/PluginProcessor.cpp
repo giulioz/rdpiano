@@ -36,7 +36,10 @@ RdPiano_juceAudioProcessor::RdPiano_juceAudioProcessor()
                 (const uint8_t *)BinaryData::RD200_IC7_bin,
                 (const uint8_t *)BinaryData::RD200_B_bin,
                 (const uint8_t *)BinaryData::RD200_IC18_bin);
-  mcu->commands_queue.push(0x30 | (status.currentPatch & 0xF));
+  mcu->commands_queue.push(0x30);
+  for (size_t cycle = 0; cycle < 100; cycle++) {
+    mcu->generate_next_sample();
+  }
 }
 
 RdPiano_juceAudioProcessor::~RdPiano_juceAudioProcessor() {
@@ -67,6 +70,7 @@ void RdPiano_juceAudioProcessor::setCurrentProgram(int index) {
   if (index < 0 || index >= getNumPrograms())
     return;
 
+  mcuLock.enter();
   if (index / 8 != status.currentPatch / 8) {
     mcu->loadSounds(index / 8 == 0 ? (const uint8_t *)BinaryData::RD200_IC5_bin
                                    : (const uint8_t *)BinaryData::MK80_IC5_bin,
@@ -81,6 +85,7 @@ void RdPiano_juceAudioProcessor::setCurrentProgram(int index) {
 
   status.currentPatch = index;
   mcu->commands_queue.push(0x30 | (status.currentPatch & 0xF));
+  mcuLock.exit();
   sourceSampleRate = sampleRates[status.currentPatch];
 
   sendChangeMessage();
@@ -96,12 +101,32 @@ void RdPiano_juceAudioProcessor::changeProgramName(
 
 void RdPiano_juceAudioProcessor::setMasterTune(int16_t tune) {
   status.masterTune = tune;
+
+  mcuLock.enter();
+
+  u8 tuneMsb = status.masterTune < 0 ? 0x7f : 0x00;
+  u8 tuneLsb =
+      (int8_t)(floor(abs(status.masterTune) / 32767.0 * 16.0) * 4) & 0xff;
+  if (tuneLsb > 0x3c)
+    tuneLsb = 0x3c;
+  if (status.masterTune < 0)
+    tuneLsb = 0x48 + tuneLsb;
+
+  // TODO: we need to do this horrible switcharoo since changing
+  // the tuning on patches different than 0 doesn't work...
+  mcu->commands_queue.push(0x30);
+  for (size_t cycle = 0; cycle < 100; cycle++) {
+    mcu->generate_next_sample();
+  }
   mcu->commands_queue.push(0xE0);
-  mcu->commands_queue.push((int8_t)(tune / 32767.0 * 1.0) & 0xff);
-  mcu->commands_queue.push(0x00);
-//   mcu->commands_queue.push(0x48 - (tune >> 12));
-  //   mcu->commands_queue.push((uint16_t)(tune / (32767 / 8)) >> 8);
-  //   mcu->commands_queue.push((uint16_t)(tune / (32767 / 8)) & 0xff);
+  mcu->commands_queue.push(tuneMsb);
+  mcu->commands_queue.push(tuneLsb);
+  for (size_t cycle = 0; cycle < 100; cycle++) {
+    mcu->generate_next_sample();
+  }
+  mcu->commands_queue.push(0x30 | (status.currentPatch & 0xF));
+
+  mcuLock.exit();
 
   sendChangeMessage();
 }
@@ -172,6 +197,7 @@ void RdPiano_juceAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
 
   std::vector<int> processedEvents;
 
+  mcuLock.enter();
   for (int i = 0; i < renderBufferFrames; i++) {
     int evI = 0;
     for (const auto metadata : midiMessages) {
@@ -189,9 +215,10 @@ void RdPiano_juceAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
     }
 
     int16_t sample = mcu->generate_next_sample();
-    sample_buffer_l[i] = sample / 65536.0f;
-    sample_buffer_r[i] = sample / 65536.0f;
+    sample_buffer_l[i] = sample / 65536.0f * status.volume;
+    sample_buffer_r[i] = sample / 65536.0f * status.volume;
   }
+  mcuLock.exit();
 
   double ratio = destSampleRate / sourceSampleRate;
   if (savedDestSampleRate != destSampleRate ||
@@ -250,6 +277,9 @@ void RdPiano_juceAudioProcessor::setStateInformation(const void *data,
                                                      int sizeInBytes) {
   memcpy(&status, data, sizeof(DataToSave));
 
+  setMasterTune(status.masterTune);
+
+  mcuLock.enter();
   mcu->loadSounds(
       status.currentPatch / 8 == 0 ? (const uint8_t *)BinaryData::RD200_IC5_bin
                                    : (const uint8_t *)BinaryData::MK80_IC5_bin,
@@ -262,6 +292,8 @@ void RdPiano_juceAudioProcessor::setStateInformation(const void *data,
           : (const uint8_t *)BinaryData::MK80_IC18_bin);
 
   mcu->commands_queue.push(0x30 | (status.currentPatch & 0xF));
+  mcuLock.exit();
+  
   sourceSampleRate = sampleRates[status.currentPatch];
 }
 
