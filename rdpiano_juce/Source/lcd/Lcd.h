@@ -21,9 +21,10 @@ public:
   ~Lcd() override;
 
   void paint(juce::Graphics &) override;
-  void resized() override;
 
   void setText(const juce::String &text);
+
+  void setScale(float scale);
 
 private:
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Lcd)
@@ -32,4 +33,5 @@ private:
                               juce::Graphics &g);
 
   uint8_t LCD_Data[80];
+  float scale = 1;
 };

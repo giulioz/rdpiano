@@ -72,6 +72,7 @@ RdPiano_juceAudioProcessorEditor::~RdPiano_juceAudioProcessorEditor() {
 void RdPiano_juceAudioProcessorEditor::resized() {
   float sfC = (float)bgWidth / getBounds().getWidth();
 
+  lcd.setScale(sfC);
   lcd.setBounds((1984 + 60) / sfC, (272 + 50) / sfC, (1394 - 60 * 2) / sfC,
                 (309 - 40 * 2) / sfC);
 
