@@ -81,7 +81,7 @@ FULL_BTN_STATE   EQU     $00C1
 M00C2   EQU     $00C2
 CURRENT_PGM?   EQU     $00C3
 M00C5   EQU     $00C5
-M00CD   EQU     $00CD
+LAST_TUNING   EQU     $00CD
 M00CE   EQU     $00CE
 M00CF   EQU     $00CF
 M00D0   EQU     $00D0
@@ -154,12 +154,12 @@ M0E51   EQU     $0E51
 M0E53   EQU     $0E53
 M0E54   EQU     $0E54
 M0FFF   EQU     $0FFF
-SWITCHES_LATCH   EQU     $1000
-LATCH_IC7   EQU     $1800
+SWITCHES_LATCH   EQU     $1000 ; ic8
+LATCH_IC7   EQU     $1800 ; ic7
 M1F40   EQU     $1F40
-LEDS_LATCH   EQU     $2000
-IC5_LATCH   EQU     $2800
-M3000   EQU     $3000
+LEDS_LATCH   EQU     $2000 ; ic6
+IC5_LATCH   EQU     $2800 ; ic5
+VOL_COMP_LATCH   EQU     $3000 ; ic12
 
 ;****************************************************
 ;* Program Code / Data Areas                        *
@@ -490,7 +490,7 @@ ZE276   LDAA    SWITCHES_LATCH                    ;E276: B6 10 00       '...'
         JSR     ZE5EA                    ;E287: BD E5 EA       '...'
 ZE28A   JSR     ZEA2C                    ;E28A: BD EA 2C       '..,'
         LDAA    #$7F                     ;E28D: 86 7F          '..'
-        STAA    M00CD                    ;E28F: 97 CD          '..'
+        STAA    LAST_TUNING                    ;E28F: 97 CD          '..'
         JSR     ZEAB2                    ;E291: BD EA B2       '...'
         LDAA    #$00                     ;E294: 86 00          '..'
         LDAB    KEY_MODEL_MODE                    ;E296: D6 C0          '..'
@@ -1635,13 +1635,15 @@ ZEAA0   LDX     #M00C5                   ;EAA0: CE 00 C5       '...'
         STAB    IC5_LATCH                    ;EAAE: F7 28 00       '.(.'
         RTS                              ;EAB1: 39             '9'
 
-        ; SEL
+        ; SEL tuning?
 ZEAB2   LDAA    IC5_LATCH_STATE                    ;EAB2: 96 98          '..'
         TAB                              ;EAB4: 16             '.'
         ORAA    #$08                     ;EAB5: 8A 08          '..'
         STAA    IC5_LATCH                    ;EAB7: B7 28 00       '.(.'
+        ; read with sel=1
         LDAA    SWITCHES_LATCH                    ;EABA: B6 10 00       '...'
         STAB    IC5_LATCH                    ;EABD: F7 28 00       '.(.'
+        ; read with sel=0 (lower bit)
         LDAB    SWITCHES_LATCH                    ;EAC0: F6 10 00       '...'
         ANDB    #$10                     ;EAC3: C4 10          '..'
         BEQ     ZEAC9                    ;EAC5: 27 02          ''.'
@@ -1652,11 +1654,12 @@ ZEAC9   ANDA    #$F0                     ;EAC9: 84 F0          '..'
         LSRA                             ;EACD: 44             'D'
         ABA                              ;EACE: 1B             '.'
         TAB                              ;EACF: 16             '.'
+        ; 5 bits of tuning in B, used as index for 0xEB00
         LDX     #MEB00                   ;EAD0: CE EB 00       '...'
         ABX                              ;EAD3: 3A             ':'
         LDAA    ,X                       ;EAD4: A6 00          '..'
         TAB                              ;EAD6: 16             '.'
-        SUBA    M00CD                    ;EAD7: 90 CD          '..'
+        SUBA    LAST_TUNING                    ;EAD7: 90 CD          '..'
         CMPA    #$01                     ;EAD9: 81 01          '..'
         BGT     ZEAE2                    ;EADB: 2E 05          '..'
         CMPA    #$FF                     ;EADD: 81 FF          '..'
@@ -1666,7 +1669,7 @@ ZEAE2   DECB                             ;EAE2: 5A             'Z'
         BRA     ZEAE6                    ;EAE3: 20 01          ' .'
 ZEAE5   INCB                             ;EAE5: 5C             '\'
 ZEAE6   CLRA                             ;EAE6: 4F             'O'
-        STAB    M00CD                    ;EAE7: D7 CD          '..'
+        STAB    LAST_TUNING                    ;EAE7: D7 CD          '..'
         SUBB    #$0F                     ;EAE9: C0 0F          '..'
         BPL     ZEAEE                    ;EAEB: 2A 01          '*.'
         DECA                             ;EAED: 4A             'J'
@@ -1682,22 +1685,39 @@ ZEAEE   ASLD                             ;EAEE: 05             '.'
         JMP     ZE5EA                    ;EAFD: 7E E5 EA       '~..'
 
         ; data (tuning?)
-MEB00   ;EB00: 150A
-        ;EB02: 1A05
-        ;EB04: 120D
-        ;EB06: 1D02
-        ;EB08: 1609
-        ;EB0A: 1906
-        ;EB0C: 110E
-        ;EB0E: 1E01
-        ;EB10: 140B
-        ;EB12: 1B04
-        ;EB14: 130C
-        ;EB16: 1C03
-        ;EB18: 1708
-        ;EB1A: 1807
-        ;EB1C: 100F
-        ;EB1E: 1F00
+        ; (((data - 0xf) <<ar 6) >>lg 1) & 0x7f
+MEB00   ;EB00: 15
+        ;EB01: 0A
+        ;EB02: 1A
+        ;EB03: 05
+        ;EB04: 12
+        ;EB05: 0D
+        ;EB06: 1D
+        ;EB07: 02
+        ;EB08: 16
+        ;EB09: 09
+        ;EB0A: 19
+        ;EB0B: 06
+        ;EB0C: 11
+        ;EB0D: 0E
+        ;EB0E: 1E
+        ;EB0F: 01
+        ;EB10: 14
+        ;EB11: 0B
+        ;EB12: 1B
+        ;EB13: 04
+        ;EB14: 13
+        ;EB15: 0C
+        ;EB16: 1C
+        ;EB17: 03
+        ;EB18: 17
+        ;EB19: 08
+        ;EB1A: 18
+        ;EB1B: 07
+        ;EB1C: 10
+        ;EB1D: 0F
+        ;EB1E: 1F
+        ;EB1F: 00
 
         ; Read upper buttons into full byte
 ZEB20   LDAA    SWITCHES_STATE_3                    ;EB20: 96 B7          '..'
@@ -2488,7 +2508,7 @@ MF086   FCB     $00                      ;F086: 00             '.'
 ZF0A0   CLRA                             ;F0A0: 4F             'O'
         LDAB    #$80                     ;F0A1: C6 80          '..'
 ZF0A3   ABA                              ;F0A3: 1B             '.'
-        STAA    M3000                    ;F0A4: B7 30 00       '.0.'
+        STAA    VOL_COMP_LATCH                    ;F0A4: B7 30 00       '.0.'
         BRN     ZF0A9                    ;F0A7: 21 00          '!.'
 ZF0A9   BRN     ZF0AB                    ;F0A9: 21 00          '!.'
 ZF0AB   BRN     ZF0AD                    ;F0AB: 21 00          '!.'
@@ -2499,7 +2519,7 @@ ZF0B3   LSRB                             ;F0B3: 54             'T'
         BCC     ZF0A3                    ;F0B4: 24 ED          '$.'
         TAB                              ;F0B6: 16             '.'
         EORB    #$80                     ;F0B7: C8 80          '..'
-        STAB    M3000                    ;F0B9: F7 30 00       '.0.'
+        STAB    VOL_COMP_LATCH                    ;F0B9: F7 30 00       '.0.'
         LDAB    IC5_LATCH_STATE                    ;F0BC: D6 98          '..'
         ANDB    #$10                     ;F0BE: C4 10          '..'
         BEQ     ZF0C4                    ;F0C0: 27 02          ''.'
@@ -2546,7 +2566,7 @@ ZF109   STAA    IC5_LATCH_STATE                    ;F109: 97 98          '..'
         STAA    IC5_LATCH                    ;F10B: B7 28 00       '.(.'
         ASLB                             ;F10E: 58             'X'
         EORB    #$80                     ;F10F: C8 80          '..'
-        STAB    M3000                    ;F111: F7 30 00       '.0.'
+        STAB    VOL_COMP_LATCH                    ;F111: F7 30 00       '.0.'
         RTS                              ;F114: 39             '9'
 
 ZF115   EORA    IC5_LATCH_STATE                    ;F115: 98 98          '..'

@@ -175,26 +175,16 @@ u8 SoundChip::read(size_t offset)
 
 void SoundChip::write(size_t offset, u8 data)
 {
+    // handled in mcu.cpp
     // m_irq_triggered = false;
+
+    // flags seems to be common for all parts?
+    if (offset % 8 == 0x6)
+        offset = (offset / 0x100) * 0x100 + 0x6;
 
     m_ctrl_mem[offset] = data;
     // printf("SA write %04x=%02x\n", offset, data);
     // fflush(stdout);
-
-    // hack
-    if (offset % 8 == 0x7 && data == 0xff)
-    {
-        m_parts[offset / 0x100][0].sub_phase = 0;
-        m_parts[offset / 0x100][1].sub_phase = 0;
-        m_parts[offset / 0x100][2].sub_phase = 0;
-        m_parts[offset / 0x100][3].sub_phase = 0;
-        m_parts[offset / 0x100][4].sub_phase = 0;
-        m_parts[offset / 0x100][5].sub_phase = 0;
-        m_parts[offset / 0x100][6].sub_phase = 0;
-        m_parts[offset / 0x100][7].sub_phase = 0;
-        m_parts[offset / 0x100][8].sub_phase = 0;
-        m_parts[offset / 0x100][9].sub_phase = 0;
-    }
 }
 
 s16 SoundChip::update()
@@ -212,7 +202,7 @@ s16 SoundChip::update()
             uint32_t wave_addr_high  = m_ctrl_mem[mem_offset + 3];
             uint32_t env_dest        = m_ctrl_mem[mem_offset + 4];
             uint32_t env_speed       = m_ctrl_mem[mem_offset + 5];
-            uint32_t flags           = m_ctrl_mem[mem_offset + 6];
+            uint32_t flags           = m_ctrl_mem[voiceI * 0x100 + 6];
             uint32_t env_offset      = m_ctrl_mem[mem_offset + 7];
 
             bool irq = false;
@@ -222,9 +212,6 @@ s16 SoundChip::update()
             bool ag3_sel_sample_type;
             bool ag1_phase_hi;
 
-            // hack
-            flags = 0x00;
-
             // IC19
             {
                 bool env_speed_some_high =
@@ -232,7 +219,7 @@ s16 SoundChip::update()
                     BIT(env_speed, 2) || BIT(env_speed, 1) || BIT(env_speed, 0);
 
                 uint32_t adder1_a = part.env_value;
-                if (BIT(flags, 0))
+                if (!BIT(flags, 0))
                     adder1_a = 1 << 25;
                 uint32_t adder1_b = env_table[env_speed];
                 bool adder1_ci = env_speed_some_high && BIT(env_speed, 7);
@@ -244,7 +231,7 @@ s16 SoundChip::update()
                 adder3_o &= 0xff;
 
                 volume = ~(
-                    ((adder1_a >> 14) & 0b111111) |
+                    (BIT(flags, 0) ? ((adder1_a >> 14) & 0b111111) : 0) |
                     ((adder3_o & 0b1111) << 6) |
                     (adder3_of ? ((adder3_o & 0b11110000) << 6) : 0)
                 ) & 0x3fff;
@@ -268,8 +255,8 @@ s16 SoundChip::update()
                 uint32_t adder2 = 1 + (adder1 >> 16) + ((~wave_addr_loop) & 0xff);
                 bool adder2_co = adder2 > 0xff;
                 adder2 &= 0xff;
-                uint32_t adder1_and = BIT(flags, 1) ? 0 : (adder1 & 0xffff);
-                adder1_and |= (BIT(flags, 1) ? 0 : (adder2_co ? adder2 : (adder1 >> 16))) << 16;
+                uint32_t adder1_and = !BIT(flags, 1) ? 0 : (adder1 & 0xffff);
+                adder1_and |= (!BIT(flags, 1) ? 0 : (adder2_co ? adder2 : (adder1 >> 16))) << 16;
 
                 part.sub_phase = adder1_and;
                 waverom_addr = (wave_addr_high << 11) | ((part.sub_phase >> 9) & 0x7ff);
@@ -279,7 +266,7 @@ s16 SoundChip::update()
                 ag1_phase_hi = (
                     (BIT(pitch_lut_i, 15) && BIT(pitch_lut_i, 14)) ||
                     (BIT(part.sub_phase, 23) || BIT(part.sub_phase, 22) || BIT(part.sub_phase, 21) || BIT(part.sub_phase, 20)) ||
-                    BIT(flags, 1)
+                    !BIT(flags, 1)
                 );
             }
 
@@ -325,7 +312,7 @@ s16 SoundChip::update()
                     exp_val2 = exp_val2 - 0x8000;
                 int32_t exp_val = exp_val1 + exp_val2;
                 
-                // hack
+                // hack to prevent voices ringing when env value is 0, investigate
                 if (part.env_value != 0)
                     result += exp_val;
             }

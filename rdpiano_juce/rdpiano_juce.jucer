@@ -6,6 +6,12 @@
               pluginFormats="buildAU,buildAUv3,buildStandalone,buildVST3" pluginName="RdPiano"
               pluginDesc="RdPiano" companyName="RdPiano" headerPath="../librdpiano/include">
   <MAINGROUP id="U4zWTk" name="rdpiano">
+    <GROUP id="{2A963864-0088-F09D-D718-9519C340ABCB}" name="ui">
+      <FILE id="YLS3MI" name="alphadial.png" compile="0" resource="1" file="../ui/alphadial.png"/>
+      <FILE id="J3kDoM" name="background.png" compile="0" resource="1" file="../ui/background.png"/>
+      <FILE id="EqHUgY" name="interactable.png" compile="0" resource="1"
+            file="../ui/interactable.png"/>
+    </GROUP>
     <GROUP id="{088D649C-6BCD-D668-D5F1-8436704FD4B2}" name="roms">
       <FILE id="oAkw1Q" name="MK80_IC5.bin" compile="0" resource="1" file="../roms/MK80_IC5.bin"/>
       <FILE id="f6dYrj" name="MK80_IC6.bin" compile="0" resource="1" file="../roms/MK80_IC6.bin"/>
@@ -18,6 +24,11 @@
       <FILE id="JCSWnB" name="RD200_IC18.bin" compile="0" resource="1" file="../roms/RD200_IC18.bin"/>
     </GROUP>
     <GROUP id="{A9A4FE8C-A726-5731-A9C6-45A227C17A55}" name="Source">
+      <GROUP id="{2B94B29E-7631-334E-156D-FCAACEAFE17C}" name="lcd">
+        <FILE id="CZNcI0" name="Lcd.cpp" compile="1" resource="0" file="Source/lcd/Lcd.cpp"/>
+        <FILE id="k9F0wB" name="Lcd.h" compile="0" resource="0" file="Source/lcd/Lcd.h"/>
+        <FILE id="Nykmlr" name="lcd_font.h" compile="0" resource="0" file="Source/lcd/lcd_font.h"/>
+      </GROUP>
       <GROUP id="{D56957DF-15BA-5C4F-755F-BFC3A28AF14C}" name="emulator">
         <GROUP id="{29986447-1771-8559-9557-861E859F021B}" name="include">
           <FILE id="aLG0ce" name="mame_utils.h" compile="0" resource="0" file="../librdpiano/include/mame_utils.h"/>
