@@ -3,14 +3,11 @@
 RdPiano accurately emulates SA-synthesis digital pianos, such as the Roland MKS-20, RD1000 and the Rhodes MK-80 electric piano.
 It simulates the CPU-B board reused in different models, emulating the CPU and the custom chips. The emulation of the custom chips is derived from silicon analysis.
 
+![UI](docs/ui_screenshot.png)
+
 **Demo video:** [https://www.youtube.com/watch?v=7w0uvZ-OZ7U](https://www.youtube.com/watch?v=7w0uvZ-OZ7U)
 
 [![Youtube demo](https://img.youtube.com/vi/7w0uvZ-OZ7U/hqdefault.jpg)](https://www.youtube.com/watch?v=7w0uvZ-OZ7U)
-
-<p float="left">
-  <img width="300px" src="docs/rd1000.jpg" />
-  <img width="300px" src="docs/cpu-b.png" />
-</p>
 
 ## Plugin downloads
 
