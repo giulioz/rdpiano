@@ -75,6 +75,7 @@ RdPiano_juceAudioProcessorEditor::RdPiano_juceAudioProcessorEditor(
 
 RdPiano_juceAudioProcessorEditor::~RdPiano_juceAudioProcessorEditor() {
   alphaDial.setLookAndFeel(nullptr);
+  audioProcessor.removeChangeListener(this);
 }
 
 void RdPiano_juceAudioProcessorEditor::resized() {

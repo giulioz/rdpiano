@@ -197,8 +197,14 @@ void RdPiano_juceAudioProcessor::prepareToPlay(double sampleRate,
 }
 
 void RdPiano_juceAudioProcessor::releaseResources() {
-  delete[] dry_sample_buffer;
-  delete[] dry_resampled_sample_buffer;
+  if (dry_sample_buffer) {
+      delete[] dry_sample_buffer;
+      dry_sample_buffer = 0;
+  }
+  if (dry_resampled_sample_buffer) {
+     delete[] dry_resampled_sample_buffer;
+     dry_resampled_sample_buffer = 0;
+  }
 }
 
 bool RdPiano_juceAudioProcessor::isBusesLayoutSupported(

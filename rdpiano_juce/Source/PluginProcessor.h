@@ -76,8 +76,8 @@ public:
   int savedSourceSampleRate = 0;
   double samplesError = 0;
 
-  float *dry_sample_buffer;
-  float *dry_resampled_sample_buffer;
+  float *dry_sample_buffer = 0;
+  float *dry_resampled_sample_buffer = 0;
   size_t dry_sample_buffer_size = 0;
 
   unsigned long chorusPhase = 0;
