@@ -81,8 +81,16 @@ private:
   MksButton button7;
   MksButton button8;
   MksButton buttonTune;
+  MksButton buttonChorusOnOff;
+  MksButton buttonChorusParams;
+  MksButton buttonTremoloOnOff;
+  MksButton buttonTremoloParams;
 
   bool tuneMode = false;
+  bool chorusRateMode = false;
+  bool chorusDepthMode = false;
+  bool tremoloRateMode = false;
+  bool tremoloDepthMode = false;
 
   unsigned long lastMidiMessageCount = 0;
 

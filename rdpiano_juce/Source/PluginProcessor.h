@@ -59,21 +59,32 @@ public:
     int16_t masterTune = 0;
     uint8_t currentPatch = 0;
     float volume = 1.0;
+    bool chorusEnabled = true;
+    uint8_t chorusRate = 1;
+    uint8_t chorusDepth = 3;
+    bool tremoloEnabled = false;
+    uint8_t tremoloRate = 6;
+    uint8_t tremoloDepth = 6;
   };
 
   DataToSave status;
   Mcu *mcu;
 
-  void *resampleL = 0;
-  void *resampleR = 0;
+  void *resample = 0;
   int savedDestSampleRate = 0;
   int sourceSampleRate = 0;
   int savedSourceSampleRate = 0;
   double samplesError = 0;
 
-  static const int audio_buffer_size = 4096 * 8;
-  float sample_buffer_l[audio_buffer_size] = {0};
-  float sample_buffer_r[audio_buffer_size] = {0};
+  float *dry_sample_buffer;
+  float *dry_resampled_sample_buffer;
+  size_t dry_sample_buffer_size = 0;
+
+  unsigned long chorusPhase = 0;
+  juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>
+      delayL;
+  juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>
+      delayR;
 
   unsigned long midiMessageCount = 0;
 

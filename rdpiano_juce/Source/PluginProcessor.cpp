@@ -25,6 +25,42 @@ const int sampleRates[] = {
     // MK80
     20000, 20000, 20000, 32000, 20000, 20000, 32000, 20000};
 
+const int chorusRateToMsPeriod[] = {
+    2700, // 1
+    1380, // 2
+    910,  // 3
+    680,  // 4
+    540,  // 5
+    450,  // 6
+    385,  // 7
+    335,  // 8
+    300,  // 9
+    265,  // 10
+    245,  // 11
+    220,  // 12
+    205,  // 13
+    190,  // 14
+    175,  // 15
+};
+
+const int chorusRateToDepthChange[] = {
+    11200, // 1
+    5600,  // 2
+    3700,  // 3
+    2700,  // 4
+    2200,  // 5
+    1800,  // 6
+    1520,  // 7
+    1360,  // 8
+    1200,  // 9
+    1040,  // 10
+    960,   // 11
+    880,   // 12
+    800,   // 13
+    720,   // 14
+    680,   // 15
+};
+
 //==============================================================================
 RdPiano_juceAudioProcessor::RdPiano_juceAudioProcessor()
     : AudioProcessor(
@@ -40,10 +76,11 @@ RdPiano_juceAudioProcessor::RdPiano_juceAudioProcessor()
   for (size_t cycle = 0; cycle < 100; cycle++) {
     mcu->generate_next_sample();
   }
+  sourceSampleRate = sampleRates[0];
 }
 
 RdPiano_juceAudioProcessor::~RdPiano_juceAudioProcessor() {
-  memset(mcu, 0, sizeof(Mcu));
+  // memset(mcu, 0, sizeof(Mcu));
   delete mcu;
 }
 
@@ -92,6 +129,9 @@ void RdPiano_juceAudioProcessor::setCurrentProgram(int index) {
 }
 
 const juce::String RdPiano_juceAudioProcessor::getProgramName(int index) {
+  if (index >= getNumPrograms())
+    return juce::String();
+
   return juce::String(index >= 8 ? mk80PatchNames[index - 8]
                                  : rd200PatchNames[index]);
 }
@@ -134,13 +174,31 @@ void RdPiano_juceAudioProcessor::setMasterTune(int16_t tune) {
 //==============================================================================
 void RdPiano_juceAudioProcessor::prepareToPlay(double sampleRate,
                                                int samplesPerBlock) {
-  // Use this method as the place to do any pre-playback
-  // initialisation that you need..
+  juce::dsp::ProcessSpec spec;
+  spec.maximumBlockSize = samplesPerBlock;
+  spec.sampleRate = sampleRate;
+  spec.numChannels = 1;
+
+  delayL = juce::dsp::DelayLine<float,
+                                juce::dsp::DelayLineInterpolationTypes::Linear>{
+      samplesPerBlock * 8};
+  delayR = juce::dsp::DelayLine<float,
+                                juce::dsp::DelayLineInterpolationTypes::Linear>{
+      samplesPerBlock * 8};
+  delayL.prepare(spec);
+  delayR.prepare(spec);
+  delayL.reset();
+  delayR.reset();
+
+  double ratio = sampleRate / 32000;
+  dry_sample_buffer_size = ceil(samplesPerBlock * ratio);
+  dry_sample_buffer = new float[dry_sample_buffer_size];
+  dry_resampled_sample_buffer = new float[samplesPerBlock];
 }
 
 void RdPiano_juceAudioProcessor::releaseResources() {
-  // When playback stops, you can use this as an opportunity to free up any
-  // spare memory, etc.
+  delete[] dry_sample_buffer;
+  delete[] dry_resampled_sample_buffer;
 }
 
 bool RdPiano_juceAudioProcessor::isBusesLayoutSupported(
@@ -164,8 +222,6 @@ void RdPiano_juceAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
 
   // int sourceSampleRate = mcu->current_sample_rate ? 32000 : 20000;
   double destSampleRate = getSampleRate();
-  float *channelDataL = buffer.getWritePointer(0);
-  float *channelDataR = buffer.getWritePointer(1);
 
   double renderBufferFramesFloat =
       (double)buffer.getNumSamples() / destSampleRate * sourceSampleRate;
@@ -174,25 +230,27 @@ void RdPiano_juceAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
 
   int limit = buffer.getNumSamples() / 4;
   if (samplesError > limit && renderBufferFrames > limit) {
-    // printf("compensating neg %d\n", limit);
     renderBufferFrames -= limit;
     currentError -= limit;
   } else if (-samplesError > limit) {
-    // printf("compensating pos %d\n", limit);
     renderBufferFrames += limit;
     currentError += limit;
   }
 
-  if (audio_buffer_size < renderBufferFrames) {
-    printf("Audio buffer size is too small. (%d requested)\n",
-           renderBufferFrames);
+  if (renderBufferFrames < 2) {
+    printf("Not enough samples to render\n");
+    fflush(stdout);
+    return;
+  }
+  if (renderBufferFrames > 20000 ||
+      renderBufferFrames > dry_sample_buffer_size) {
+    printf("Too many samples to render\n");
     fflush(stdout);
     return;
   }
 
-  for (size_t i = 0; i < audio_buffer_size; i++) {
-    sample_buffer_l[i] = 0;
-    sample_buffer_r[i] = 0;
+  for (size_t i = 0; i < dry_sample_buffer_size; i++) {
+    dry_sample_buffer[i] = 0;
   }
 
   std::vector<int> processedEvents;
@@ -215,8 +273,7 @@ void RdPiano_juceAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
     }
 
     int16_t sample = mcu->generate_next_sample();
-    sample_buffer_l[i] = sample / 65536.0f * status.volume;
-    sample_buffer_r[i] = sample / 65536.0f * status.volume;
+    dry_sample_buffer[i] = sample / 65536.0f * status.volume;
   }
   mcuLock.exit();
 
@@ -225,32 +282,67 @@ void RdPiano_juceAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
       savedSourceSampleRate != sourceSampleRate) {
     savedDestSampleRate = destSampleRate;
     savedSourceSampleRate = sourceSampleRate;
-    if (resampleL)
-      resample_close(resampleL);
-    if (resampleR)
-      resample_close(resampleR);
-    resampleL = resample_open(1, ratio, ratio);
-    resampleR = resample_open(1, ratio, ratio);
+    if (resample)
+      resample_close(resample);
+    resample = resample_open(1, ratio, ratio);
   }
 
-  int inUsedL = 0;
-  int inUsedR = 0;
-  int outL = 0;
-  int outR = 0;
-
-  outL =
-      resample_process(resampleL, ratio, sample_buffer_l, renderBufferFrames,
-                       false, &inUsedL, channelDataL, buffer.getNumSamples());
-  outR =
-      resample_process(resampleR, ratio, sample_buffer_r, renderBufferFrames,
-                       false, &inUsedR, channelDataR, buffer.getNumSamples());
-
+  int inUsed = 0;
+  int out = 0;
+  out = resample_process(resample, ratio, dry_sample_buffer, renderBufferFrames,
+                         false, &inUsed, dry_resampled_sample_buffer,
+                         buffer.getNumSamples());
   samplesError += currentError;
-  // printf("error: %f total: %f\n", currentError, samplesError);
-
-  if (inUsedL == 0 || inUsedR == 0) {
+  if (inUsed == 0) {
     samplesError = 0;
-    printf("click: %d %d\n", outL, outR);
+    printf("click: %d\n", out);
+  }
+
+  for (size_t i = 0; i < buffer.getNumSamples(); i++) {
+    delayL.pushSample(0, dry_resampled_sample_buffer[i]);
+    delayR.pushSample(0, dry_resampled_sample_buffer[i]);
+  }
+
+  float *channelDataL = buffer.getWritePointer(0);
+  float *channelDataR = buffer.getWritePointer(1);
+
+  // chorus
+  for (int i = 0; i < buffer.getNumSamples(); i++) {
+    float amplitude = status.chorusDepth / 14.0f * 512.0f;
+    // float amplitude = chorusRateToDepthChange[status.chorusRate] / 20.0;
+
+    float speed = 1000.0f / chorusRateToMsPeriod[status.chorusRate];
+
+    chorusPhase = (chorusPhase + 1) & 0xffffffff;
+    float lfoDelay =
+        fabs(fmod((chorusPhase * speed) / destSampleRate, 1) - 0.5f) * 2.0f *
+        amplitude;
+
+    delayL.setDelay(lfoDelay);
+    delayR.setDelay(amplitude - lfoDelay);
+
+    float drySample = dry_resampled_sample_buffer[i];
+    float lSample = delayL.popSample(0);
+    float rSample = delayR.popSample(0);
+
+    if (status.chorusEnabled) {
+      channelDataL[i] = 0.6 * drySample + 0.4 * (lSample - rSample);
+      channelDataR[i] = 0.6 * drySample + 0.4 * (rSample - lSample);
+    } else {
+      channelDataL[i] = drySample;
+      channelDataR[i] = drySample;
+    }
+
+    if (status.tremoloEnabled) {
+      float tremoloL = (0.5f + 0.5f * sin(status.tremoloRate * 3.14159265359 *
+                                          chorusPhase / destSampleRate));
+      float tremoloR =
+          (0.5f + 0.5f * sin(3.1415926535 + status.tremoloRate * 3.14159265359 *
+                                                chorusPhase / destSampleRate));
+      float depth = status.tremoloDepth / 14.0f;
+      channelDataL[i] *= (1.0f - depth) + (tremoloL * depth);
+      channelDataR[i] *= (1.0f - depth) + (tremoloR * depth);
+    }
   }
 
   if (hasMidi) {
@@ -277,6 +369,19 @@ void RdPiano_juceAudioProcessor::setStateInformation(const void *data,
                                                      int sizeInBytes) {
   memcpy(&status, data, sizeof(DataToSave));
 
+  if (status.currentPatch < 0 || status.currentPatch >= getNumPrograms())
+    status.currentPatch = 0;
+  if (status.volume < 0 || status.volume > 1)
+    status.volume = 1;
+  if (status.chorusRate > 14)
+    status.chorusRate = 1;
+  if (status.chorusDepth > 14)
+    status.chorusDepth = 3;
+  if (status.tremoloRate > 14)
+    status.tremoloRate = 6;
+  if (status.tremoloDepth > 14)
+    status.tremoloDepth = 6;
+
   setMasterTune(status.masterTune);
 
   mcuLock.enter();
@@ -293,7 +398,7 @@ void RdPiano_juceAudioProcessor::setStateInformation(const void *data,
 
   mcu->commands_queue.push(0x30 | (status.currentPatch & 0xF));
   mcuLock.exit();
-  
+
   sourceSampleRate = sampleRates[status.currentPatch];
 }
 

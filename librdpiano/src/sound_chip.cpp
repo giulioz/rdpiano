@@ -62,9 +62,6 @@ SoundChip::SoundChip(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7)
 {
     load_samples(temp_ic5, temp_ic6, temp_ic7);
 
-    m_irq_id = 0;
-    m_irq_triggered = false;
-
     // Exp table to for the subphase
     // TODO: This is bit accurate, but I want to believe there is a better way to compute this function
     for (size_t i = 0; i < 0x10000; i++)

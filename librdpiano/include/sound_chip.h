@@ -16,7 +16,7 @@ public:
   void load_samples(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7);
 
   // if there is an IRQ currently waiting
-  bool m_irq_triggered;
+  bool m_irq_triggered = false;
 
 private:
   static constexpr unsigned NUM_VOICES = 16;
@@ -37,7 +37,7 @@ private:
 
   SA_Part m_parts[NUM_VOICES][PARTS_PER_VOICE];    // channel memory
   uint8_t m_ctrl_mem[0x2000];											 // RAM IC12 (as the CPU writes it)
-  uint8_t m_irq_id;																 // voice/part that triggered the IRQ
+  uint8_t m_irq_id = 0;														 // voice/part that triggered the IRQ
 };
 
 #endif

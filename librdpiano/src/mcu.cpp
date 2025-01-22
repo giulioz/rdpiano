@@ -409,17 +409,19 @@ void Mcu::execute_run()
       execute_set_input(0, ASSERT_LINE);
   check_irq_lines();
 
-  do
-  {
-    // failsafe
-    if (m_icount > 10000)
-      m_icount = 0;
+  // do
+  // {
+  //   // failsafe
+  //   if (m_icount > 10000)
+  //     m_icount = 0;
     
-    if (m_wai_state & (M6800_WAI | M6800_SLP))
-      eat_cycles();
-    else
-      execute_one();
-  } while (m_icount > 0);
+  //   if (m_wai_state & (M6800_WAI | M6800_SLP))
+  //     eat_cycles();
+  //   else
+  //     execute_one();
+  // } while (m_icount > 0);
+
+  execute_one();
 }
 
 void Mcu::execute_one()
@@ -552,7 +554,7 @@ void Mcu::write_byte(u16 addr, u8 data)
   }
   
   // sound chip
-  else if (addr < 0x2000) {
+  else if (addr >= 0x1000 && addr < 0x2000) {
     sound_chip.write(addr - 0x1000, data);
     // printf("%04x: SA write %04x=%02x\n", PCD, addr, data);
     // fflush(stdout);

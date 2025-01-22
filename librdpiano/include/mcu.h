@@ -48,7 +48,7 @@ private:
 
   SoundChip sound_chip;
 
-  u8 latch_val;
+  u8 latch_val = 0x00;
   u8 program_rom[0x2000];
   u8 params_rom[0x20000];
   u8 ram[0x10000] = {0};
@@ -62,22 +62,22 @@ private:
   void enter_interrupt(const char *message, u16 irq_vector);
   void increment_counter(int amount);
 
-  PAIR m_ppc;         // Previous program counter
-	PAIR m_pc;          // Program counter
-	PAIR m_s;           // Stack pointer
-	PAIR m_x;           // Index register
-	PAIR m_d;           // Accumulators
-	PAIR m_ea;          // effective address (temporary variable)
-	u8 m_cc;            // Condition codes
-	u8 m_wai_state;     // WAI opcode state (or sleep opcode state)
-	u8 m_nmi_state;     // NMI line state
-	u8 m_nmi_pending;   // NMI pending
-	u8 m_irq_state[5];  // IRQ line state [IRQ1,TIN,IS3,..]
+  PAIR m_ppc = {0,0};         // Previous program counter
+	PAIR m_pc = {0,0};          // Program counter
+	PAIR m_s = {0,0};           // Stack pointer
+	PAIR m_x = {0,0};           // Index register
+	PAIR m_d = {0,0};           // Accumulators
+	PAIR m_ea = {0,0};          // effective address (temporary variable)
+	u8 m_cc = 0;            // Condition codes
+	u8 m_wai_state = 0;     // WAI opcode state (or sleep opcode state)
+	u8 m_nmi_state = 0;     // NMI line state
+	u8 m_nmi_pending = 0;   // NMI pending
+	u8 m_irq_state[5] = {0};  // IRQ line state [IRQ1,TIN,IS3,..]
 
-  u8 m_tcsr;            // Timer Control and Status Register
-  PAIR m_counter;       // free running counter
-  u8 m_pending_tcsr;    // pending IRQ flag for clear IRQflag process
-  u16 m_input_capture;  // input capture
+  u8 m_tcsr = 0;            // Timer Control and Status Register
+  PAIR m_counter = {0,0};       // free running counter
+  u8 m_pending_tcsr = 0;    // pending IRQ flag for clear IRQflag process
+  u16 m_input_capture = 0;  // input capture
 
   u8 tcsr_r();
   void tcsr_w(u8 data);
