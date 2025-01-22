@@ -82,6 +82,7 @@ RdPiano_juceAudioProcessor::RdPiano_juceAudioProcessor()
 RdPiano_juceAudioProcessor::~RdPiano_juceAudioProcessor() {
   // memset(mcu, 0, sizeof(Mcu));
   delete mcu;
+  mcu = 0;
 }
 
 //==============================================================================
@@ -198,12 +199,12 @@ void RdPiano_juceAudioProcessor::prepareToPlay(double sampleRate,
 
 void RdPiano_juceAudioProcessor::releaseResources() {
   if (dry_sample_buffer) {
-      delete[] dry_sample_buffer;
-      dry_sample_buffer = 0;
+    delete[] dry_sample_buffer;
+    dry_sample_buffer = 0;
   }
   if (dry_resampled_sample_buffer) {
-     delete[] dry_resampled_sample_buffer;
-     dry_resampled_sample_buffer = 0;
+    delete[] dry_resampled_sample_buffer;
+    dry_resampled_sample_buffer = 0;
   }
 }
 

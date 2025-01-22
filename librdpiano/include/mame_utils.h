@@ -5,6 +5,7 @@
 #define MAME_UTILS_H
 
 #include <type_traits>
+#include <cstdint>
 
 #define LSB_FIRST
 
