@@ -2,6 +2,7 @@
 
 RdPiano accurately emulates SA-synthesis digital pianos, such as the Roland MKS-20, RD1000 and the Rhodes MK-80 electric piano.
 It simulates the CPU-B board reused in different models, emulating the CPU and the custom chips. The emulation of the custom chips is derived from silicon analysis.
+It also approximates the BBD chorus and tremolo effect, albeit less accurately than the digital emulation.
 
 ![UI](docs/ui_screenshot.png)
 
@@ -35,5 +36,6 @@ More info on this guide: https://www.osirisguitar.com/2020/04/01/how-to-make-uns
 
 - 6800 CPU emulation code taken from [MAME](https://github.com/mamedev/mame)
 - [InfoSecDJ](https://siliconpr0n.org/archive/doku.php?id=infosecdj:start), [Furrtek](http://furrtek.free.fr/), Jotego, Skutis and others for the help with silicon RE
+- [Sean Costello](https://valhalladsp.com/) for the [info](https://gearspace.com/board/showpost.php?p=9200326&postcount=18) on how to implement the chorus effect
 - Dominic Mazzoni for the audio resample library
 - [probonopd](https://github.com/probonopd) for the CI pipelines for building the JUCE plugin
