@@ -18,7 +18,9 @@ static int uiHeight = bgHeight / scaleFactor;
 //==============================================================================
 RdPiano_juceAudioProcessorEditor::RdPiano_juceAudioProcessorEditor(
     RdPiano_juceAudioProcessor &p)
-    : AudioProcessorEditor(&p), audioProcessor(p), midiMessageTimer(*this) {
+    : AudioProcessorEditor(&p), audioProcessor(p)
+    // , midiMessageTimer(*this)
+  {
   addAndMakeVisible(lcd);
 
   addAndMakeVisible(buttonMks20);
@@ -137,12 +139,12 @@ void RdPiano_juceAudioProcessorEditor::paint(juce::Graphics &g) {
                                               BinaryData::interactable_pngSize),
               1188 / sfC, volumeY, 100 / sfC, 131 / sfC, 1188, 1179, 100, 131);
 
-  if (audioProcessor.midiMessageCount != lastMidiMessageCount) {
-    g.setColour(juce::Colours::greenyellow);
-    g.fillRect(5197 / sfC, 517 / sfC, 85 / sfC, 38 / sfC);
-    lastMidiMessageCount = audioProcessor.midiMessageCount;
-    midiMessageTimer.restart();
-  }
+  // if (audioProcessor.midiMessageCount != lastMidiMessageCount) {
+  //   g.setColour(juce::Colours::greenyellow);
+  //   g.fillRect(5197 / sfC, 517 / sfC, 85 / sfC, 38 / sfC);
+  //   lastMidiMessageCount = audioProcessor.midiMessageCount;
+  //   midiMessageTimer.restart();
+  // }
 }
 
 void RdPiano_juceAudioProcessorEditor::buttonClicked(juce::Button *button) {

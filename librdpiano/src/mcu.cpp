@@ -452,8 +452,12 @@ void Mcu::tcsr_w(u8 data)
 
 u8 Mcu::read_byte(u16 addr)
 {
+  // program rom
+  if (addr >= 0xc000)
+    return program_rom[(addr - 0xc000) & 0xdfff];
+  
   // port 1 DATA
-  if (addr == 0x0002) {
+  else if (addr == 0x0002) {
     u8 data_comm_bus = 0xff;
 
     // HACK: only works with the RD200 ROM
@@ -504,14 +508,6 @@ u8 Mcu::read_byte(u16 addr)
   // params rom
   else if (addr >= 0x4000 && addr <= 0xbfff)
     return params_rom[UNSCRAMBLE_ADDR_PARAMS(addr - 0x4000) | ((latch_val & 0b11) << 15)];
-  
-  // program rom
-  else if (addr >= 0xc000 && addr <= 0xdfff)
-    return program_rom[addr - 0xc000];
-  
-  // program rom mirror
-  else if (addr >= 0xe000 && addr <= 0xffff)
-    return program_rom[addr - 0xe000];
   
   printf("%04x: unk read %04x\n", PCD, addr);
   return 0xFF;

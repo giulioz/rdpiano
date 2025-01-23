@@ -172,16 +172,44 @@ u8 SoundChip::read(size_t offset)
 
 void SoundChip::write(size_t offset, u8 data)
 {
-    // handled in mcu.cpp
-    // m_irq_triggered = false;
+    uint8_t voiceI = offset / 0x100;
+    uint8_t partI = offset % 0x100 / 0x10;
+    uint8_t field = offset % 8;
+
+    if (voiceI >= NUM_VOICES || partI >= PARTS_PER_VOICE_MEM || field >= 8)
+    {
+        printf("ERROR: received invalid SA write %02x %02x %02x %02x\n", voiceI, partI, field, data);
+        return;
+    }
+
+    SA_Part &part = m_parts[voiceI][partI];
 
     // flags seems to be common for all parts?
-    if (offset % 8 == 0x6)
-        offset = (offset / 0x100) * 0x100 + 0x6;
-
-    m_ctrl_mem[offset] = data;
-    // printf("SA write %04x=%02x\n", offset, data);
-    // fflush(stdout);
+    if (field == 0x6)
+    {
+        m_parts[voiceI][0].flags_0 = data & 1;
+        m_parts[voiceI][0].flags_1 = (data >> 1) & 1;
+    }
+    else if (field == 0x0)
+    {
+        part.pitch_lut_i &= 0x00FF;
+        part.pitch_lut_i |= data << 8;
+    }
+    else if (field == 0x1)
+    {
+        part.pitch_lut_i &= 0xFF00;
+        part.pitch_lut_i |= data;
+    }
+    else if (field == 0x2)
+        part.wave_addr_loop = data;
+    else if (field == 0x3)
+        part.wave_addr_high = data;
+    else if (field == 0x4)
+        part.env_dest = data;
+    else if (field == 0x5)
+        part.env_speed = data;
+    else if (field == 0x7)
+        part.env_offset = data;
 }
 
 s16 SoundChip::update()
@@ -190,17 +218,17 @@ s16 SoundChip::update()
     
     for (size_t voiceI = 0; voiceI < NUM_VOICES; voiceI++)
     {
+        SA_Part &partFlags = m_parts[voiceI][0];
         for (size_t partI = 0; partI < PARTS_PER_VOICE; partI++)
         {
             SA_Part &part = m_parts[voiceI][partI];
-            size_t mem_offset = voiceI * 0x100 + partI * 0x10;
-            uint32_t pitch_lut_i     = m_ctrl_mem[mem_offset + 1] | (m_ctrl_mem[mem_offset + 0] << 8);
-            uint32_t wave_addr_loop  = m_ctrl_mem[mem_offset + 2];
-            uint32_t wave_addr_high  = m_ctrl_mem[mem_offset + 3];
-            uint32_t env_dest        = m_ctrl_mem[mem_offset + 4];
-            uint32_t env_speed       = m_ctrl_mem[mem_offset + 5];
-            uint32_t flags           = m_ctrl_mem[voiceI * 0x100 + 6];
-            uint32_t env_offset      = m_ctrl_mem[mem_offset + 7];
+
+            // hack for performance
+            if (part.env_value == 0 && part.env_dest == 0)
+            {
+                part.sub_phase = 0;
+                continue;
+            }
 
             bool irq = false;
 
@@ -211,24 +239,23 @@ s16 SoundChip::update()
 
             // IC19
             {
-                bool env_speed_some_high =
-                    BIT(env_speed, 6) || BIT(env_speed, 5) || BIT(env_speed, 4) || BIT(env_speed, 3) ||
-                    BIT(env_speed, 2) || BIT(env_speed, 1) || BIT(env_speed, 0);
+                bool env_speed_some_high = (part.env_speed & 0b01111111) != 0;
+                bool env_speed_inv = (part.env_speed & 0b10000000) != 0;
 
                 uint32_t adder1_a = part.env_value;
-                if (!BIT(flags, 0))
+                if (!partFlags.flags_0)
                     adder1_a = 1 << 25;
-                uint32_t adder1_b = env_table[env_speed];
-                bool adder1_ci = env_speed_some_high && BIT(env_speed, 7);
+                uint32_t adder1_b = env_table[part.env_speed];
+                bool adder1_ci = env_speed_some_high && env_speed_inv;
                 if (adder1_ci)
                     adder1_b |= 0x7f << 21;
 
-                uint32_t adder3_o = 1 + (adder1_a >> 20) + env_offset;
+                uint32_t adder3_o = 1 + (adder1_a >> 20) + part.env_offset;
                 uint32_t adder3_of = adder3_o > 0xff;
                 adder3_o &= 0xff;
 
                 volume = ~(
-                    (BIT(flags, 0) ? ((adder1_a >> 14) & 0b111111) : 0) |
+                    (partFlags.flags_0 ? ((adder1_a >> 14) & 0b111111) : 0) |
                     ((adder3_o & 0b1111) << 6) |
                     (adder3_of ? ((adder3_o & 0b11110000) << 6) : 0)
                 ) & 0x3fff;
@@ -237,33 +264,33 @@ s16 SoundChip::update()
                 uint32_t adder1_of = adder1_o > 0xfffffff;
                 adder1_o &= 0xfffffff;
 
-                uint32_t adder2_o = (adder1_o >> 20) + (~env_dest & 0xff) + 1;
+                uint32_t adder2_o = (adder1_o >> 20) + (~part.env_dest & 0xff) + 1;
                 uint32_t adder2_of = adder2_o > 0xff;
 
-                bool end_reached = env_speed_some_high && ((adder1_of != (BIT(env_speed, 7))) || ((BIT(env_speed, 7)) != adder2_of));
+                bool end_reached = env_speed_some_high && ((adder1_of != env_speed_inv) || (env_speed_inv != adder2_of));
                 irq |= end_reached;
 
-                part.env_value = end_reached ? (env_dest << 20) : adder1_o;
+                part.env_value = end_reached ? (part.env_dest << 20) : adder1_o;
             }
 
             // IC9
             {
-                uint32_t adder1 = (phase_exp_table[pitch_lut_i] + part.sub_phase) & 0xffffff;
-                uint32_t adder2 = 1 + (adder1 >> 16) + ((~wave_addr_loop) & 0xff);
+                uint32_t adder1 = (phase_exp_table[part.pitch_lut_i] + part.sub_phase) & 0xffffff;
+                uint32_t adder2 = 1 + (adder1 >> 16) + ((~part.wave_addr_loop) & 0xff);
                 bool adder2_co = adder2 > 0xff;
                 adder2 &= 0xff;
-                uint32_t adder1_and = !BIT(flags, 1) ? 0 : (adder1 & 0xffff);
-                adder1_and |= (!BIT(flags, 1) ? 0 : (adder2_co ? adder2 : (adder1 >> 16))) << 16;
+                uint32_t adder1_and = !partFlags.flags_1 ? 0 : (adder1 & 0xffff);
+                adder1_and |= (!partFlags.flags_1 ? 0 : (adder2_co ? adder2 : (adder1 >> 16))) << 16;
 
                 part.sub_phase = adder1_and;
-                waverom_addr = (wave_addr_high << 11) | ((part.sub_phase >> 9) & 0x7ff);
+                waverom_addr = (part.wave_addr_high << 11) | ((part.sub_phase >> 9) & 0x7ff);
 
                 ag3_sel_sample_type = BIT(waverom_addr, 16) || BIT(waverom_addr, 15) || BIT(waverom_addr, 14) ||
                                     !((BIT(waverom_addr, 13) && !BIT(waverom_addr, 11) && !BIT(waverom_addr, 12)) || !BIT(waverom_addr, 13));
                 ag1_phase_hi = (
-                    (BIT(pitch_lut_i, 15) && BIT(pitch_lut_i, 14)) ||
+                    (BIT(part.pitch_lut_i, 15) && BIT(part.pitch_lut_i, 14)) ||
                     (BIT(part.sub_phase, 23) || BIT(part.sub_phase, 22) || BIT(part.sub_phase, 21) || BIT(part.sub_phase, 20)) ||
-                    !BIT(flags, 1)
+                    !partFlags.flags_1
                 );
             }
 

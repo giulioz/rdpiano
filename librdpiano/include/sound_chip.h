@@ -21,6 +21,7 @@ public:
 private:
   static constexpr unsigned NUM_VOICES = 16;
   static constexpr unsigned PARTS_PER_VOICE = 10;
+  static constexpr unsigned PARTS_PER_VOICE_MEM = 16;
 
   uint16_t samples_exp[0x20000];
   bool samples_exp_sign[0x20000];
@@ -33,11 +34,19 @@ private:
   struct SA_Part {
     uint32_t sub_phase = 0;
     uint32_t env_value = 0;
+
+    uint16_t pitch_lut_i;
+    uint8_t wave_addr_loop;
+    uint8_t wave_addr_high;
+    uint8_t env_dest;
+    uint8_t env_speed;
+    bool flags_0;
+    bool flags_1;
+    uint8_t env_offset;
   };
 
-  SA_Part m_parts[NUM_VOICES][PARTS_PER_VOICE];    // channel memory
-  uint8_t m_ctrl_mem[0x2000];											 // RAM IC12 (as the CPU writes it)
-  uint8_t m_irq_id = 0;														 // voice/part that triggered the IRQ
+  SA_Part m_parts[NUM_VOICES][PARTS_PER_VOICE_MEM];    // channel memory
+  uint8_t m_irq_id = 0;						                     // voice/part that triggered the IRQ
 };
 
 #endif

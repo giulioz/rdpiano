@@ -354,7 +354,7 @@ void RdPiano_juceAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
 
   if (hasMidi) {
     midiMessageCount++;
-    sendChangeMessage();
+    // sendChangeMessage();
   }
 }
 
