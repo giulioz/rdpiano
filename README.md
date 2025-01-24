@@ -32,6 +32,14 @@ More info on this guide: https://www.osirisguitar.com/2020/04/01/how-to-make-uns
 - **librdpiano**: a dependency-free version of the emulator, to be used as a library in other software, also builds a test standalone app with SDL
 - **re_stuff**: tooling used during the reverse engineering process, mostly for educational purposes
 
+## Building
+
+- Clone the repository
+- Download [Projucer](https://juce.com/download/)
+- Open with Projucer rdpiano_juce/rdpiano_juce.jucer
+- Generate the version you need (Visual Studio for Windows, iOS, MacOS, Linux Makefile)
+- use your IDE of choice (Visual Studio/XCode) or `make` to build
+
 ## Acknowledgements
 
 - 6800 CPU emulation code taken from [MAME](https://github.com/mamedev/mame)
