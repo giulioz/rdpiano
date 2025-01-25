@@ -445,7 +445,7 @@ void RdPiano_juceAudioProcessor::setStateInformation(const void *data,
       getXmlFromBinary(data, sizeInBytes));
 
   if (xmlState.get() != nullptr) {
-    if (xmlState->hasTagName("RRV10")) {
+    if (xmlState->hasTagName("RdPiano")) {
       masterTune = xmlState->getIntAttribute("masterTune", 0);
       currentPatch = xmlState->getIntAttribute("currentPatch", 0);
       *volume = (float)xmlState->getDoubleAttribute("volume", 1.0);
