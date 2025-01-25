@@ -15,12 +15,19 @@
 //==============================================================================
 /**
  */
-class RdPiano_juceAudioProcessor : public juce::AudioProcessor,
-                                   public juce::ChangeBroadcaster {
+class RdPiano_juceAudioProcessor
+    : public juce::AudioProcessor,
+      public juce::ChangeBroadcaster,
+      public juce::AudioProcessorParameter::Listener {
 public:
   //==============================================================================
   RdPiano_juceAudioProcessor();
   ~RdPiano_juceAudioProcessor() override;
+
+  //==============================================================================
+  void parameterValueChanged(int parameterIndex, float newValue) override;
+  void parameterGestureChanged(int parameterIndex,
+                               bool gestureIsStarting) override;
 
   //==============================================================================
   void prepareToPlay(double sampleRate, int samplesPerBlock) override;
@@ -55,19 +62,17 @@ public:
 
   //==============================================================================
 
-  struct DataToSave {
-    int16_t masterTune = 0;
-    uint8_t currentPatch = 0;
-    float volume = 1.0;
-    bool chorusEnabled = true;
-    uint8_t chorusRate = 1;
-    uint8_t chorusDepth = 3;
-    bool tremoloEnabled = false;
-    uint8_t tremoloRate = 6;
-    uint8_t tremoloDepth = 6;
-  };
+  juce::AudioParameterFloat *volume;
+  juce::AudioParameterBool *chorusEnabled;
+  juce::AudioParameterInt *chorusRate;
+  juce::AudioParameterInt *chorusDepth;
+  juce::AudioParameterBool *tremoloEnabled;
+  juce::AudioParameterInt *tremoloRate;
+  juce::AudioParameterInt *tremoloDepth;
 
-  DataToSave status;
+  int currentPatch = 0;
+  int masterTune = 0;
+
   Mcu *mcu;
 
   void *resample = 0;

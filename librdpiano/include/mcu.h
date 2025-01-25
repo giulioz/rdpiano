@@ -35,7 +35,7 @@ public:
 
   std::queue<u8> commands_queue;
 
-	s16 generate_next_sample();
+	s16 generate_next_sample(bool sampleRate32 = false);
 	bool current_sample_rate = false;
 
 	void sendMidiCmd(u8 cmd, u8 data1, u8 data2);

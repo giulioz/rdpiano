@@ -72,11 +72,61 @@ RdPiano_juceAudioProcessor::RdPiano_juceAudioProcessor()
                 (const uint8_t *)BinaryData::RD200_IC7_bin,
                 (const uint8_t *)BinaryData::RD200_B_bin,
                 (const uint8_t *)BinaryData::RD200_IC18_bin);
+
+  // MCU handshake
   mcu->commands_queue.push(0x30);
   for (size_t cycle = 0; cycle < 100; cycle++) {
     mcu->generate_next_sample();
   }
   sourceSampleRate = sampleRates[0];
+
+  // DAW parameters
+  addParameter(volume =
+                   new juce::AudioParameterFloat("volume", // parameterID
+                                                 "Volume", // parameter name
+                                                 0.0f,     // minimum value
+                                                 1.0f,     // maximum value
+                                                 1.0));    // default value
+  addParameter(chorusEnabled = new juce::AudioParameterBool(
+                   "chorusEnabled",  // parameterID
+                   "Chorus Enabled", // parameter name
+                   true));           // default value
+  addParameter(chorusRate =
+                   new juce::AudioParameterInt("chorusRate",  // parameterID
+                                               "Chorus Rate", // parameter name
+                                               0,             // minimum value
+                                               14,            // maximum value
+                                               1));           // default value
+  addParameter(chorusDepth =
+                   new juce::AudioParameterInt("chorusDepth",  // parameterID
+                                               "Chorus Depth", // parameter name
+                                               0,              // minimum value
+                                               14,             // maximum value
+                                               3));            // default value
+  addParameter(tremoloEnabled = new juce::AudioParameterBool(
+                   "tremoloEnabled",  // parameterID
+                   "Tremolo Enabled", // parameter name
+                   false));           // default value
+  addParameter(tremoloRate =
+                   new juce::AudioParameterInt("tremoloRate",  // parameterID
+                                               "Tremolo Rate", // parameter name
+                                               0,              // minimum value
+                                               14,             // maximum value
+                                               6));            // default value
+  addParameter(tremoloDepth = new juce::AudioParameterInt(
+                   "tremoloDepth",  // parameterID
+                   "Tremolo Depth", // parameter name
+                   0,               // minimum value
+                   14,              // maximum value
+                   6));             // default value
+
+  volume->addListener(this);
+  chorusEnabled->addListener(this);
+  chorusRate->addListener(this);
+  chorusDepth->addListener(this);
+  tremoloEnabled->addListener(this);
+  tremoloRate->addListener(this);
+  tremoloDepth->addListener(this);
 }
 
 RdPiano_juceAudioProcessor::~RdPiano_juceAudioProcessor() {
@@ -84,6 +134,15 @@ RdPiano_juceAudioProcessor::~RdPiano_juceAudioProcessor() {
   delete mcu;
   mcu = 0;
 }
+
+//==============================================================================
+void RdPiano_juceAudioProcessor::parameterValueChanged(int parameterIndex,
+                                                       float newValue) {
+  sendChangeMessage();
+}
+
+void RdPiano_juceAudioProcessor::parameterGestureChanged(
+    int parameterIndex, bool gestureIsStarting) {}
 
 //==============================================================================
 const juce::String RdPiano_juceAudioProcessor::getName() const {
@@ -100,16 +159,14 @@ double RdPiano_juceAudioProcessor::getTailLengthSeconds() const { return 0.0; }
 
 int RdPiano_juceAudioProcessor::getNumPrograms() { return 8 + 8; }
 
-int RdPiano_juceAudioProcessor::getCurrentProgram() {
-  return status.currentPatch;
-}
+int RdPiano_juceAudioProcessor::getCurrentProgram() { return currentPatch; }
 
 void RdPiano_juceAudioProcessor::setCurrentProgram(int index) {
   if (index < 0 || index >= getNumPrograms())
     return;
 
   mcuLock.enter();
-  if (index / 8 != status.currentPatch / 8) {
+  if (index / 8 != currentPatch / 8) {
     mcu->loadSounds(index / 8 == 0 ? (const uint8_t *)BinaryData::RD200_IC5_bin
                                    : (const uint8_t *)BinaryData::MK80_IC5_bin,
                     index / 8 == 0 ? (const uint8_t *)BinaryData::RD200_IC6_bin
@@ -121,10 +178,10 @@ void RdPiano_juceAudioProcessor::setCurrentProgram(int index) {
                         : (const uint8_t *)BinaryData::MK80_IC18_bin);
   }
 
-  status.currentPatch = index;
-  mcu->commands_queue.push(0x30 | (status.currentPatch & 0xF));
+  currentPatch = index;
+  mcu->commands_queue.push(0x30 | (currentPatch & 0xF));
   mcuLock.exit();
-  sourceSampleRate = sampleRates[status.currentPatch];
+  sourceSampleRate = sampleRates[currentPatch];
 
   sendChangeMessage();
 }
@@ -141,16 +198,15 @@ void RdPiano_juceAudioProcessor::changeProgramName(
     int index, const juce::String &newName) {}
 
 void RdPiano_juceAudioProcessor::setMasterTune(int16_t tune) {
-  status.masterTune = tune;
+  masterTune = tune;
 
   mcuLock.enter();
 
-  u8 tuneMsb = status.masterTune < 0 ? 0x7f : 0x00;
-  u8 tuneLsb =
-      (int8_t)(floor(abs(status.masterTune) / 32767.0 * 16.0) * 4) & 0xff;
+  u8 tuneMsb = masterTune < 0 ? 0x7f : 0x00;
+  u8 tuneLsb = (int8_t)(floor(abs(masterTune) / 32767.0 * 16.0) * 4) & 0xff;
   if (tuneLsb > 0x3c)
     tuneLsb = 0x3c;
-  if (status.masterTune < 0)
+  if (masterTune < 0)
     tuneLsb = 0x48 + tuneLsb;
 
   // TODO: we need to do this horrible switcharoo since changing
@@ -165,7 +221,7 @@ void RdPiano_juceAudioProcessor::setMasterTune(int16_t tune) {
   for (size_t cycle = 0; cycle < 100; cycle++) {
     mcu->generate_next_sample();
   }
-  mcu->commands_queue.push(0x30 | (status.currentPatch & 0xF));
+  mcu->commands_queue.push(0x30 | (currentPatch & 0xF));
 
   mcuLock.exit();
 
@@ -262,6 +318,8 @@ void RdPiano_juceAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
 
   std::vector<int> processedEvents;
 
+  bool mode32khz = sourceSampleRate == 32000;
+
   mcuLock.enter();
   for (int i = 0; i < renderBufferFrames; i++) {
     int evI = 0;
@@ -279,8 +337,8 @@ void RdPiano_juceAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
       evI++;
     }
 
-    int16_t sample = mcu->generate_next_sample();
-    dry_sample_buffer[i] = sample / 65536.0f * status.volume;
+    int16_t sample = mcu->generate_next_sample(mode32khz);
+    dry_sample_buffer[i] = sample / 65536.0f * *volume;
   }
   mcuLock.exit();
 
@@ -315,10 +373,10 @@ void RdPiano_juceAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
 
   // chorus
   for (int i = 0; i < buffer.getNumSamples(); i++) {
-    float amplitude = status.chorusDepth / 14.0f * 512.0f;
-    // float amplitude = chorusRateToDepthChange[status.chorusRate] / 20.0;
+    float amplitude = *chorusDepth / 14.0f * 512.0f;
+    // float amplitude = chorusRateToDepthChange[*chorusRate] / 20.0;
 
-    float speed = 1000.0f / chorusRateToMsPeriod[status.chorusRate];
+    float speed = 1000.0f / chorusRateToMsPeriod[*chorusRate];
 
     chorusPhase = (chorusPhase + 1) & 0xffffffff;
     float lfoDelay =
@@ -332,7 +390,7 @@ void RdPiano_juceAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
     float lSample = delayL.popSample(0);
     float rSample = delayR.popSample(0);
 
-    if (status.chorusEnabled) {
+    if (*chorusEnabled) {
       channelDataL[i] = 0.6 * drySample + 0.4 * (lSample - rSample);
       channelDataR[i] = 0.6 * drySample + 0.4 * (rSample - lSample);
     } else {
@@ -340,13 +398,13 @@ void RdPiano_juceAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
       channelDataR[i] = drySample;
     }
 
-    if (status.tremoloEnabled) {
-      float tremoloL = (0.5f + 0.5f * sin(status.tremoloRate * 3.14159265359 *
+    if (*tremoloEnabled) {
+      float tremoloL = (0.5f + 0.5f * sin(*tremoloRate * 3.14159265359 *
                                           chorusPhase / destSampleRate));
       float tremoloR =
-          (0.5f + 0.5f * sin(3.1415926535 + status.tremoloRate * 3.14159265359 *
+          (0.5f + 0.5f * sin(3.1415926535 + *tremoloRate * 3.14159265359 *
                                                 chorusPhase / destSampleRate));
-      float depth = status.tremoloDepth / 14.0f;
+      float depth = *tremoloDepth / 14.0f;
       channelDataL[i] *= (1.0f - depth) + (tremoloL * depth);
       channelDataR[i] *= (1.0f - depth) + (tremoloR * depth);
     }
@@ -368,45 +426,69 @@ juce::AudioProcessorEditor *RdPiano_juceAudioProcessor::createEditor() {
 //==============================================================================
 void RdPiano_juceAudioProcessor::getStateInformation(
     juce::MemoryBlock &destData) {
-  destData.ensureSize(sizeof(DataToSave));
-  destData.replaceAll(&status, sizeof(DataToSave));
+  std::unique_ptr<juce::XmlElement> xml(new juce::XmlElement("RdPiano"));
+  xml->setAttribute("masterTune", masterTune);
+  xml->setAttribute("currentPatch", currentPatch);
+  xml->setAttribute("volume", (double)*volume);
+  xml->setAttribute("chorusEnabled", (bool)*chorusEnabled);
+  xml->setAttribute("chorusRate", (int)*chorusRate);
+  xml->setAttribute("chorusDepth", (int)*chorusDepth);
+  xml->setAttribute("tremoloEnabled", (bool)*tremoloEnabled);
+  xml->setAttribute("tremoloRate", (int)*tremoloRate);
+  xml->setAttribute("tremoloDepth", (int)*tremoloDepth);
+  copyXmlToBinary(*xml, destData);
 }
 
 void RdPiano_juceAudioProcessor::setStateInformation(const void *data,
                                                      int sizeInBytes) {
-  memcpy(&status, data, sizeof(DataToSave));
+  std::unique_ptr<juce::XmlElement> xmlState(
+      getXmlFromBinary(data, sizeInBytes));
 
-  if (status.currentPatch < 0 || status.currentPatch >= getNumPrograms())
-    status.currentPatch = 0;
-  if (status.volume < 0 || status.volume > 1)
-    status.volume = 1;
-  if (status.chorusRate > 14)
-    status.chorusRate = 1;
-  if (status.chorusDepth > 14)
-    status.chorusDepth = 3;
-  if (status.tremoloRate > 14)
-    status.tremoloRate = 6;
-  if (status.tremoloDepth > 14)
-    status.tremoloDepth = 6;
+  if (xmlState.get() != nullptr) {
+    if (xmlState->hasTagName("RRV10")) {
+      masterTune = xmlState->getIntAttribute("masterTune", 0);
+      currentPatch = xmlState->getIntAttribute("currentPatch", 0);
+      *volume = (float)xmlState->getDoubleAttribute("volume", 1.0);
+      *chorusEnabled = (bool)xmlState->getBoolAttribute("chorusEnabled", true);
+      *chorusRate = (int)xmlState->getIntAttribute("chorusRate", 1);
+      *chorusDepth = (int)xmlState->getIntAttribute("chorusDepth", 3);
+      *tremoloEnabled =
+          (bool)xmlState->getBoolAttribute("tremoloEnabled", false);
+      *tremoloRate = (int)xmlState->getIntAttribute("tremoloRate", 6);
+      *tremoloDepth = (int)xmlState->getIntAttribute("tremoloDepth", 6);
+    }
+  }
 
-  setMasterTune(status.masterTune);
+  if (currentPatch < 0 || currentPatch >= getNumPrograms())
+    currentPatch = 0;
+  if (*volume < 0 || *volume > 1)
+    *volume = 1;
+  if (*chorusRate > 14)
+    *chorusRate = 1;
+  if (*chorusDepth > 14)
+    *chorusDepth = 3;
+  if (*tremoloRate > 14)
+    *tremoloRate = 6;
+  if (*tremoloDepth > 14)
+    *tremoloDepth = 6;
+
+  setMasterTune(masterTune);
 
   mcuLock.enter();
   mcu->loadSounds(
-      status.currentPatch / 8 == 0 ? (const uint8_t *)BinaryData::RD200_IC5_bin
-                                   : (const uint8_t *)BinaryData::MK80_IC5_bin,
-      status.currentPatch / 8 == 0 ? (const uint8_t *)BinaryData::RD200_IC6_bin
-                                   : (const uint8_t *)BinaryData::MK80_IC6_bin,
-      status.currentPatch / 8 == 0 ? (const uint8_t *)BinaryData::RD200_IC7_bin
-                                   : (const uint8_t *)BinaryData::MK80_IC7_bin,
-      status.currentPatch / 8 == 0
-          ? (const uint8_t *)BinaryData::RD200_IC18_bin
-          : (const uint8_t *)BinaryData::MK80_IC18_bin);
+      currentPatch / 8 == 0 ? (const uint8_t *)BinaryData::RD200_IC5_bin
+                             : (const uint8_t *)BinaryData::MK80_IC5_bin,
+      currentPatch / 8 == 0 ? (const uint8_t *)BinaryData::RD200_IC6_bin
+                             : (const uint8_t *)BinaryData::MK80_IC6_bin,
+      currentPatch / 8 == 0 ? (const uint8_t *)BinaryData::RD200_IC7_bin
+                             : (const uint8_t *)BinaryData::MK80_IC7_bin,
+      currentPatch / 8 == 0 ? (const uint8_t *)BinaryData::RD200_IC18_bin
+                             : (const uint8_t *)BinaryData::MK80_IC18_bin);
 
-  mcu->commands_queue.push(0x30 | (status.currentPatch & 0xF));
+  mcu->commands_queue.push(0x30 | (currentPatch & 0xF));
   mcuLock.exit();
 
-  sourceSampleRate = sampleRates[status.currentPatch];
+  sourceSampleRate = sampleRates[currentPatch];
 }
 
 //==============================================================================

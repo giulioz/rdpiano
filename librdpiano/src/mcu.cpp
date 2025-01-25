@@ -568,12 +568,12 @@ void Mcu::write_byte(u16 addr, u8 data)
   }
 }
 
-s16 Mcu::generate_next_sample()
+s16 Mcu::generate_next_sample(bool sampleRate32)
 {
   s16 sample = sound_chip.update();
 
   // 20kHz sample rate, 2000kHz CPU clock
-  for (size_t cycle = 0; cycle < 100; cycle++) {
+  for (size_t cycle = 0; cycle < (sampleRate32 ? 62 : 100); cycle++) {
     execute_run();
   }
 
