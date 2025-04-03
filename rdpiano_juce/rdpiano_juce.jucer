@@ -78,7 +78,8 @@
     <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
   </MODULES>
-  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"
+               JUCE_WEB_BROWSER="0" JUCE_USE_CURL="0" JUCE_JACK="1"/>
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX">
       <CONFIGURATIONS>
@@ -124,7 +125,8 @@
         <MODULEPATH id="juce_dsp" path="./JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_IPHONE>
-    <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
+    <LINUX_MAKE targetFolder="Builds/LinuxMakefile" extraCompilerFlags="-fvisibility=hidden"
+                extraLinkerFlags="-fdata-sections -ffunction-sections -Wl,--gc-sections -Wl,-O1 -Wl,--as-needed -Wl,--strip-all">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="rdpiano_juce"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="rdpiano_juce"/>
