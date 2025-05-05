@@ -56,7 +56,7 @@ RdPiano_juceAudioProcessorEditor::RdPiano_juceAudioProcessorEditor(
 
   addAndMakeVisible(alphaDial);
   alphaDial.setLookAndFeel(&knobLF);
-  alphaDial.setSliderStyle(juce::Slider::Rotary);
+  alphaDial.setSliderStyle(juce::Slider::RotaryVerticalDrag);
   alphaDial.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
   alphaDial.setRange(-1, 1);
   alphaDial.addListener(this);
