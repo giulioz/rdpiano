@@ -26,7 +26,7 @@ jobs:
       run: sh -ex ./rdpiano_juce/build/build-win.sh
       shell: bash
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3.1.2
+      uses: actions/upload-artifact@v4
       with:
         name: RdPiano-win
         path: |
