@@ -86,5 +86,5 @@ jobs:
           automatic_release_tag: latest
           title: RdPiano Latest
           files: |
-                 rdpiano_juce/build/RdPiano-osx
-                 rdpiano_juce/build/RdPiano-win
+                 RdPiano-osx
+                 RdPiano-win
