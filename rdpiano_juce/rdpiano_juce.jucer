@@ -2,9 +2,9 @@
 
 <JUCERPROJECT id="DSwmeO" name="rdpiano" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
-              pluginManufacturerCode="RDPN" pluginCode="RDPN" cppLanguageStandard="20"
+              pluginManufacturerCode="GlZs" pluginCode="RDPN" cppLanguageStandard="20"
               pluginFormats="buildAU,buildAUv3,buildLV2,buildStandalone,buildVST3"
-              pluginName="RdPiano" pluginDesc="RdPiano" companyName="RdPiano"
+              pluginName="RdPiano" pluginDesc="RdPiano" companyName="Giulio Zausa"
               headerPath="../librdpiano/include" lv2Uri="https://www.rdpiano.com/plugins/rdpiano">
   <MAINGROUP id="U4zWTk" name="rdpiano">
     <GROUP id="{2A963864-0088-F09D-D718-9519C340ABCB}" name="ui">
