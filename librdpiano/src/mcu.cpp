@@ -248,15 +248,15 @@ const u8 Mcu::cycles_63701[256] =
 #define UNSCRAMBLE_DATA_PARAMS(_data) \
   bitswap<8>(_data,7,0,6,1,5,2,4,3)
 
+
 Mcu::Mcu(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7, const u8 *temp_progrom, const u8 *temp_paramsrom)
   : sound_chip(temp_ic5, temp_ic6, temp_ic7)
 {
   for (size_t srcpos = 0x00; srcpos < 0x2000; srcpos++) {
     program_rom[srcpos] = UNSCRAMBLE_DATA_CPUB(temp_progrom[UNSCRAMBLE_ADDR_CPUB(srcpos)]);
   }
-  for (size_t srcpos = 0x00; srcpos < 0x20000; srcpos++) {
-    params_rom[srcpos] = UNSCRAMBLE_DATA_CPUB(temp_paramsrom[srcpos]);
-  }
+
+  loadSounds(temp_ic5, temp_ic6, temp_ic7, temp_progrom, 0x00);
 
   m_ppc.d = 0;
   m_pc.d = 0;
@@ -462,6 +462,7 @@ u8 Mcu::read_byte(u16 addr)
 
     // HACK: only works with the RD200 ROM
     if (!commands_queue.empty() && (PCD == 0xE12B || PCD == 0xE15E || PCD == 0xE168))
+    // if (!commands_queue.empty() && (PCD == 0xE0E4 || PCD == 0xE111 || PCD == 0xE11B))
     {
       data_comm_bus = commands_queue.front();
       commands_queue.pop();
@@ -478,6 +479,7 @@ u8 Mcu::read_byte(u16 addr)
 
     // HACK: only works with the RD200 ROM
     if (PCD == 0xE15A) return 0xFF;
+    // if (PCD == 0xE10D) return 0xFF;
     return 0x00;
   }
 
@@ -507,7 +509,7 @@ u8 Mcu::read_byte(u16 addr)
   
   // params rom
   else if (addr >= 0x4000 && addr <= 0xbfff)
-    return params_rom[UNSCRAMBLE_ADDR_PARAMS(addr - 0x4000) | ((latch_val & 0b11) << 15)];
+    return params_rom[(addr - 0x4000) | ((latch_val & 0b11) << 15)];
   
   printf("%04x: unk read %04x\n", PCD, addr);
   return 0xFF;
@@ -609,10 +611,25 @@ void Mcu::sendMidiCmd(u8 data1, u8 data2, u8 data3)
   }
 }
 
-void Mcu::loadSounds(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7, const u8 *temp_paramsrom)
+void Mcu::loadSounds(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7, const u8 *temp_paramsrom, size_t from_addr)
 {
   sound_chip.load_samples(temp_ic5, temp_ic6, temp_ic7);
+  
   for (size_t srcpos = 0x00; srcpos < 0x20000; srcpos++) {
-    params_rom[srcpos] = UNSCRAMBLE_DATA_CPUB(temp_paramsrom[srcpos]);
+    params_rom_tmp[srcpos] = UNSCRAMBLE_DATA_CPUB(temp_paramsrom[UNSCRAMBLE_ADDR_PARAMS(srcpos)]);
   }
+
+  for (size_t srcpos = 0x00; srcpos < 0x20000; srcpos++) {
+    params_rom[srcpos] = 0xff;
+  }
+  
+  size_t from_addr_aligned = from_addr >> 15 << 15;
+  for (size_t srcpos = 0x00; srcpos < 0x8000; srcpos++) {
+    params_rom[srcpos+0x8000] = params_rom_tmp[srcpos+from_addr_aligned];
+  }
+
+  size_t target = (from_addr - from_addr_aligned) + 0x4000;
+  params_rom[0x00] = 0x01;
+  params_rom[0x01] = (target >> 8) & 0xff;
+  params_rom[0x02] = target & 0xff;
 }

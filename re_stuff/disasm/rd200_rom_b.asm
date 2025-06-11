@@ -391,7 +391,7 @@ ZE124   TIM     #$01,P2DR                ;E124: 7B 01 03       '{..'
         ; Read P1 in A
         LDAA    P1DR                     ;E129: 96 02          '..'
         ; Set DAC=1
-        OIM     #$10,P2DR                ;E12B: 72 10 03       'r..'
+        OIM     #$10,P2DR                ;E12B: 72 10 03       'r..'           POS 1
         STAA    CMD_COMMAND                    ;E12E: 97 DC          '..'
         BPL     ZE134                    ;E130: 2A 02          '*.'
         BSR     ZE157                    ;E132: 8D 23          '.#'
@@ -417,13 +417,13 @@ ZE14F   LDAB    TMR_CTRL_STATUS                    ;E14F: D6 08          '..'
 
         ; Multi byte command
 ZE157   TIM     #$01,P2DR                ;E157: 7B 01 03       '{..'
-        BEQ     ZE157                    ;E15A: 27 FB          ''.'
+        BEQ     ZE157                    ;E15A: 27 FB          ''.'         POS 4
         LDAA    P1DR                     ;E15C: 96 02          '..'
-        AIM     #$EF,P2DR                ;E15E: 71 EF 03       'q..'
+        AIM     #$EF,P2DR                ;E15E: 71 EF 03       'q..'        POS 2
 ZE161   TIM     #$01,P2DR                ;E161: 7B 01 03       '{..'
         BNE     ZE161                    ;E164: 26 FB          '&.'
         LDAB    P1DR                     ;E166: D6 02          '..'
-        OIM     #$10,P2DR                ;E168: 72 10 03       'r..'
+        OIM     #$10,P2DR                ;E168: 72 10 03       'r..'        POS 3
         STD     CMD_PARAMS                    ;E16B: DD E1          '..'
         RTS                              ;E16D: 39             '9'
 
@@ -445,6 +445,7 @@ ME16E   ;E16E: 0x00 => 0xEBB7   (test mode)
         ;E18A: 0x0E => 0xE18E   master tune
         ;E18C: 0x0F => 0xEDBD   utilities
 
+
         ; handler 0x0e master tune
         LDD     CMD_PARAMS                    ;E18E: DC E1          '..'
         ; <<= 1
@@ -455,6 +456,7 @@ ME16E   ;E16E: 0x00 => 0xEBB7   (test mode)
         ORAA    #$C0                     ;E196: 8A C0          '..'
 ZE198   STD     MASTER_TUNE                    ;E198: DD E3          '..'
         RTS                              ;E19A: 39             '9'
+
 
         ; handler 0x03 program change
         CLRA                             ;E19B: 4F             'O'
@@ -2068,6 +2070,7 @@ ZEC7E   TSX                              ;EC7E: 30             '0'
         STD     $94,X                    ;EC7F: ED 94          '..'
         LDS     M00B3                    ;EC81: 9E B3          '..'
         RTS                              ;EC83: 39             '9'
+
 ZEC84   STD     $04,X                    ;EC84: ED 04          '..'
         BRA     ZEC88                    ;EC86: 20 00          ' .'
 ZEC88   STD     $14,X                    ;EC88: ED 14          '..'
@@ -2153,6 +2156,7 @@ ZED00   LDAB    IRQ_RESULT_STORED                    ;ED00: D6 D0          '..'
         ABX                              ;ED16: 3A             ':'
         DEC     $70,X                    ;ED17: 6A 70          'jp'
         RTI                              ;ED19: 3B             ';'
+
 
         ; IRQ Handler
 hdlr_IRQ

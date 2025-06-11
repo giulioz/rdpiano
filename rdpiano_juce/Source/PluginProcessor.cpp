@@ -19,8 +19,56 @@ const char *mk80PatchNames[] = {"MK-80: Classic",    "MK-80: Special",
                                 "MK-80: A. Piano 1", "MK-80: A. Piano 2",
                                 "MK-80: Clavi",      "MK-80: Vibraphone"};
 
+struct RomSet {
+  const uint8_t *ic5;
+  const uint8_t *ic6;
+  const uint8_t *ic7;
+  const uint8_t *ic18;
+};
+
+const RomSet mks20ARomSet = {(const uint8_t *)BinaryData::mks20_15179738_BIN,
+                             (const uint8_t *)BinaryData::mks20_15179737_BIN,
+                             (const uint8_t *)BinaryData::mks20_15179736_BIN,
+                             (const uint8_t *)BinaryData::mks20_15179757_BIN};
+const RomSet mks20BRomSet = {(const uint8_t *)BinaryData::mks20_15179741_BIN,
+                             (const uint8_t *)BinaryData::mks20_15179740_BIN,
+                             (const uint8_t *)BinaryData::mks20_15179739_BIN,
+                             (const uint8_t *)BinaryData::mks20_15179757_BIN};
+const RomSet mk80RomSet = {(const uint8_t *)BinaryData::MK80_IC5_bin,
+                           (const uint8_t *)BinaryData::MK80_IC6_bin,
+                           (const uint8_t *)BinaryData::MK80_IC7_bin,
+                           (const uint8_t *)BinaryData::MK80_IC18_bin};
+
+const RomSet *patchToRomSet[] = {
+    &mks20ARomSet, &mks20ARomSet, &mks20ARomSet, &mks20BRomSet,
+    &mks20BRomSet, &mks20BRomSet, &mks20BRomSet, &mks20BRomSet,
+    &mk80RomSet,   &mk80RomSet,   &mk80RomSet,   &mk80RomSet,
+    &mk80RomSet,   &mk80RomSet,   &mk80RomSet,   &mk80RomSet};
+
+const size_t patchToOffset[] = {
+    // MKS-20
+    0x000000, // Piano 1
+    0x008000, // Piano 2
+    0x010000, // Piano 3
+    0x018000, // Harpsichord
+    0x003c20, // Clavi
+    0x00ab50, // Vibraphone
+    0x014260, // E-Piano 1
+    0x01bef0, // E-Piano 2
+
+    // MK80
+    0x000020, // Classic
+    0x008000, // Special
+    0x010000, // Blend
+    0x018000, // Contemporary
+    0x002c00, // A. Piano 1
+    0x00b1f0, // A. Piano 2
+    0x012910, // Clavi
+    0x0199f0, // Vibraphone
+};
+
 const int sampleRates[] = {
-    // RD200
+    // MKS-20
     20000, 20000, 20000, 32000, 32000, 20000, 20000, 32000,
     // MK80
     20000, 20000, 20000, 32000, 20000, 20000, 32000, 20000};
@@ -67,11 +115,10 @@ RdPiano_juceAudioProcessor::RdPiano_juceAudioProcessor()
           BusesProperties()
               .withInput("Input", juce::AudioChannelSet::stereo(), true)
               .withOutput("Output", juce::AudioChannelSet::stereo(), true)) {
-  mcu = new Mcu((const uint8_t *)BinaryData::RD200_IC5_bin,
-                (const uint8_t *)BinaryData::RD200_IC6_bin,
-                (const uint8_t *)BinaryData::RD200_IC7_bin,
-                (const uint8_t *)BinaryData::RD200_B_bin,
-                (const uint8_t *)BinaryData::RD200_IC18_bin);
+  mcu = new Mcu(
+      patchToRomSet[0]->ic5, patchToRomSet[0]->ic6, patchToRomSet[0]->ic7,
+      // (const uint8_t *)BinaryData::mks20_cpub_1_0_bin,
+      (const uint8_t *)BinaryData::RD200_B_bin, patchToRomSet[0]->ic18);
 
   // MCU handshake
   mcu->commands_queue.push(0x30);
@@ -81,44 +128,44 @@ RdPiano_juceAudioProcessor::RdPiano_juceAudioProcessor()
   sourceSampleRate = sampleRates[0];
 
   // DAW parameters
-  addParameter(volume =
-                   new juce::AudioParameterFloat("volume", // parameterID
-                                                 "Volume", // parameter name
-                                                 0.0f,     // minimum value
-                                                 1.0f,     // maximum value
-                                                 1.0));    // default value
+  addParameter(volume = new juce::AudioParameterFloat(
+                   juce::ParameterID{"volume", 1}, // parameterID
+                   "Volume",                       // parameter name
+                   0.0f,                           // minimum value
+                   1.0f,                           // maximum value
+                   1.0));                          // default value
   addParameter(chorusEnabled = new juce::AudioParameterBool(
-                   "chorusEnabled",  // parameterID
-                   "Chorus Enabled", // parameter name
-                   true));           // default value
-  addParameter(chorusRate =
-                   new juce::AudioParameterInt("chorusRate",  // parameterID
-                                               "Chorus Rate", // parameter name
-                                               0,             // minimum value
-                                               14,            // maximum value
-                                               1));           // default value
-  addParameter(chorusDepth =
-                   new juce::AudioParameterInt("chorusDepth",  // parameterID
-                                               "Chorus Depth", // parameter name
-                                               0,              // minimum value
-                                               14,             // maximum value
-                                               3));            // default value
+                   juce::ParameterID{"chorusEnabled", 1}, // parameterID
+                   "Chorus Enabled",                      // parameter name
+                   true));                                // default value
+  addParameter(chorusRate = new juce::AudioParameterInt(
+                   juce::ParameterID{"chorusRate", 1}, // parameterID
+                   "Chorus Rate",                      // parameter name
+                   0,                                  // minimum value
+                   14,                                 // maximum value
+                   1));                                // default value
+  addParameter(chorusDepth = new juce::AudioParameterInt(
+                   juce::ParameterID{"chorusDepth", 1}, // parameterID
+                   "Chorus Depth",                      // parameter name
+                   0,                                   // minimum value
+                   14,                                  // maximum value
+                   3));                                 // default value
   addParameter(tremoloEnabled = new juce::AudioParameterBool(
-                   "tremoloEnabled",  // parameterID
-                   "Tremolo Enabled", // parameter name
-                   false));           // default value
-  addParameter(tremoloRate =
-                   new juce::AudioParameterInt("tremoloRate",  // parameterID
-                                               "Tremolo Rate", // parameter name
-                                               0,              // minimum value
-                                               14,             // maximum value
-                                               6));            // default value
+                   juce::ParameterID{"tremoloEnabled", 1}, // parameterID
+                   "Tremolo Enabled",                      // parameter name
+                   false));                                // default value
+  addParameter(tremoloRate = new juce::AudioParameterInt(
+                   juce::ParameterID{"tremoloRate", 1}, // parameterID
+                   "Tremolo Rate",                      // parameter name
+                   0,                                   // minimum value
+                   14,                                  // maximum value
+                   6));                                 // default value
   addParameter(tremoloDepth = new juce::AudioParameterInt(
-                   "tremoloDepth",  // parameterID
-                   "Tremolo Depth", // parameter name
-                   0,               // minimum value
-                   14,              // maximum value
-                   6));             // default value
+                   juce::ParameterID{"tremoloDepth", 1}, // parameterID
+                   "Tremolo Depth",                      // parameter name
+                   0,                                    // minimum value
+                   14,                                   // maximum value
+                   6));                                  // default value
 
   volume->addListener(this);
   chorusEnabled->addListener(this);
@@ -166,20 +213,15 @@ void RdPiano_juceAudioProcessor::setCurrentProgram(int index) {
     return;
 
   mcuLock.enter();
-  if (index / 8 != currentPatch / 8) {
-    mcu->loadSounds(index / 8 == 0 ? (const uint8_t *)BinaryData::RD200_IC5_bin
-                                   : (const uint8_t *)BinaryData::MK80_IC5_bin,
-                    index / 8 == 0 ? (const uint8_t *)BinaryData::RD200_IC6_bin
-                                   : (const uint8_t *)BinaryData::MK80_IC6_bin,
-                    index / 8 == 0 ? (const uint8_t *)BinaryData::RD200_IC7_bin
-                                   : (const uint8_t *)BinaryData::MK80_IC7_bin,
-                    index / 8 == 0
-                        ? (const uint8_t *)BinaryData::RD200_IC18_bin
-                        : (const uint8_t *)BinaryData::MK80_IC18_bin);
-  }
+  // if (patchToRomSet[index] != patchToRomSet[currentPatch]) {
+    mcu->loadSounds(patchToRomSet[index]->ic5, patchToRomSet[index]->ic6,
+                    patchToRomSet[index]->ic7, patchToRomSet[index]->ic18,
+                    patchToOffset[index]);
+  // }
 
   currentPatch = index;
-  mcu->commands_queue.push(0x30 | (currentPatch & 0xF));
+  mcu->commands_queue.push(0x31);
+  mcu->commands_queue.push(0x30);
   mcuLock.exit();
   sourceSampleRate = sampleRates[currentPatch];
 
@@ -221,7 +263,7 @@ void RdPiano_juceAudioProcessor::setMasterTune(int16_t tune) {
   for (size_t cycle = 0; cycle < 100; cycle++) {
     mcu->generate_next_sample();
   }
-  mcu->commands_queue.push(0x30 | (currentPatch & 0xF));
+  mcu->commands_queue.push(0x30);
 
   mcuLock.exit();
 
@@ -476,16 +518,12 @@ void RdPiano_juceAudioProcessor::setStateInformation(const void *data,
 
   mcuLock.enter();
   mcu->loadSounds(
-      currentPatch / 8 == 0 ? (const uint8_t *)BinaryData::RD200_IC5_bin
-                             : (const uint8_t *)BinaryData::MK80_IC5_bin,
-      currentPatch / 8 == 0 ? (const uint8_t *)BinaryData::RD200_IC6_bin
-                             : (const uint8_t *)BinaryData::MK80_IC6_bin,
-      currentPatch / 8 == 0 ? (const uint8_t *)BinaryData::RD200_IC7_bin
-                             : (const uint8_t *)BinaryData::MK80_IC7_bin,
-      currentPatch / 8 == 0 ? (const uint8_t *)BinaryData::RD200_IC18_bin
-                             : (const uint8_t *)BinaryData::MK80_IC18_bin);
+      patchToRomSet[currentPatch]->ic5, patchToRomSet[currentPatch]->ic6,
+      patchToRomSet[currentPatch]->ic7, patchToRomSet[currentPatch]->ic18,
+      patchToOffset[currentPatch]);
 
-  mcu->commands_queue.push(0x30 | (currentPatch & 0xF));
+  mcu->commands_queue.push(0x31);
+  mcu->commands_queue.push(0x30);
   mcuLock.exit();
 
   sourceSampleRate = sampleRates[currentPatch];

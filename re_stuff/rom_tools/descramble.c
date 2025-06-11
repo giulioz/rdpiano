@@ -107,15 +107,15 @@ int main(int argc, char** argv) {
     // outbuf[i] = tmp;
 
     // // IC18
-    // u32 addr = ((BIT(i, 16) << 16) | (BIT(i, 15) << 15) | (BIT(i, 13) << 14) |
-    //             (BIT(i, 12) << 13) | (BIT(i, 14) << 12) |
-    //             // split here
-    //             (BIT(i, 11) << 11) | (BIT(i, 8) << 10) | (BIT(i, 9) << 9) |
-    //             (BIT(i, 10) << 8) | (BIT(i, 7) << 7) | (BIT(i, 6) << 6) |
-    //             (BIT(i, 5) << 5) | (BIT(i, 4) << 4) | (BIT(i, 3) << 3) |
-    //             (BIT(i, 2) << 2) | (BIT(i, 1) << 1) | (BIT(i, 0) << 0));
-    // u16 tmp = BITSWAP8(buf[addr], 7, 0, 6, 1, 5, 2, 4, 3);
-    // outbuf[i] = tmp;
+    u32 addr = ((BIT(i, 16) << 16) | (BIT(i, 15) << 15) | (BIT(i, 13) << 14) |
+                (BIT(i, 12) << 13) | (BIT(i, 14) << 12) |
+                // split here
+                (BIT(i, 11) << 11) | (BIT(i, 8) << 10) | (BIT(i, 9) << 9) |
+                (BIT(i, 10) << 8) | (BIT(i, 7) << 7) | (BIT(i, 6) << 6) |
+                (BIT(i, 5) << 5) | (BIT(i, 4) << 4) | (BIT(i, 3) << 3) |
+                (BIT(i, 2) << 2) | (BIT(i, 1) << 1) | (BIT(i, 0) << 0));
+    u16 tmp = BITSWAP8(buf[addr], 7, 0, 6, 1, 5, 2, 4, 3);
+    outbuf[i] = tmp;
   }
   //////////////////////////////////////////////
 
