@@ -174,12 +174,24 @@ RdPiano_juceAudioProcessor::RdPiano_juceAudioProcessor()
   tremoloEnabled->addListener(this);
   tremoloRate->addListener(this);
   tremoloDepth->addListener(this);
+
+  lsp = new LspState();
+  int32_t *iram = &lsp->iram[0x80];
+  for (size_t i = 0; i < 384 * 3; i += 3) {
+    *iram = ((uint8_t *)BinaryData::lsp_bin)[i + 2] |
+            (((uint8_t *)BinaryData::lsp_bin)[i + 1] << 8) |
+            (((uint8_t *)BinaryData::lsp_bin)[i + 0] << 16);
+    iram++;
+  }
 }
 
 RdPiano_juceAudioProcessor::~RdPiano_juceAudioProcessor() {
   // memset(mcu, 0, sizeof(Mcu));
   delete mcu;
   mcu = 0;
+
+  delete lsp;
+  lsp = 0;
 }
 
 //==============================================================================
@@ -214,9 +226,9 @@ void RdPiano_juceAudioProcessor::setCurrentProgram(int index) {
 
   mcuLock.enter();
   // if (patchToRomSet[index] != patchToRomSet[currentPatch]) {
-    mcu->loadSounds(patchToRomSet[index]->ic5, patchToRomSet[index]->ic6,
-                    patchToRomSet[index]->ic7, patchToRomSet[index]->ic18,
-                    patchToOffset[index]);
+  mcu->loadSounds(patchToRomSet[index]->ic5, patchToRomSet[index]->ic6,
+                  patchToRomSet[index]->ic7, patchToRomSet[index]->ic18,
+                  patchToOffset[index]);
   // }
 
   currentPatch = index;
@@ -450,6 +462,15 @@ void RdPiano_juceAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
       channelDataL[i] *= (1.0f - depth) + (tremoloL * depth);
       channelDataR[i] *= (1.0f - depth) + (tremoloR * depth);
     }
+  }
+
+  // lsp
+  for (int i = 0; i < buffer.getNumSamples(); i++) {
+    lsp->audioInL = (int32_t)(channelDataL[i] * (8388607.0));
+    lsp->audioInR = (int32_t)(channelDataR[i] * (8388607.0));
+    lsp->runProgram();
+    channelDataL[i] = lsp->audioOutL / (8388607.0);
+    channelDataR[i] = lsp->audioOutR / (8388607.0);
   }
 
   if (hasMidi) {

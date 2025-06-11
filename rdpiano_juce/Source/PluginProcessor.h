@@ -9,8 +9,10 @@
 #pragma once
 
 #include "../../librdpiano/include/mcu.h"
+#include "LSP.h"
 #include "resample/libresample.h"
 #include <JuceHeader.h>
+
 
 //==============================================================================
 /**
@@ -74,6 +76,7 @@ public:
   int masterTune = 0;
 
   Mcu *mcu;
+  LspState *lsp;
 
   void *resample = 0;
   int savedDestSampleRate = 0;

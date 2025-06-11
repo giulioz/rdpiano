@@ -85,10 +85,10 @@ M00CD   EQU     $00CD
 M00CE   EQU     $00CE
 IRQ_RESULT_STORED   EQU     $00D0
 M00D1   EQU     $00D1
-M00D2   EQU     $00D2
-SOME_IRQ_MUL_STATE   EQU     $00D3
+RAMSTATE_1_STORED   EQU     $00D2
+RAMSTATE_PTR   EQU     $00D3
 SOME_IRQ_MUL_STATE_1   EQU     $00D4
-SOME_IRQ_MUL_STATE_2   EQU     $00D5
+RAMSTATE_NEXTENV_STORED   EQU     $00D5
 M00D6   EQU     $00D6
 M00D7   EQU     $00D7
 M00D9   EQU     $00D9
@@ -1390,7 +1390,7 @@ ZE808   STD     $96,X                    ;E808: ED 96          '..'
         
         TXS                              ;E80A: 35             '5'
         
-        ; write to IC19, set 00-01 (pitch)
+        ; write to IC19, set 00-01 (pitch), also writes to ram
         ; part 0
         LDX     TEMP_PATCHROM_PITCH_ADDR                    ;E80B: DE AD          '..'
         LDD     ,X                       ;E80D: EC 00          '..'
@@ -1590,6 +1590,7 @@ ZE927   STX     TEMP_PATCHROM_ENV_ADDR                    ;E927: DF AB          
         ; write to IC19, set 04-05 (envelope)
         ; part 0
         LDX     TEMP_PATCHROM_ENV_ADDR                    ;E929: DE AB          '..'
+        ; load envTable.ram1
         LDAB    $04,X                    ;E92B: E6 04          '..'
         LDX     #MED9D                   ;E92D: CE ED 9D       '...'
         ABX                              ;E930: 3A             ':'
@@ -1598,6 +1599,7 @@ ZE927   STX     TEMP_PATCHROM_ENV_ADDR                    ;E927: DF AB          
         ABX                              ;E935: 3A             ':'
         LDAB    ,X                       ;E936: E6 00          '..'
         LDX     M00B5                    ;E938: DE B5          '..'
+        ; write ramState.unk1
         STAB    $01,X                    ;E93A: E7 01          '..'
         STAB    M00C3                    ;E93C: D7 C3          '..'
         LDX     TEMP_PATCHROM_ADDR3                    ;E93E: DE AF          '..'
@@ -1850,7 +1852,7 @@ ZEAFC   LDX     M00B5                    ;EAFC: DE B5          '..'
 ZEB05   LDX     CURRENT_IC19_ADDR                    ;EB05: DE B1          '..'
         STD     $94,X                    ;EB07: ED 94          '..'
         
-        ; set last part flags to FF
+        ; set last part flags to FF (start playback?)
         LDX     CURRENT_IC19_ADDR                    ;EB09: DE B1          '..'
         LDAB    PART_06_FLAGS                    ;EB0B: D6 A4          '..'
         LDAA    #$FF                     ;EB0D: 86 FF          '..'
@@ -1889,6 +1891,7 @@ ZEB3B   LDAA    ,X                       ;EB3B: A6 00          '..'
         PULB                             ;EB3D: 33             '3'
         RTS                              ;EB3E: 39             '9'
 
+        ; some note off function 1
 ZEB3F   LDAB    $30,X                    ;EB3F: E6 30          '.0'
         CMPB    M00BE                    ;EB41: D1 BE          '..'
         BLS     ZEB4A                    ;EB43: 23 05          '#.'
@@ -1960,6 +1963,8 @@ ZEB90   LDD     #M00DB                   ;EB90: CC 00 DB       '...'
         ANDB    #$0F                     ;EBB9: C4 0F          '..'
         STAB    M0091                    ;EBBB: D7 91          '..'
         LDX     M0090                    ;EBBD: DE 90          '..'
+
+        ; some note off function 2
 ZEBBF   LDAA    $40,X                    ;EBBF: A6 40          '.@'
         ROLA                             ;EBC1: 49             'I'
         ROLA                             ;EBC2: 49             'I'
@@ -2175,14 +2180,15 @@ hdlr_IRQ
         ADDD    #M0200                   ;ED2D: C3 02 00       '...'
         XGDX                             ;ED30: 18             '.'
         ; store something in (voice<<4)*0xa0 + part*0x6 + 0x200
-        STX     SOME_IRQ_MUL_STATE                    ;ED31: DF D3          '..'
+        STX     RAMSTATE_PTR                    ;ED31: DF D3          '..'
+        ; load ramState.ram1
         LDAB    $01,X                    ;ED33: E6 01          '..'
-        STAB    M00D2                    ;ED35: D7 D2          '..'
+        STAB    RAMSTATE_1_STORED                    ;ED35: D7 D2          '..'
         LDX     $02,X                    ;ED37: EE 02          '..'
         BEQ     ZED00                    ;ED39: 27 C5          ''.'
 
-        ; 
-        STX     SOME_IRQ_MUL_STATE_2                    ;ED3B: DF D5          '..'
+        ; update next env ptr in ram (+6)
+        STX     RAMSTATE_NEXTENV_STORED                    ;ED3B: DF D5          '..'
         LDAB    IRQ_RESULT_STORED                    ;ED3D: D6 D0          '..'
         LSRB                             ;ED3F: 54             'T'
         LSRB                             ;ED40: 54             'T'
@@ -2193,11 +2199,12 @@ hdlr_IRQ
         LDAB    $40,X                    ;ED47: E6 40          '.@'
         ASLB                             ;ED49: 58             'X'
         STAB    M00D1                    ;ED4A: D7 D1          '..'
-        LDX     SOME_IRQ_MUL_STATE_2                    ;ED4C: DE D5          '..'
+        LDX     RAMSTATE_NEXTENV_STORED                    ;ED4C: DE D5          '..'
         XGDX                             ;ED4E: 18             '.'
         ADDD    #M0006                   ;ED4F: C3 00 06       '...'
-        LDX     SOME_IRQ_MUL_STATE                    ;ED52: DE D3          '..'
+        LDX     RAMSTATE_PTR                    ;ED52: DE D3          '..'
         STD     $02,X                    ;ED54: ED 02          '..'
+        
         XGDX                             ;ED56: 18             '.'
         LDAB    IRQ_RESULT_STORED                    ;ED57: D6 D0          '..'
         LDAA    #$01                     ;ED59: 86 01          '..'
@@ -2208,33 +2215,38 @@ hdlr_IRQ
         STD     M00D7                    ;ED5F: DD D7          '..'
         LDAA    M00D1                    ;ED61: 96 D1          '..'
         BEQ     ZED93                    ;ED63: 27 2E          ''.'
+        ; read param rom env table +3
         LDAB    $03,X                    ;ED65: E6 03          '..'
         MUL                              ;ED67: 3D             '='
         STD     M00B7                    ;ED68: DD B7          '..'
         CLRA                             ;ED6A: 4F             'O'
         SUBA    M00D1                    ;ED6B: 90 D1          '..'
+        ; read param rom env table +1
         LDAB    $01,X                    ;ED6D: E6 01          '..'
         MUL                              ;ED6F: 3D             '='
         ADDD    M00B7                    ;ED70: D3 B7          '..'
         PSHA                             ;ED72: 36             '6'
-ZED73   LDAA    M00D2                    ;ED73: 96 D2          '..'
+ZED73   LDAA    RAMSTATE_1_STORED                    ;ED73: 96 D2          '..'
         BEQ     ZED98                    ;ED75: 27 21          ''!'
+        ; read param rom env table +2
         LDAB    $02,X                    ;ED77: E6 02          '..'
         MUL                              ;ED79: 3D             '='
         STD     M00B7                    ;ED7A: DD B7          '..'
         CLRA                             ;ED7C: 4F             'O'
-        SUBA    M00D2                    ;ED7D: 90 D2          '..'
+        SUBA    RAMSTATE_1_STORED                    ;ED7D: 90 D2          '..'
+        ; read param rom env table +0
         LDAB    ,X                       ;ED7F: E6 00          '..'
         MUL                              ;ED81: 3D             '='
         ADDD    M00B7                    ;ED82: D3 B7          '..'
 ZED84   PULB                             ;ED84: 33             '3'
+        
         LDX     M00D7                    ;ED85: DE D7          '..'
         ; write env to IC19
         STD     $04,X                    ;ED87: ED 04          '..'
         TSTA                             ;ED89: 4D             'M'
         BEQ     ZED8D                    ;ED8A: 27 01          ''.'
         RTI                              ;ED8C: 3B             ';'
-ZED8D   LDX     SOME_IRQ_MUL_STATE                    ;ED8D: DE D3          '..'
+ZED8D   LDX     RAMSTATE_PTR                    ;ED8D: DE D3          '..'
         CLRB                             ;ED8F: 5F             '_'
         STD     $02,X                    ;ED90: ED 02          '..'
         RTI                              ;ED92: 3B             ';'
@@ -3221,7 +3233,7 @@ ZEDFB   STAB    ADDR_LATCH                    ;EDFB: F7 E0 00       '...'
 ;         SUBB    #$C4                     ;F3AC: C0 C4          '..'
 ;         FCB     $C7                      ;F3AE: C7             '.'
 ;         ORAB    #$CD                     ;F3AF: CA CD          '..'
-;         SUBB    M00D2                    ;F3B1: D0 D2          '..'
+;         SUBB    RAMSTATE_1_STORED                    ;F3B1: D0 D2          '..'
 ;         BITB    M00D7                    ;F3B3: D5 D7          '..'
 ;         ORAB    CMD_COMMAND                    ;F3B5: DA DC          '..'
 ;         LDX     M00E0                    ;F3B7: DE E0          '..'

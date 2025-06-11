@@ -500,16 +500,21 @@ u8 Mcu::read_byte(u16 addr)
   }
   
   // ram
-  else if (addr < 0x1000)
+  else if (addr < 0x1000) {
+    if (addr >= 0x200)
+      printf("%04x ram read %04x=%02x\n", PCD, addr, ram[addr]);
     return ram[addr];
+  }
   
   // sound chip
   else if (addr < 0x2000)
     return sound_chip.read(addr - 0x1000);
   
   // params rom
-  else if (addr >= 0x4000 && addr <= 0xbfff)
+  else if (addr >= 0x4000 && addr <= 0xbfff) {
+    printf("%04x: params rom read %04x\n", PCD, addr - 0x4000);
     return params_rom[(addr - 0x4000) | ((latch_val & 0b11) << 15)];
+  }
   
   printf("%04x: unk read %04x\n", PCD, addr);
   return 0xFF;
@@ -549,12 +554,14 @@ void Mcu::write_byte(u16 addr, u8 data)
   // ram
   else if (addr < 0x1000) {
     ram[addr] = data;
+    if (addr >= 0x200)
+      printf("%04x ram write %04x=%02x\n", PCD, addr, data);
   }
   
   // sound chip
   else if (addr >= 0x1000 && addr < 0x2000) {
     sound_chip.write(addr - 0x1000, data);
-    // printf("%04x: SA write %04x=%02x\n", PCD, addr, data);
+    printf("%04x: SA write %04x=%02x\n", PCD, addr - 0x1000, data);
     // fflush(stdout);
 
     if (sound_chip.m_irq_triggered) {
@@ -611,6 +618,56 @@ void Mcu::sendMidiCmd(u8 data1, u8 data2, u8 data3)
   }
 }
 
+#pragma pack(push, 1)
+struct RomPitchTableEntry {
+  uint8_t wfIndex; // x10
+  uint16_t pitches[10];
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct RomWfTableEntry {
+  uint16_t wfAddress;
+  uint16_t envTblAddrs;
+  uint8_t ram1; // gets stored in ram.unk1 (not really?)
+  uint8_t tblIndex; // index for table at 0xED9D (written to ram)
+  uint8_t release;
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct RomEnvTableEntry {
+  uint8_t unk1;
+  uint8_t unk2;
+  uint8_t unk3;
+  uint8_t unk4;
+  uint8_t unk5;
+  uint8_t unk6;
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct RomPatch {
+  uint8_t flags;
+  uint8_t velTable[255];
+  RomPitchTableEntry pitchTable[99];
+  RomWfTableEntry wfTable[10*25];
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct RamVoiceState {
+  uint8_t release; // from wfTable
+  uint8_t unk1; // from wfTable.ram1
+  uint16_t envTablePos; // from wfTable
+  uint16_t basePitch; // from pitchTable, without master tune
+};
+#pragma pack(pop)
+
+u16 swapBytes16(u16 value){
+  return (value >> 8) | (value << 8);
+}
+
 void Mcu::loadSounds(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7, const u8 *temp_paramsrom, size_t from_addr)
 {
   sound_chip.load_samples(temp_ic5, temp_ic6, temp_ic7);
@@ -632,4 +689,38 @@ void Mcu::loadSounds(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7,
   params_rom[0x00] = 0x01;
   params_rom[0x01] = (target >> 8) & 0xff;
   params_rom[0x02] = target & 0xff;
+
+  RomPatch *patch = (RomPatch *)&params_rom_tmp[from_addr];
+  printf("flags: %02x\n", patch->flags);
+  
+  printf("velTable: ");
+  for (size_t i = 0; i < 255; i++) {
+    printf("%02x ", patch->velTable[i]);
+  }
+  printf("\n");
+  printf("\n");
+  
+  printf("pitchTable:\n");
+  for (size_t i = 0; i < 99; i++) {
+    printf("%02x: (%02x) ", i, patch->pitchTable[i].wfIndex * 10);
+    for (size_t j = 0; j < 10; j++) {
+      printf("%04x ", swapBytes16(patch->pitchTable[i].pitches[j]));
+    }
+    printf("\n");
+  }
+  printf("\n");
+  
+  printf("wfTable:\n");
+  for (size_t i = 0; i < 10*25; i++) {
+    if (i % 10 == 0) printf("\n");
+    printf("%04x: wfAddr:%04x env:%04x ram1:%02x tblIndex:%02x release:%02x\n",
+      i, swapBytes16(patch->wfTable[i].wfAddress), swapBytes16(patch->wfTable[i].envTblAddrs),
+      patch->wfTable[i].ram1, patch->wfTable[i].tblIndex, patch->wfTable[i].release);
+
+      for (size_t j = 0; j < 30; j++) {
+        RomEnvTableEntry *env = (RomEnvTableEntry *)&params_rom_tmp[(swapBytes16(patch->wfTable[i].envTblAddrs) - 0x4000) + j * 6];
+        printf("    env %d: %02x %02x %02x %02x %02x %02x\n", j, env->unk1, env->unk2, env->unk3, env->unk4, env->unk5, env->unk6);
+      }
+      printf("\n");
+  }
 }
