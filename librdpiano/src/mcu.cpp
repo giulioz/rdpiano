@@ -256,7 +256,7 @@ Mcu::Mcu(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7, const u8 *t
     program_rom[srcpos] = UNSCRAMBLE_DATA_CPUB(temp_progrom[UNSCRAMBLE_ADDR_CPUB(srcpos)]);
   }
 
-  loadSounds(temp_ic5, temp_ic6, temp_ic7, temp_progrom, 0x00);
+  loadSounds(temp_ic5, temp_ic6, temp_ic7, temp_paramsrom, 0x00);
 
   m_ppc.d = 0;
   m_pc.d = 0;
