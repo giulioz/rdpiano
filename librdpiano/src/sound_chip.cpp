@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#define VOLUME_SHIFT 2
+#define VOLUME_SHIFT 3
 
 // LUT for the address speed
 static constexpr uint32_t env_table[] = {
