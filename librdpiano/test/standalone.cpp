@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #define SDL_MAIN_HANDLED
 #include "SDL.h"
 #include <portmidi.h>
@@ -135,8 +137,15 @@ void MIDI_Update() {
   }
 }
 
-#define MODEL "RD200"
-// #define MODEL "MK80"
+void load_rom(u8 *data, size_t len, const char *filename) {
+  FILE *f = fopen(filename, "rb");
+  if (f == NULL) {
+    printf("Error opening %s\n", filename);
+    exit(2);
+  }
+  fread(data, 1, len, f);
+  fclose(f);
+}
 
 int main() {
   u8 temp_ic5[0x20000];
@@ -144,33 +153,12 @@ int main() {
   u8 temp_ic7[0x20000];
   u8 temp_progrom[0x2000];
   u8 temp_paramsrom[0x20000];
-  FILE *f;
 
-  f = fopen(MODEL "_IC5.bin", "rb");
-  if (f == NULL)
-    printf("Error opening " MODEL "_IC5.bin\n");
-  fread(temp_ic5, 1, 0x20000, f);
-  fclose(f);
-  f = fopen(MODEL "_IC6.bin", "rb");
-  if (f == NULL)
-    printf("Error opening " MODEL "_IC6.bin\n");
-  fread(temp_ic6, 1, 0x20000, f);
-  fclose(f);
-  f = fopen(MODEL "_IC7.bin", "rb");
-  if (f == NULL)
-    printf("Error opening " MODEL "_IC7.bin\n");
-  fread(temp_ic7, 1, 0x20000, f);
-  fclose(f);
-  f = fopen("RD200_B.bin", "rb");
-  if (f == NULL)
-    printf("Error opening RD200_B.bin\n");
-  fread(temp_progrom, 1, 0x2000, f);
-  fclose(f);
-  f = fopen(MODEL "_IC18.bin", "rb");
-  if (f == NULL)
-    printf("Error opening " MODEL "_IC18.bin\n");
-  fread(temp_paramsrom, 1, 0x20000, f);
-  fclose(f);
+  load_rom(temp_ic5, sizeof temp_ic5, "mks20_15179738.BIN");
+  load_rom(temp_ic6, sizeof temp_ic6, "mks20_15179737.BIN");
+  load_rom(temp_ic7, sizeof temp_ic7, "mks20_15179736.BIN");
+  load_rom(temp_progrom, sizeof temp_progrom, "RD200_B.bin");
+  load_rom(temp_paramsrom, sizeof temp_paramsrom, "mks20_15179757.BIN");
 
   // It's important to send a program change after boot to init the parameters
   mcu = new Mcu(temp_ic5, temp_ic6, temp_ic7, temp_progrom, temp_paramsrom);
