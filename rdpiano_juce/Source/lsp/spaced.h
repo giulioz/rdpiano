@@ -17,8 +17,8 @@
 extern int32_t spaceDRateTable[];
 extern int32_t spaceDDepthTable[];
 
-constexpr int32_t spaceDRateFromMs(float ms) { return ms * 498.0f; }
-constexpr int32_t spaceDDepth(float amount) {
+inline int32_t spaceDRateFromMs(float ms) { return ms * 498.0f; }
+inline int32_t spaceDDepth(float amount) {
   return spaceDDepthTable[(int)floor(amount * 0x80)];
 }
 
