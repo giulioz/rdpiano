@@ -85,12 +85,20 @@ private:
   MksButton buttonChorusParams;
   MksButton buttonTremoloOnOff;
   MksButton buttonTremoloParams;
+  MksButton buttonEfxOnOff;
+  MksButton buttonEfxParams;
 
   bool tuneMode = false;
   bool chorusRateMode = false;
   bool chorusDepthMode = false;
   bool tremoloRateMode = false;
   bool tremoloDepthMode = false;
+  bool efxPhaserOnOffMode = false;
+  bool efxPhaserRateMode = false;
+  bool efxPhaserDepthMode = false;
+  bool efxReverbOnOffMode = false;
+  bool efxReverbTypeMode = false;
+  bool efxReverbBalanceMode = false;
 
   unsigned long lastMidiMessageCount = 0;
 
@@ -120,7 +128,8 @@ private:
       auto radius = juce::jmin(width * 0.5f, height * 0.5f) -
                     (244.0f / scale) / 2 - 30.0f / scale;
       auto angle = rotaryStartAngle +
-                   sliderPos * (rotaryEndAngle - rotaryStartAngle) + 3.14 / 2 + 3.14;
+                   sliderPos * (rotaryEndAngle - rotaryStartAngle) + 3.14 / 2 +
+                   3.14;
       auto px = centerX + cos(angle) * radius;
       auto py = centerY + sin(angle) * radius;
 

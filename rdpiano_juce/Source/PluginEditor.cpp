@@ -19,8 +19,8 @@ static int uiHeight = bgHeight / scaleFactor;
 RdPiano_juceAudioProcessorEditor::RdPiano_juceAudioProcessorEditor(
     RdPiano_juceAudioProcessor &p)
     : AudioProcessorEditor(&p), audioProcessor(p)
-    // , midiMessageTimer(*this)
-  {
+// , midiMessageTimer(*this)
+{
   addAndMakeVisible(lcd);
 
   addAndMakeVisible(buttonMks20);
@@ -38,6 +38,8 @@ RdPiano_juceAudioProcessorEditor::RdPiano_juceAudioProcessorEditor(
   addAndMakeVisible(buttonChorusParams);
   addAndMakeVisible(buttonTremoloOnOff);
   addAndMakeVisible(buttonTremoloParams);
+  addAndMakeVisible(buttonEfxOnOff);
+  addAndMakeVisible(buttonEfxParams);
   buttonMks20.addListener(this);
   buttonMk80.addListener(this);
   button1.addListener(this);
@@ -53,6 +55,8 @@ RdPiano_juceAudioProcessorEditor::RdPiano_juceAudioProcessorEditor(
   buttonChorusParams.addListener(this);
   buttonTremoloOnOff.addListener(this);
   buttonTremoloParams.addListener(this);
+  buttonEfxOnOff.addListener(this);
+  buttonEfxParams.addListener(this);
 
   addAndMakeVisible(alphaDial);
   alphaDial.setLookAndFeel(&knobLF);
@@ -102,6 +106,8 @@ void RdPiano_juceAudioProcessorEditor::resized() {
   buttonChorusParams.setBounds(2917 / sfC, 1068 / sfC, 248 / sfC, 248 / sfC);
   buttonTremoloOnOff.setBounds(3229 / sfC, 806 / sfC, 248 / sfC, 248 / sfC);
   buttonTremoloParams.setBounds(3229 / sfC, 1068 / sfC, 248 / sfC, 248 / sfC);
+  buttonEfxOnOff.setBounds(3547 / sfC, 806 / sfC, 248 / sfC, 248 / sfC);
+  buttonEfxParams.setBounds(3547 / sfC, 1068 / sfC, 248 / sfC, 248 / sfC);
 
   buttonMks20.position(2598, 800, 257, 258, sfC);
   buttonMk80.position(2598, 1058, 257, 260, sfC);
@@ -118,6 +124,8 @@ void RdPiano_juceAudioProcessorEditor::resized() {
   buttonChorusParams.position(2917, 1058, 262, 262, sfC);
   buttonTremoloOnOff.position(3229, 800, 262, 262, sfC);
   buttonTremoloParams.position(3229, 1058, 262, 262, sfC);
+  buttonEfxOnOff.position(3547, 800, 262, 262, sfC);
+  buttonEfxParams.position(3547, 1058, 262, 262, sfC);
 
   alphaDial.setBounds(
       (204.564) * (6140 / 311.92) / sfC, (24.061) * (6140 / 311.92) / sfC,
@@ -133,8 +141,7 @@ void RdPiano_juceAudioProcessorEditor::paint(juce::Graphics &g) {
               getLocalBounds().toFloat());
 
   // Volume
-  float volumeY =
-      660 / sfC + (1 - *audioProcessor.volume) * (656 - 131) / sfC;
+  float volumeY = 660 / sfC + (1 - *audioProcessor.volume) * (656 - 131) / sfC;
   g.drawImage(juce::ImageCache::getFromMemory(BinaryData::interactable_png,
                                               BinaryData::interactable_pngSize),
               1188 / sfC, volumeY, 100 / sfC, 131 / sfC, 1188, 1179, 100, 131);
@@ -153,12 +160,24 @@ void RdPiano_juceAudioProcessorEditor::buttonClicked(juce::Button *button) {
   bool prevChorusDepthMode = chorusDepthMode;
   bool prevTremoloRateMode = tremoloRateMode;
   bool prevTremoloDepthMode = tremoloDepthMode;
+  // bool prevEfxPhaserOnOffMode = efxPhaserOnOffMode;
+  bool prevEfxPhaserDepthMode = efxPhaserDepthMode;
+  bool prevEfxPhaserRateMode = efxPhaserRateMode;
+  // bool prevEfxReverbOnOffMode = efxReverbOnOffMode;
+  // // bool prevEfxReverbTypeMode = efxReverbTypeMode;
+  // // bool prevEfxReverbBalanceMode = efxReverbBalanceMode;
 
   tuneMode = false;
   chorusRateMode = false;
   chorusDepthMode = false;
   tremoloRateMode = false;
   tremoloDepthMode = false;
+  // efxPhaserOnOffMode = false;
+  efxPhaserRateMode = false;
+  efxPhaserDepthMode = false;
+  // efxReverbOnOffMode = false;
+  // efxReverbTypeMode = false;
+  // efxReverbBalanceMode = false;
   if (button == &buttonMks20) {
     audioProcessor.setCurrentProgram(0);
   } else if (button == &buttonMk80) {
@@ -204,8 +223,7 @@ void RdPiano_juceAudioProcessorEditor::buttonClicked(juce::Button *button) {
     }
     updateValues();
   } else if (button == &buttonTremoloOnOff) {
-    *audioProcessor.tremoloEnabled =
-        !*audioProcessor.tremoloEnabled;
+    *audioProcessor.tremoloEnabled = !*audioProcessor.tremoloEnabled;
     updateValues();
   } else if (button == &buttonTremoloParams) {
     if (!prevTremoloRateMode && !prevTremoloDepthMode)
@@ -217,6 +235,19 @@ void RdPiano_juceAudioProcessorEditor::buttonClicked(juce::Button *button) {
       tremoloDepthMode = false;
     }
     updateValues();
+  } else if (button == &buttonEfxOnOff) {
+    *audioProcessor.efxEnabled = !*audioProcessor.efxEnabled;
+    updateValues();
+  } else if (button == &buttonEfxParams) {
+    if (!prevEfxPhaserRateMode && !prevEfxPhaserDepthMode)
+      efxPhaserRateMode = true;
+    else if (prevEfxPhaserRateMode)
+      efxPhaserDepthMode = true;
+    else if (prevEfxPhaserDepthMode) {
+      efxPhaserRateMode = false;
+      efxPhaserDepthMode = false;
+    }
+    updateValues();
   }
 }
 
@@ -226,16 +257,28 @@ void RdPiano_juceAudioProcessorEditor::sliderValueChanged(
     if (tuneMode) {
       audioProcessor.setMasterTune(alphaDial.getValue() * 32767.0);
     } else if (chorusRateMode) {
-      *audioProcessor.chorusRate = floor((alphaDial.getValue() / 2.0 + 0.5) * 14.0);
+      *audioProcessor.chorusRate =
+          floor((alphaDial.getValue() / 2.0 + 0.5) * 14.0);
       updateValues();
     } else if (chorusDepthMode) {
-      *audioProcessor.chorusDepth = floor((alphaDial.getValue() / 2.0 + 0.5) * 14.0);
+      *audioProcessor.chorusDepth =
+          floor((alphaDial.getValue() / 2.0 + 0.5) * 14.0);
       updateValues();
     } else if (tremoloRateMode) {
-      *audioProcessor.tremoloRate = floor((alphaDial.getValue() / 2.0 + 0.5) * 14.0);
+      *audioProcessor.tremoloRate =
+          floor((alphaDial.getValue() / 2.0 + 0.5) * 14.0);
       updateValues();
     } else if (tremoloDepthMode) {
-      *audioProcessor.tremoloDepth = floor((alphaDial.getValue() / 2.0 + 0.5) * 14.0);
+      *audioProcessor.tremoloDepth =
+          floor((alphaDial.getValue() / 2.0 + 0.5) * 14.0);
+      updateValues();
+    } else if (efxPhaserRateMode) {
+      *audioProcessor.efxPhaserRate =
+          juce::jmin(juce::jmax(alphaDial.getValue(), 0.0), 1.0);
+      updateValues();
+    } else if (efxPhaserDepthMode) {
+      *audioProcessor.efxPhaserDepth =
+          juce::jmin(juce::jmax(alphaDial.getValue(), 0.0), 1.0);
       updateValues();
     } else {
       audioProcessor.setCurrentProgram((alphaDial.getValue() + 1) * 8);
@@ -266,43 +309,34 @@ void RdPiano_juceAudioProcessorEditor::updateValues() {
   bool alternativeMode = tuneMode || chorusRateMode || chorusDepthMode ||
                          tremoloRateMode || tremoloDepthMode;
 
-  buttonMks20.enabled =
-      !alternativeMode && audioProcessor.currentPatch < 8;
-  buttonMk80.enabled =
-      !alternativeMode && audioProcessor.currentPatch >= 8;
-  buttonMks20.enabled =
-      !alternativeMode && audioProcessor.currentPatch < 8;
-  buttonMk80.enabled =
-      !alternativeMode && audioProcessor.currentPatch >= 8;
+  buttonMks20.enabled = !alternativeMode && audioProcessor.currentPatch < 8;
+  buttonMk80.enabled = !alternativeMode && audioProcessor.currentPatch >= 8;
+  buttonMks20.enabled = !alternativeMode && audioProcessor.currentPatch < 8;
+  buttonMk80.enabled = !alternativeMode && audioProcessor.currentPatch >= 8;
 
-  button1.enabled =
-      !alternativeMode && audioProcessor.currentPatch % 8 == 0;
-  button2.enabled =
-      !alternativeMode && audioProcessor.currentPatch % 8 == 1;
-  button3.enabled =
-      !alternativeMode && audioProcessor.currentPatch % 8 == 2;
-  button4.enabled =
-      !alternativeMode && audioProcessor.currentPatch % 8 == 3;
-  button5.enabled =
-      !alternativeMode && audioProcessor.currentPatch % 8 == 4;
-  button6.enabled =
-      !alternativeMode && audioProcessor.currentPatch % 8 == 5;
-  button7.enabled =
-      !alternativeMode && audioProcessor.currentPatch % 8 == 6;
-  button8.enabled =
-      !alternativeMode && audioProcessor.currentPatch % 8 == 7;
+  button1.enabled = !alternativeMode && audioProcessor.currentPatch % 8 == 0;
+  button2.enabled = !alternativeMode && audioProcessor.currentPatch % 8 == 1;
+  button3.enabled = !alternativeMode && audioProcessor.currentPatch % 8 == 2;
+  button4.enabled = !alternativeMode && audioProcessor.currentPatch % 8 == 3;
+  button5.enabled = !alternativeMode && audioProcessor.currentPatch % 8 == 4;
+  button6.enabled = !alternativeMode && audioProcessor.currentPatch % 8 == 5;
+  button7.enabled = !alternativeMode && audioProcessor.currentPatch % 8 == 6;
+  button8.enabled = !alternativeMode && audioProcessor.currentPatch % 8 == 7;
 
   buttonTune.enabled = tuneMode;
   buttonChorusOnOff.enabled = *audioProcessor.chorusEnabled;
   buttonChorusParams.enabled = chorusRateMode || chorusDepthMode;
   buttonTremoloOnOff.enabled = *audioProcessor.tremoloEnabled;
   buttonTremoloParams.enabled = tremoloRateMode || tremoloDepthMode;
+  buttonEfxOnOff.enabled = *audioProcessor.efxEnabled;
+  buttonEfxParams.enabled = efxPhaserOnOffMode || efxPhaserRateMode ||
+                            efxPhaserDepthMode || efxReverbOnOffMode ||
+                            efxReverbTypeMode || efxReverbBalanceMode;
 
   if (tuneMode) {
     juce::String tuningString =
         "TUNING           " +
-        juce::String(442.0 + audioProcessor.masterTune / 32767.0 * 3.85,
-                     1) +
+        juce::String(442.0 + audioProcessor.masterTune / 32767.0 * 3.85, 1) +
         "Hz          ";
     lcd.setText(tuningString);
     alphaDial.setValue(audioProcessor.masterTune / 32767.0,
@@ -311,9 +345,10 @@ void RdPiano_juceAudioProcessorEditor::updateValues() {
     juce::String paramString =
         "CHORUS RATE    " +
         (*audioProcessor.chorusRate < 9 ? juce::String(" ")
-                                               : juce::String("")) +
+                                        : juce::String("")) +
         juce::String(*audioProcessor.chorusRate + 1) + " _______________ ";
-    paramString = paramString.replaceSection(17 + 1 + *audioProcessor.chorusRate, 1, "\xff");
+    paramString = paramString.replaceSection(
+        17 + 1 + *audioProcessor.chorusRate, 1, "\xff");
     lcd.setText(paramString);
     alphaDial.setValue((*audioProcessor.chorusRate / 14.0) * 2.0 - 1.0,
                        juce::dontSendNotification);
@@ -321,9 +356,10 @@ void RdPiano_juceAudioProcessorEditor::updateValues() {
     juce::String paramString =
         "CHORUS DEPTH   " +
         (*audioProcessor.chorusDepth < 9 ? juce::String(" ")
-                                               : juce::String("")) +
+                                         : juce::String("")) +
         juce::String(*audioProcessor.chorusDepth + 1) + " _______________ ";
-    paramString = paramString.replaceSection(17 + 1 + *audioProcessor.chorusDepth, 1, "\xff");
+    paramString = paramString.replaceSection(
+        17 + 1 + *audioProcessor.chorusDepth, 1, "\xff");
     lcd.setText(paramString);
     alphaDial.setValue((*audioProcessor.chorusDepth / 14.0) * 2.0 - 1.0,
                        juce::dontSendNotification);
@@ -331,9 +367,10 @@ void RdPiano_juceAudioProcessorEditor::updateValues() {
     juce::String paramString =
         "TREMOLO RATE   " +
         (*audioProcessor.tremoloRate < 9 ? juce::String(" ")
-                                               : juce::String("")) +
+                                         : juce::String("")) +
         juce::String(*audioProcessor.tremoloRate + 1) + " _______________ ";
-    paramString = paramString.replaceSection(17 + 1 + *audioProcessor.tremoloRate, 1, "\xff");
+    paramString = paramString.replaceSection(
+        17 + 1 + *audioProcessor.tremoloRate, 1, "\xff");
     lcd.setText(paramString);
     alphaDial.setValue((*audioProcessor.tremoloRate / 14.0) * 2.0 - 1.0,
                        juce::dontSendNotification);
@@ -341,20 +378,36 @@ void RdPiano_juceAudioProcessorEditor::updateValues() {
     juce::String paramString =
         "TREMOLO DEPTH  " +
         (*audioProcessor.tremoloDepth < 9 ? juce::String(" ")
-                                               : juce::String("")) +
+                                          : juce::String("")) +
         juce::String(*audioProcessor.tremoloDepth + 1) + " _______________ ";
-    paramString = paramString.replaceSection(17 + 1 + *audioProcessor.tremoloDepth, 1, "\xff");
+    paramString = paramString.replaceSection(
+        17 + 1 + *audioProcessor.tremoloDepth, 1, "\xff");
     lcd.setText(paramString);
     alphaDial.setValue((*audioProcessor.tremoloDepth / 14.0) * 2.0 - 1.0,
                        juce::dontSendNotification);
+  } else if (efxPhaserRateMode) {
+    int value = *audioProcessor.efxPhaserRate * 14;
+    juce::String paramString =
+        "PHASER RATE    " + (value < 9 ? juce::String(" ") : juce::String("")) +
+        juce::String(value + 1) + " _______________ ";
+    paramString = paramString.replaceSection(17 + 1 + value, 1, "\xff");
+    lcd.setText(paramString);
+    alphaDial.setValue((value / 14.0) * 2.0 - 1.0, juce::dontSendNotification);
+  } else if (efxPhaserDepthMode) {
+    int value = *audioProcessor.efxPhaserDepth * 14;
+    juce::String paramString =
+        "PHASER DEPTH   " + (value < 9 ? juce::String(" ") : juce::String("")) +
+        juce::String(value + 1) + " _______________ ";
+    paramString = paramString.replaceSection(17 + 1 + value, 1, "\xff");
+    lcd.setText(paramString);
+    alphaDial.setValue((value / 14.0) * 2.0 - 1.0, juce::dontSendNotification);
   } else {
     lcd.setText(displayPatchNames[audioProcessor.currentPatch]);
     alphaDial.setValue(audioProcessor.currentPatch / 16.0 * 2.0 - 1,
                        juce::dontSendNotification);
   }
 
-  volumeSlider.setValue(*audioProcessor.volume,
-                        juce::dontSendNotification);
+  volumeSlider.setValue(*audioProcessor.volume, juce::dontSendNotification);
 
   this->repaint();
 }

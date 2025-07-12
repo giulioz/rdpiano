@@ -18,17 +18,35 @@
       <FILE id="f6dYrj" name="MK80_IC6.bin" compile="0" resource="1" file="../roms/MK80_IC6.bin"/>
       <FILE id="YMCaUe" name="MK80_IC7.bin" compile="0" resource="1" file="../roms/MK80_IC7.bin"/>
       <FILE id="Y976hj" name="MK80_IC18.bin" compile="0" resource="1" file="../roms/MK80_IC18.bin"/>
-      <FILE id="Dq0nUS" name="mks20_cpub_1.0.bin" compile="0" resource="1" file="../roms/mks20_cpub_1.0.bin"/>
-      <FILE id="Ai4iwG" name="mks20_15179736.BIN" compile="0" resource="1" file="../roms/mks20_15179736.BIN"/>
-      <FILE id="sMJsfn" name="mks20_15179737.BIN" compile="0" resource="1" file="../roms/mks20_15179737.BIN"/>
-      <FILE id="VL7IhH" name="mks20_15179738.BIN" compile="0" resource="1" file="../roms/mks20_15179738.BIN"/>
-      <FILE id="ODTTdZ" name="mks20_15179739.BIN" compile="0" resource="1" file="../roms/mks20_15179739.BIN"/>
-      <FILE id="guxbvE" name="mks20_15179740.BIN" compile="0" resource="1" file="../roms/mks20_15179740.BIN"/>
-      <FILE id="CdCcv7" name="mks20_15179741.BIN" compile="0" resource="1" file="../roms/mks20_15179741.BIN"/>
-      <FILE id="hjUw6m" name="mks20_15179757.BIN" compile="0" resource="1" file="../roms/mks20_15179757.BIN"/>
+      <FILE id="Dq0nUS" name="mks20_cpub_1.0.bin" compile="0" resource="1"
+            file="../roms/mks20_cpub_1.0.bin"/>
+      <FILE id="Ai4iwG" name="mks20_15179736.BIN" compile="0" resource="1"
+            file="../roms/mks20_15179736.BIN"/>
+      <FILE id="sMJsfn" name="mks20_15179737.BIN" compile="0" resource="1"
+            file="../roms/mks20_15179737.BIN"/>
+      <FILE id="VL7IhH" name="mks20_15179738.BIN" compile="0" resource="1"
+            file="../roms/mks20_15179738.BIN"/>
+      <FILE id="ODTTdZ" name="mks20_15179739.BIN" compile="0" resource="1"
+            file="../roms/mks20_15179739.BIN"/>
+      <FILE id="guxbvE" name="mks20_15179740.BIN" compile="0" resource="1"
+            file="../roms/mks20_15179740.BIN"/>
+      <FILE id="CdCcv7" name="mks20_15179741.BIN" compile="0" resource="1"
+            file="../roms/mks20_15179741.BIN"/>
+      <FILE id="hjUw6m" name="mks20_15179757.BIN" compile="0" resource="1"
+            file="../roms/mks20_15179757.BIN"/>
       <FILE id="OthL6U" name="RD200_B.bin" compile="0" resource="1" file="../roms/RD200_B.bin"/>
     </GROUP>
     <GROUP id="{A9A4FE8C-A726-5731-A9C6-45A227C17A55}" name="Source">
+      <GROUP id="{363881CB-CC91-D877-CE27-45F5EF93C4BF}" name="lsp">
+        <FILE id="J0rntA" name="enhancer.cpp" compile="1" resource="0" file="Source/lsp/enhancer.cpp"/>
+        <FILE id="DoKr7u" name="enhancer.h" compile="0" resource="0" file="Source/lsp/enhancer.h"/>
+        <FILE id="JRZ5Ik" name="phaser.cpp" compile="1" resource="0" file="Source/lsp/phaser.cpp"/>
+        <FILE id="qV5jGl" name="phaser.h" compile="0" resource="0" file="Source/lsp/phaser.h"/>
+        <FILE id="kiQ3Eb" name="reverb.cpp" compile="1" resource="0" file="Source/lsp/reverb.cpp"/>
+        <FILE id="EoTATf" name="reverb.h" compile="0" resource="0" file="Source/lsp/reverb.h"/>
+        <FILE id="bsdrzI" name="spaced.cpp" compile="1" resource="0" file="Source/lsp/spaced.cpp"/>
+        <FILE id="mFtKJT" name="spaced.h" compile="0" resource="0" file="Source/lsp/spaced.h"/>
+      </GROUP>
       <GROUP id="{2B94B29E-7631-334E-156D-FCAACEAFE17C}" name="lcd">
         <FILE id="CZNcI0" name="Lcd.cpp" compile="1" resource="0" file="Source/lcd/Lcd.cpp"/>
         <FILE id="k9F0wB" name="Lcd.h" compile="0" resource="0" file="Source/lcd/Lcd.h"/>

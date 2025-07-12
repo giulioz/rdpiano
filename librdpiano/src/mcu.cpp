@@ -257,7 +257,10 @@ Mcu::Mcu(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7, const u8 *t
   }
 
   loadSounds(temp_ic5, temp_ic6, temp_ic7, temp_paramsrom, 0x00);
+}
 
+void Mcu::reset()
+{
   m_ppc.d = 0;
   m_pc.d = 0;
   m_s.d = 0;
@@ -570,9 +573,9 @@ void Mcu::write_byte(u16 addr, u8 data)
   }
 }
 
-s16 Mcu::generate_next_sample(bool sampleRate32)
+s32 Mcu::generate_next_sample(bool sampleRate32)
 {
-  s16 sample = sound_chip.update();
+  s32 sample = sound_chip.update();
 
   // 20kHz sample rate, 2000kHz CPU clock
   for (size_t cycle = 0; cycle < (sampleRate32 ? 62 : 100); cycle++) {

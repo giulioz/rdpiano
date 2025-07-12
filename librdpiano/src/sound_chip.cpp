@@ -2,8 +2,6 @@
 
 #include <cmath>
 
-#define VOLUME_SHIFT 3
-
 // LUT for the address speed
 static constexpr uint32_t env_table[] = {
     0x000000, 0x000023, 0x000026, 0x000029, 0x00002d, 0x000031, 0x000036,
@@ -212,7 +210,7 @@ void SoundChip::write(size_t offset, u8 data)
         part.env_offset = data;
 }
 
-s16 SoundChip::update()
+s32 SoundChip::update()
 {
     s32 result = 0;
     
@@ -349,7 +347,7 @@ s16 SoundChip::update()
         }
     }
 
-    return result >> VOLUME_SHIFT;
+    return result;
 }
 
 void SoundChip::load_samples(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7)

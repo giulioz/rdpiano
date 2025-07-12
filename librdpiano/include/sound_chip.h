@@ -11,7 +11,7 @@ public:
   u8 read(size_t offset);
   void write(size_t offset, u8 data);
 
-  s16 update();
+  s32 update();
 
   void load_samples(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7);
 

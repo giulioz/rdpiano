@@ -9,6 +9,8 @@
 #pragma once
 
 #include "../../librdpiano/include/mcu.h"
+#include "lsp/spaced.h"
+#include "lsp/phaser.h"
 #include "resample/libresample.h"
 #include <JuceHeader.h>
 
@@ -69,31 +71,45 @@ public:
   juce::AudioParameterBool *tremoloEnabled;
   juce::AudioParameterInt *tremoloRate;
   juce::AudioParameterInt *tremoloDepth;
+  juce::AudioParameterBool *efxEnabled;
+  // juce::AudioParameterBool *efxPhaserOnOff;
+  juce::AudioParameterFloat *efxPhaserRate;
+  juce::AudioParameterFloat *efxPhaserDepth;
+  // juce::AudioParameterBool *efxReverbOnOff;
+  // juce::AudioParameterInt *efxReverbType;
+  // juce::AudioParameterFloat *efxReverbBalance;
 
   int currentPatch = 0;
   int masterTune = 0;
 
-  Mcu *mcu;
+  Mcu *mcu = 0;
 
-  void *resample = 0;
+  void *resampleL = 0;
+  void *resampleR = 0;
   int savedDestSampleRate = 0;
   int sourceSampleRate = 0;
   int savedSourceSampleRate = 0;
   double samplesError = 0;
 
-  float *dry_sample_buffer = 0;
-  float *dry_resampled_sample_buffer = 0;
-  size_t dry_sample_buffer_size = 0;
+  float *emu_sample_bufferL = 0;
+  float *emu_sample_bufferR = 0;
+  float *emu_resampled_sample_bufferL = 0;
+  float *emu_resampled_sample_bufferR = 0;
+  size_t emu_sample_buffer_size = 0;
 
-  unsigned long chorusPhase = 0;
-  juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>
-      delayL;
-  juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>
-      delayR;
+  unsigned long tremoloPhase = 0;
 
   unsigned long midiMessageCount = 0;
 
   void setMasterTune(int16_t tune);
+  void mcuReset();
+
+  SpaceD *spaceD = 0;
+  Phaser *phaser = 0;
+
+  juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>,
+                                 juce::dsp::IIR::Coefficients<float>>
+      midEQ;
 
   juce::SpinLock mcuLock;
 
