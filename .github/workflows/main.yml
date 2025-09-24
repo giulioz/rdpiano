@@ -74,7 +74,7 @@ jobs:
           fetch-depth: 0
           submodules: recursive
       - name: "Install Dependencies"
-        run: sudo apt update && sudo apt install -y libasound2-dev libjack-jackd2-dev libxcursor-dev libxinerama-dev libxrandr-dev
+        run: sudo apt update && sudo apt install -y libasound2-dev libjack-jackd2-dev libfontconfig1-dev libfreetype-dev libxcursor-dev libxinerama-dev libxrandr-dev
       - name: "Download Projucer"
         run: |
           cd rdpiano_juce
