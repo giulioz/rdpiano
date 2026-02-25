@@ -446,7 +446,7 @@ void RdPiano_juceAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
     int evI = 0;
     for (const auto metadata : midiMessages) {
       auto message = metadata.getMessage();
-      if (metadata.samplePosition >= i &&
+      if (metadata.samplePosition == i &&
           std::find(processedEvents.begin(), processedEvents.end(), evI) ==
               processedEvents.end()) {
         mcu->sendMidiCmd(message.getRawData()[0], message.getRawData()[1],
