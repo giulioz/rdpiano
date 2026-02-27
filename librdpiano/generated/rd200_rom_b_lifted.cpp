@@ -7714,6 +7714,181 @@ void rd200_rom_b_register_blocks(Rd200RomBLiftedCore &core)
   core.register_block(0xE599, &block_e599);
   core.register_block(0xE59C, &block_e59c);
 
+  // Linear chain hints for runtime superblock execution.
+  // Chain 01, len=23: E062 -> E091
+  core.register_linear_next(0xE062, 0xE064);
+  core.register_linear_next(0xE064, 0xE066);
+  core.register_linear_next(0xE066, 0xE068);
+  core.register_linear_next(0xE068, 0xE069);
+  core.register_linear_next(0xE069, 0xE06B);
+  core.register_linear_next(0xE06B, 0xE06C);
+  core.register_linear_next(0xE06C, 0xE06E);
+  core.register_linear_next(0xE06E, 0xE071);
+  core.register_linear_next(0xE071, 0xE073);
+  core.register_linear_next(0xE073, 0xE076);
+  core.register_linear_next(0xE076, 0xE078);
+  core.register_linear_next(0xE078, 0xE07B);
+  core.register_linear_next(0xE07B, 0xE07E);
+  core.register_linear_next(0xE07E, 0xE080);
+  core.register_linear_next(0xE080, 0xE082);
+  core.register_linear_next(0xE082, 0xE084);
+  core.register_linear_next(0xE084, 0xE086);
+  core.register_linear_next(0xE086, 0xE088);
+  core.register_linear_next(0xE088, 0xE08B);
+  core.register_linear_next(0xE08B, 0xE08D);
+  core.register_linear_next(0xE08D, 0xE08E);
+  core.register_linear_next(0xE08E, 0xE091);
+  // Chain 02, len=21: E2A1 -> E2C9
+  core.register_linear_next(0xE2A1, 0xE2A2);
+  core.register_linear_next(0xE2A2, 0xE2A5);
+  core.register_linear_next(0xE2A5, 0xE2A7);
+  core.register_linear_next(0xE2A7, 0xE2A9);
+  core.register_linear_next(0xE2A9, 0xE2AB);
+  core.register_linear_next(0xE2AB, 0xE2AD);
+  core.register_linear_next(0xE2AD, 0xE2AF);
+  core.register_linear_next(0xE2AF, 0xE2B1);
+  core.register_linear_next(0xE2B1, 0xE2B3);
+  core.register_linear_next(0xE2B3, 0xE2B5);
+  core.register_linear_next(0xE2B5, 0xE2B7);
+  core.register_linear_next(0xE2B7, 0xE2B9);
+  core.register_linear_next(0xE2B9, 0xE2BB);
+  core.register_linear_next(0xE2BB, 0xE2BD);
+  core.register_linear_next(0xE2BD, 0xE2BF);
+  core.register_linear_next(0xE2BF, 0xE2C1);
+  core.register_linear_next(0xE2C1, 0xE2C3);
+  core.register_linear_next(0xE2C3, 0xE2C5);
+  core.register_linear_next(0xE2C5, 0xE2C7);
+  core.register_linear_next(0xE2C7, 0xE2C9);
+  // Chain 03, len=19: E2FF -> E323
+  core.register_linear_next(0xE2FF, 0xE301);
+  core.register_linear_next(0xE301, 0xE303);
+  core.register_linear_next(0xE303, 0xE305);
+  core.register_linear_next(0xE305, 0xE307);
+  core.register_linear_next(0xE307, 0xE309);
+  core.register_linear_next(0xE309, 0xE30B);
+  core.register_linear_next(0xE30B, 0xE30D);
+  core.register_linear_next(0xE30D, 0xE30F);
+  core.register_linear_next(0xE30F, 0xE311);
+  core.register_linear_next(0xE311, 0xE313);
+  core.register_linear_next(0xE313, 0xE315);
+  core.register_linear_next(0xE315, 0xE317);
+  core.register_linear_next(0xE317, 0xE319);
+  core.register_linear_next(0xE319, 0xE31B);
+  core.register_linear_next(0xE31B, 0xE31D);
+  core.register_linear_next(0xE31D, 0xE31F);
+  core.register_linear_next(0xE31F, 0xE321);
+  core.register_linear_next(0xE321, 0xE323);
+  // Chain 04, len=16: E1B3 -> E1D3
+  core.register_linear_next(0xE1B3, 0xE1B5);
+  core.register_linear_next(0xE1B5, 0xE1B7);
+  core.register_linear_next(0xE1B7, 0xE1BA);
+  core.register_linear_next(0xE1BA, 0xE1BB);
+  core.register_linear_next(0xE1BB, 0xE1BD);
+  core.register_linear_next(0xE1BD, 0xE1C0);
+  core.register_linear_next(0xE1C0, 0xE1C2);
+  core.register_linear_next(0xE1C2, 0xE1C5);
+  core.register_linear_next(0xE1C5, 0xE1C7);
+  core.register_linear_next(0xE1C7, 0xE1C9);
+  core.register_linear_next(0xE1C9, 0xE1CB);
+  core.register_linear_next(0xE1CB, 0xE1CD);
+  core.register_linear_next(0xE1CD, 0xE1CF);
+  core.register_linear_next(0xE1CF, 0xE1D1);
+  core.register_linear_next(0xE1D1, 0xE1D3);
+  // Chain 05, len=16: E209 -> E228
+  core.register_linear_next(0xE209, 0xE20B);
+  core.register_linear_next(0xE20B, 0xE20D);
+  core.register_linear_next(0xE20D, 0xE20F);
+  core.register_linear_next(0xE20F, 0xE211);
+  core.register_linear_next(0xE211, 0xE213);
+  core.register_linear_next(0xE213, 0xE216);
+  core.register_linear_next(0xE216, 0xE218);
+  core.register_linear_next(0xE218, 0xE21A);
+  core.register_linear_next(0xE21A, 0xE21C);
+  core.register_linear_next(0xE21C, 0xE21E);
+  core.register_linear_next(0xE21E, 0xE220);
+  core.register_linear_next(0xE220, 0xE222);
+  core.register_linear_next(0xE222, 0xE224);
+  core.register_linear_next(0xE224, 0xE226);
+  core.register_linear_next(0xE226, 0xE228);
+  // Chain 06, len=14: E19C -> E281
+  core.register_linear_next(0xE19C, 0xE19E);
+  core.register_linear_next(0xE19E, 0xE1A0);
+  core.register_linear_next(0xE1A0, 0xE26C);
+  core.register_linear_next(0xE26C, 0xE26E);
+  core.register_linear_next(0xE26E, 0xE270);
+  core.register_linear_next(0xE270, 0xE271);
+  core.register_linear_next(0xE271, 0xE273);
+  core.register_linear_next(0xE273, 0xE276);
+  core.register_linear_next(0xE276, 0xE278);
+  core.register_linear_next(0xE278, 0xE27B);
+  core.register_linear_next(0xE27B, 0xE27D);
+  core.register_linear_next(0xE27D, 0xE27F);
+  core.register_linear_next(0xE27F, 0xE281);
+  // Chain 07, len=14: E32F -> E349
+  core.register_linear_next(0xE32F, 0xE330);
+  core.register_linear_next(0xE330, 0xE332);
+  core.register_linear_next(0xE332, 0xE334);
+  core.register_linear_next(0xE334, 0xE336);
+  core.register_linear_next(0xE336, 0xE338);
+  core.register_linear_next(0xE338, 0xE33A);
+  core.register_linear_next(0xE33A, 0xE33C);
+  core.register_linear_next(0xE33C, 0xE33E);
+  core.register_linear_next(0xE33E, 0xE340);
+  core.register_linear_next(0xE340, 0xE342);
+  core.register_linear_next(0xE342, 0xE344);
+  core.register_linear_next(0xE344, 0xE347);
+  core.register_linear_next(0xE347, 0xE349);
+  // Chain 08, len=12: E5FA -> E658
+  core.register_linear_next(0xE5FA, 0xE5FD);
+  core.register_linear_next(0xE5FD, 0xE5FF);
+  core.register_linear_next(0xE5FF, 0xE601);
+  core.register_linear_next(0xE601, 0xE603);
+  core.register_linear_next(0xE603, 0xE605);
+  core.register_linear_next(0xE605, 0xE607);
+  core.register_linear_next(0xE607, 0xE609);
+  core.register_linear_next(0xE609, 0xE60B);
+  core.register_linear_next(0xE60B, 0xE60D);
+  core.register_linear_next(0xE60D, 0xE656);
+  core.register_linear_next(0xE656, 0xE658);
+  // Chain 09, len=10: E5C2 -> E522
+  core.register_linear_next(0xE5C2, 0xE5C3);
+  core.register_linear_next(0xE5C3, 0xE5C5);
+  core.register_linear_next(0xE5C5, 0xE5C7);
+  core.register_linear_next(0xE5C7, 0xE5C9);
+  core.register_linear_next(0xE5C9, 0xE51B);
+  core.register_linear_next(0xE51B, 0xE51D);
+  core.register_linear_next(0xE51D, 0xE51F);
+  core.register_linear_next(0xE51F, 0xE520);
+  core.register_linear_next(0xE520, 0xE522);
+  // Chain 10, len=10: E5CC -> E5DF
+  core.register_linear_next(0xE5CC, 0xE5CE);
+  core.register_linear_next(0xE5CE, 0xE5D0);
+  core.register_linear_next(0xE5D0, 0xE5D2);
+  core.register_linear_next(0xE5D2, 0xE5D4);
+  core.register_linear_next(0xE5D4, 0xE5D6);
+  core.register_linear_next(0xE5D6, 0xE5D8);
+  core.register_linear_next(0xE5D8, 0xE5DA);
+  core.register_linear_next(0xE5DA, 0xE5DD);
+  core.register_linear_next(0xE5DD, 0xE5DF);
+  // Chain 11, len=9: E04D -> E060
+  core.register_linear_next(0xE04D, 0xE050);
+  core.register_linear_next(0xE050, 0xE053);
+  core.register_linear_next(0xE053, 0xE055);
+  core.register_linear_next(0xE055, 0xE057);
+  core.register_linear_next(0xE057, 0xE05A);
+  core.register_linear_next(0xE05A, 0xE05C);
+  core.register_linear_next(0xE05C, 0xE05E);
+  core.register_linear_next(0xE05E, 0xE060);
+  // Chain 12, len=9: E1E1 -> E1F4
+  core.register_linear_next(0xE1E1, 0xE1E4);
+  core.register_linear_next(0xE1E4, 0xE1E7);
+  core.register_linear_next(0xE1E7, 0xE1E9);
+  core.register_linear_next(0xE1E9, 0xE1EB);
+  core.register_linear_next(0xE1EB, 0xE1ED);
+  core.register_linear_next(0xE1ED, 0xE1EF);
+  core.register_linear_next(0xE1EF, 0xE1F2);
+  core.register_linear_next(0xE1F2, 0xE1F4);
+
   // Temporary dynamic lift for remaining unlifted rd200_rom_b PCs.
   // It covers E000..EDFF addresses not yet statically lifted while we progressively
   // replace it with static per-block lifts.

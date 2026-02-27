@@ -49,6 +49,8 @@ public:
   struct Config {
     bool strict_dead_ops = false;
     bool halt_on_unlifted_pc = true;
+    bool enable_linear_chaining = true;
+    size_t max_chain_blocks = 32;
     std::function<void(u16)> on_unlifted_pc;
   };
 
@@ -62,6 +64,7 @@ public:
   void run_steps(size_t steps);
 
   void register_block(u16 pc, BlockFn fn);
+  void register_linear_next(u16 from_pc, u16 to_pc);
   void clear_blocks();
   bool has_block(u16 pc) const;
 
@@ -121,6 +124,7 @@ private:
   CpuState m_state;
   bool m_halted = false;
   std::array<BlockFn, 65536> m_blocks{};
+  std::array<u16, 65536> m_linear_next{};
   Rd200TraceSink *m_trace_sink = nullptr;
 };
 

@@ -29,7 +29,8 @@ bool Rd200RomBLiftedCore::step()
   if (m_halted)
     return false;
 
-  BlockFn fn = m_blocks[m_state.pc];
+  u16 executed_pc = m_state.pc;
+  BlockFn fn = m_blocks[executed_pc];
   if (!fn)
   {
     if (m_config.on_unlifted_pc)
@@ -40,6 +41,31 @@ bool Rd200RomBLiftedCore::step()
   }
 
   fn(*this);
+
+  if (!m_config.enable_linear_chaining)
+    return true;
+
+  size_t chained = 0;
+  while (!m_halted && chained < m_config.max_chain_blocks)
+  {
+    const u16 expected_next = m_linear_next[executed_pc];
+    if (expected_next == 0 || m_state.pc != expected_next)
+      break;
+
+    // Preserve interrupt boundary semantics between original blocks.
+    check_interrupts();
+    if (m_halted || m_state.pc != expected_next)
+      break;
+
+    executed_pc = m_state.pc;
+    BlockFn next_fn = m_blocks[executed_pc];
+    if (!next_fn)
+      break;
+
+    next_fn(*this);
+    ++chained;
+  }
+
   return true;
 }
 
@@ -54,9 +80,15 @@ void Rd200RomBLiftedCore::register_block(u16 pc, BlockFn fn)
   m_blocks[pc] = fn;
 }
 
+void Rd200RomBLiftedCore::register_linear_next(u16 from_pc, u16 to_pc)
+{
+  m_linear_next[from_pc] = to_pc;
+}
+
 void Rd200RomBLiftedCore::clear_blocks()
 {
   m_blocks.fill(nullptr);
+  m_linear_next.fill(0);
 }
 
 bool Rd200RomBLiftedCore::has_block(u16 pc) const
