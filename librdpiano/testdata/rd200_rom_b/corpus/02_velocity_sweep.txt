@@ -1,0 +1,23 @@
+# note-on velocity sweep on middle C
+program 0
+render 32
+note_on 0 60 8
+render 12
+note_off 0 60 0
+render 8
+note_on 0 60 32
+render 12
+note_off 0 60 0
+render 8
+note_on 0 60 64
+render 12
+note_off 0 60 0
+render 8
+note_on 0 60 96
+render 12
+note_off 0 60 0
+render 8
+note_on 0 60 127
+render 16
+note_off 0 60 0
+render 24

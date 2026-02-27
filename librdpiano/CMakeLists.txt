@@ -31,6 +31,7 @@ add_library(librdpiano
     src/mcu.cpp
     src/sound_chip.cpp
     src/rd200_lifted_core.cpp
+    src/rd200_trace.cpp
     src/rdpiano_program_map.cpp
     generated/rd200_rom_b_lifted.cpp
 )
@@ -49,3 +50,6 @@ enable_testing()
 add_executable(rdpiano_program_map_test test/program_map_test.cpp)
 target_link_libraries(rdpiano_program_map_test librdpiano)
 add_test(NAME rdpiano_program_map_test COMMAND rdpiano_program_map_test)
+
+add_executable(rd200_trace_runner test/trace_runner.cpp)
+target_link_libraries(rd200_trace_runner librdpiano)

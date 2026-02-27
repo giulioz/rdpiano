@@ -28,7 +28,7 @@ Event kinds:
 - `b`
 - `x`
 - `s`
-- `pc_after`
+- `pc_state`
 
 5. `state_snapshot`
 - `cc`
@@ -36,7 +36,7 @@ Event kinds:
 - `b`
 - `x`
 - `s`
-- `pc`
+- `pc_state`
 - `tcsr`
 
 Normalization rules:

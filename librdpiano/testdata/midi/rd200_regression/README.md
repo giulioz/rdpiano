@@ -1,13 +1,21 @@
-# RD200 Regression MIDI Corpus
+# RD200 Regression Corpus
 
 Deterministic corpus for trace-equivalence and audio-regression runs.
 
-Planned files:
+The active text corpus lives in `librdpiano/testdata/rd200_rom_b/corpus/*.txt` and is consumed by
+`librdpiano/test/trace_runner.cpp`.
 
-- `01_patch_sweep.mid`
-- `02_velocity_sweep.mid`
-- `03_sustain_edges.mid`
-- `04_overlap_retrigger.mid`
-- `05_long_mix.mid`
+Each line is one command:
 
-These inputs are intentionally fixed and should not be regenerated automatically.
+- `render <samples> [auto|20k|32k]`
+- `program <index>`
+- `note_on <ch> <note> <vel>`
+- `note_off <ch> <note> <vel>`
+- `cc <ch> <controller> <value>`
+- `pc <ch> <program>`
+- `raw <status> <data1> <data2>`
+- `run <cpu_steps>`
+- `tin <0|1>`
+- `irq1 <0|1>`
+
+Lines starting with `#` are ignored.

@@ -1,11 +1,19 @@
 #ifndef MCU_H
 #define MCU_H
 
+#include <cstdint>
 #include <stdio.h>
+#include <memory>
+#include <unordered_map>
 #include <queue>
+#include <unordered_set>
+#include <vector>
 
 #include "mame_utils.h"
+#include "rd200_trace.h"
 #include "sound_chip.h"
+
+class Rd200RomBLiftedCore;
 
 enum
   {
@@ -24,6 +32,14 @@ enum
 
 class Mcu {
 public:
+  struct LiftedStats {
+    uint64_t step_attempts = 0;
+    uint64_t lifted_steps = 0;
+    uint64_t fallback_steps = 0;
+    uint64_t unlifted_hits = 0;
+    size_t unique_unlifted_pcs = 0;
+  };
+
   enum class RuntimeMode {
     Interpreter = 0,
     Lifted = 1
@@ -45,14 +61,25 @@ public:
 
 	void sendMidiCmd(u8 cmd, u8 data1, u8 data2);
 	void loadSounds(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7, const u8 *temp_paramsrom, size_t from_addr);
-	void reset();
+  void reset();
   void setRuntimeMode(RuntimeMode mode);
   RuntimeMode getRuntimeMode() const;
+  void setTraceSink(Rd200TraceSink *trace_sink);
+  LiftedStats getLiftedStats() const;
+  std::vector<u16> getLiftedUnliftedPcs() const;
+  std::vector<std::pair<u16, uint64_t>> getLiftedUnliftedPcHits() const;
+  void clearLiftedStats();
 
 private:
   // Board specific
   u8 read_byte(u16 addr);
   void write_byte(u16 addr, u8 data);
+  u8 lifted_bus_read(u16 addr);
+  void lifted_bus_write(u16 addr, u8 data);
+  void ensure_lifted_core();
+  void sync_interpreter_to_lifted();
+  void sync_lifted_to_interpreter();
+  u16 current_pc_for_io() const;
 
   SoundChip sound_chip;
 
@@ -61,7 +88,7 @@ private:
   u8 params_rom[0x20000];
   u8 params_rom_tmp[0x20000];
   u8 ram[0x10000] = {0};
-  RuntimeMode m_runtime_mode = RuntimeMode::Interpreter;
+  RuntimeMode m_runtime_mode = RuntimeMode::Lifted;
 
   // Generic CPU
   void take_trap();
@@ -91,8 +118,22 @@ private:
 
   u8 tcsr_r();
   void tcsr_w(u8 data);
+  bool is_traced_mmio_addr(u16 addr) const;
+  Rd200CpuStateSnapshot snapshot_state() const;
 
   int m_icount = 0;
+  Rd200TraceSink *m_trace_sink = nullptr;
+  std::unique_ptr<Rd200RomBLiftedCore> m_lifted_core;
+  bool m_lifted_authoritative = false;
+  bool m_has_pc_override = false;
+  u16 m_pc_override = 0;
+  bool m_suppress_mcu_trace = false;
+  uint64_t m_lifted_step_attempts = 0;
+  uint64_t m_lifted_steps = 0;
+  uint64_t m_lifted_fallback_steps = 0;
+  uint64_t m_lifted_unlifted_hits = 0;
+  std::unordered_set<u16> m_lifted_unlifted_pcs;
+  std::unordered_map<u16, uint64_t> m_lifted_unlifted_pc_hits;
 
   static const u8 flags8i[256];
 	static const u8 flags8d[256];

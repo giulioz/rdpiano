@@ -90,3 +90,9 @@ Use A/B comparison against current emulator:
 
 This scaffold is intentionally minimal and does not include a full opcode interpreter fallback.
 Unlifted PCs can halt or call `on_unlifted_pc` based on config.
+
+## 9. Runtime Cutover Status
+
+- `Mcu` defaults to lifted runtime for `rd200_rom_b` paths.
+- Debug override remains available via `RDPIANO_FORCE_INTERPRETER=1` or `RDPIANO_MCU_RUNTIME=interpreter`.
+- Lift equivalence gate now targets zero fallback PCs in the deterministic corpus.

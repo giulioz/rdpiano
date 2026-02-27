@@ -1,0 +1,19 @@
+# overlapping notes and retrigger stress
+program 11
+render 20
+note_on 0 60 100
+render 8
+note_on 0 64 96
+render 8
+note_on 0 67 92
+render 8
+note_off 0 64 0
+render 6
+note_on 0 64 110
+render 8
+note_off 0 60 0
+render 6
+note_off 0 67 0
+render 6
+note_off 0 64 0
+render 20

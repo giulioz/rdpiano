@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <cstring>
+#include <cmath>
 
 #define SDL_MAIN_HANDLED
 #include "SDL.h"
@@ -19,11 +20,34 @@ static SDL_AudioDeviceID sdl_audio;
 
 Mcu *mcu;
 
+static void push_master_tune_handshake(Mcu *mcu, int16_t masterTune) {
+  if (!mcu)
+    return;
+
+  uint8_t tuneMsb = masterTune < 0 ? 0x7f : 0x00;
+  uint8_t tuneLsb =
+      (int8_t)(std::floor(std::abs(masterTune) / 32767.0 * 16.0) * 4) & 0xff;
+  if (tuneLsb > 0x3c)
+    tuneLsb = 0x3c;
+  if (masterTune < 0)
+    tuneLsb = 0x48 + tuneLsb;
+
+  // Match JUCE reset handshake ordering.
+  mcu->commands_queue.push(0x30);
+  mcu->commands_queue.push(0xE0);
+  mcu->commands_queue.push(tuneMsb);
+  mcu->commands_queue.push(tuneLsb);
+  for (size_t cycle = 0; cycle < 1024; cycle++)
+    mcu->generate_next_sample();
+  mcu->commands_queue.push(0x31);
+  mcu->commands_queue.push(0x30);
+}
+
 void audio_callback(void * /*userdata*/, Uint8 *stream, int len) {
   len /= 4;
 
   for (size_t i = 0; i < len; i++) {
-    s16 sample = mcu->generate_next_sample(g_mode32khz);
+    s16 sample = mcu->generate_next_sample(g_mode32khz) >> 3;
     ((int16_t *)stream)[i * 2] = sample;
     ((int16_t *)stream)[i * 2 + 1] = sample;
   }
@@ -228,6 +252,9 @@ int main(int argc, char **argv) {
   mcu = new Mcu(selected_cfg.rom_set->ic5, selected_cfg.rom_set->ic6,
                 selected_cfg.rom_set->ic7, temp_progrom,
                 selected_cfg.rom_set->ic18);
+
+  mcu->reset();
+  push_master_tune_handshake(mcu, 0);
 
   if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
     fprintf(stderr, "FATAL ERROR: Failed to initialize the SDL2: %s.\n",

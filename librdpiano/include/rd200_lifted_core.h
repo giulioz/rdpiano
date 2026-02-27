@@ -7,6 +7,7 @@
 #include <functional>
 
 #include "mame_utils.h"
+#include "rd200_trace.h"
 
 // Scaffold for progressively replacing rd200_rom_b CPU emulation with lifted blocks.
 // The core owns CPU-visible state and interrupt/timer side effects; memory/IO is delegated
@@ -58,6 +59,7 @@ public:
 
   void register_block(u16 pc, BlockFn fn);
   void clear_blocks();
+  bool has_block(u16 pc) const;
 
   void set_irq1_level(bool asserted);
   void set_nmi_level(bool asserted);
@@ -87,6 +89,7 @@ public:
   void set_pc(u16 next_pc);
   bool halted() const;
   void halt();
+  void setTraceSink(Rd200TraceSink *trace_sink);
 
 private:
   static constexpr u8 CC_I = 0x10;
@@ -98,12 +101,15 @@ private:
   void check_interrupts();
   u8 tcsr_read();
   void tcsr_write(u8 data);
+  bool is_traced_mmio_addr(u16 addr) const;
+  Rd200CpuStateSnapshot snapshot_state() const;
 
   Bus m_bus;
   Config m_config;
   CpuState m_state;
   bool m_halted = false;
   std::array<BlockFn, 65536> m_blocks{};
+  Rd200TraceSink *m_trace_sink = nullptr;
 };
 
 #endif

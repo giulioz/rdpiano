@@ -1,6 +1,11 @@
 #include "../include/mcu.h"
+#include "../include/rd200_lifted_core.h"
+#include "../generated/rd200_rom_b_lifted.h"
 
 #include <algorithm>
+#include <cstdlib>
+#include <vector>
+#include <utility>
 
 #define pPPC    m_ppc
 #define pPC     m_pc
@@ -248,6 +253,38 @@ const u8 Mcu::cycles_63701[256] =
 #define UNSCRAMBLE_DATA_PARAMS(_data) \
   bitswap<8>(_data,7,0,6,1,5,2,4,3)
 
+namespace {
+
+Mcu::RuntimeMode runtime_mode_from_env()
+{
+  const char *force_interpreter = std::getenv("RDPIANO_FORCE_INTERPRETER");
+  if (force_interpreter && force_interpreter[0] != '\0' && force_interpreter[0] != '0')
+    return Mcu::RuntimeMode::Interpreter;
+
+  const char *runtime = std::getenv("RDPIANO_MCU_RUNTIME");
+  if (!runtime)
+    return Mcu::RuntimeMode::Lifted;
+
+  if (runtime[0] == 'i' || runtime[0] == 'I')
+    return Mcu::RuntimeMode::Interpreter;
+  if (runtime[0] == 'l' || runtime[0] == 'L')
+    return Mcu::RuntimeMode::Lifted;
+  return Mcu::RuntimeMode::Lifted;
+}
+
+bool lifted_debug_enabled()
+{
+  const char *v = std::getenv("RDPIANO_LIFTED_DEBUG");
+  return v && v[0] != '\0' && v[0] != '0';
+}
+
+bool lifted_survey_enabled()
+{
+  const char *v = std::getenv("RDPIANO_LIFTED_SURVEY");
+  return v && v[0] != '\0' && v[0] != '0';
+}
+
+} // namespace
 
 Mcu::Mcu(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7, const u8 *temp_progrom, const u8 *temp_paramsrom)
   : sound_chip(temp_ic5, temp_ic6, temp_ic7)
@@ -258,11 +295,13 @@ Mcu::Mcu(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7, const u8 *t
 
   loadSounds(temp_ic5, temp_ic6, temp_ic7, temp_paramsrom, 0x00);
 
+  m_runtime_mode = runtime_mode_from_env();
   reset();
 }
 
 void Mcu::reset()
 {
+  clearLiftedStats();
   m_ppc.d = 0;
   m_pc.d = 0;
   m_s.d = 0;
@@ -285,9 +324,41 @@ void Mcu::reset()
   // We need to run the CPU for a bit before being able to send commands to it
   for (size_t i = 0; i < 1024 * 8; i++)
     execute_one();
+
+  m_lifted_authoritative = false;
 }
 
-Mcu::~Mcu() {}
+Mcu::~Mcu()
+{
+  if (!lifted_survey_enabled())
+    return;
+
+  std::vector<std::pair<u16, uint64_t>> hits = getLiftedUnliftedPcHits();
+  if (hits.empty())
+  {
+    std::fprintf(stderr, "rd200 lifted survey: no unlifted PCs encountered\n");
+    return;
+  }
+
+  std::fprintf(stderr, "rd200 lifted survey: unique_unlifted_pcs=%zu\n", hits.size());
+  for (const auto &it : hits)
+    std::fprintf(stderr, "  %04X hits=%llu\n", it.first, static_cast<unsigned long long>(it.second));
+
+  const char *out_path = std::getenv("RDPIANO_LIFTED_SURVEY_OUT");
+  if (out_path && out_path[0] != '\0')
+  {
+    FILE *f = std::fopen(out_path, "wb");
+    if (!f)
+    {
+      std::fprintf(stderr, "rd200 lifted survey: failed to open %s\n", out_path);
+      return;
+    }
+    for (const auto &it : hits)
+      std::fprintf(f, "%04X %llu\n", it.first, static_cast<unsigned long long>(it.second));
+    std::fclose(f);
+    std::fprintf(stderr, "rd200 lifted survey: wrote %s\n", out_path);
+  }
+}
 
 void Mcu::setRuntimeMode(RuntimeMode mode)
 {
@@ -297,6 +368,208 @@ void Mcu::setRuntimeMode(RuntimeMode mode)
 Mcu::RuntimeMode Mcu::getRuntimeMode() const
 {
   return m_runtime_mode;
+}
+
+Mcu::LiftedStats Mcu::getLiftedStats() const
+{
+  LiftedStats s;
+  s.step_attempts = m_lifted_step_attempts;
+  s.lifted_steps = m_lifted_steps;
+  s.fallback_steps = m_lifted_fallback_steps;
+  s.unlifted_hits = m_lifted_unlifted_hits;
+  s.unique_unlifted_pcs = m_lifted_unlifted_pcs.size();
+  return s;
+}
+
+std::vector<u16> Mcu::getLiftedUnliftedPcs() const
+{
+  std::vector<u16> pcs;
+  pcs.reserve(m_lifted_unlifted_pcs.size());
+  for (u16 pc : m_lifted_unlifted_pcs)
+    pcs.push_back(pc);
+  std::sort(pcs.begin(), pcs.end());
+  return pcs;
+}
+
+std::vector<std::pair<u16, uint64_t>> Mcu::getLiftedUnliftedPcHits() const
+{
+  std::vector<std::pair<u16, uint64_t>> hits;
+  hits.reserve(m_lifted_unlifted_pc_hits.size());
+  for (const auto &it : m_lifted_unlifted_pc_hits)
+    hits.push_back(it);
+  std::sort(hits.begin(), hits.end(), [](const auto &a, const auto &b) {
+    if (a.second != b.second)
+      return a.second > b.second;
+    return a.first < b.first;
+  });
+  return hits;
+}
+
+void Mcu::clearLiftedStats()
+{
+  m_lifted_step_attempts = 0;
+  m_lifted_steps = 0;
+  m_lifted_fallback_steps = 0;
+  m_lifted_unlifted_hits = 0;
+  m_lifted_unlifted_pcs.clear();
+  m_lifted_unlifted_pc_hits.clear();
+}
+
+void Mcu::setTraceSink(Rd200TraceSink *trace_sink)
+{
+  m_trace_sink = trace_sink;
+  if (m_lifted_core)
+    m_lifted_core->setTraceSink(trace_sink);
+}
+
+u16 Mcu::current_pc_for_io() const
+{
+  return m_has_pc_override ? m_pc_override : PCD;
+}
+
+void Mcu::ensure_lifted_core()
+{
+  if (m_lifted_core)
+    return;
+
+  Rd200RomBLiftedCore::Bus bus;
+  bus.read8 = [this](u16 addr) { return this->lifted_bus_read(addr); };
+  bus.write8 = [this](u16 addr, u8 data) { this->lifted_bus_write(addr, data); };
+
+  Rd200RomBLiftedCore::Config config;
+  config.halt_on_unlifted_pc = !lifted_survey_enabled();
+  config.on_unlifted_pc = [this](u16 pc) {
+    m_lifted_unlifted_hits++;
+    m_lifted_unlifted_pcs.insert(pc);
+    m_lifted_unlifted_pc_hits[pc]++;
+    if (lifted_debug_enabled())
+      std::fprintf(stderr, "rd200 lifted: unlifted pc=%04X\n", pc);
+  };
+  m_lifted_core = std::make_unique<Rd200RomBLiftedCore>(std::move(bus), std::move(config));
+  rd200_rom_b_register_blocks(*m_lifted_core);
+  m_lifted_core->setTraceSink(m_trace_sink);
+  if (lifted_debug_enabled())
+  {
+    std::fprintf(stderr, "rd200 lifted: has E0BE=%d E0BF=%d E0C1=%d E156=%d\n",
+                 m_lifted_core->has_block(0xE0BE) ? 1 : 0,
+                 m_lifted_core->has_block(0xE0BF) ? 1 : 0,
+                 m_lifted_core->has_block(0xE0C1) ? 1 : 0,
+                 m_lifted_core->has_block(0xE156) ? 1 : 0);
+  }
+  m_lifted_authoritative = false;
+}
+
+void Mcu::sync_interpreter_to_lifted()
+{
+  if (!m_lifted_core)
+    return;
+
+  auto &ls = m_lifted_core->state();
+  ls.pc = m_pc.w.l;
+  ls.s = m_s.w.l;
+  ls.x = m_x.w.l;
+  ls.a = m_d.b.h;
+  ls.b = m_d.b.l;
+  ls.cc = m_cc;
+  ls.tcsr = m_tcsr;
+  ls.pending_tcsr = m_pending_tcsr;
+  ls.input_capture = m_input_capture;
+  ls.free_running_counter = m_counter.w.l;
+  ls.wai = (m_wai_state & M6800_WAI) != 0;
+  ls.slp = (m_wai_state & M6800_SLP) != 0;
+  ls.nmi_pending = m_nmi_pending != 0;
+  ls.nmi_level = m_nmi_state != CLEAR_LINE;
+  ls.irq1_level = m_irq_state[M6800_IRQ_LINE] != CLEAR_LINE;
+  ls.tin_level = m_irq_state[M6801_TIN_LINE] != CLEAR_LINE;
+}
+
+void Mcu::sync_lifted_to_interpreter()
+{
+  if (!m_lifted_core)
+    return;
+
+  const auto &ls = m_lifted_core->state();
+  m_pc.w.l = ls.pc;
+  m_s.w.l = ls.s;
+  m_x.w.l = ls.x;
+  m_d.b.h = ls.a;
+  m_d.b.l = ls.b;
+  m_cc = ls.cc;
+  m_tcsr = ls.tcsr;
+  m_pending_tcsr = ls.pending_tcsr;
+  m_input_capture = ls.input_capture;
+  m_counter.w.l = ls.free_running_counter;
+  m_wai_state = (ls.wai ? M6800_WAI : 0) | (ls.slp ? M6800_SLP : 0);
+  m_nmi_pending = ls.nmi_pending ? 1 : 0;
+  m_nmi_state = ls.nmi_level ? ASSERT_LINE : CLEAR_LINE;
+  m_irq_state[M6800_IRQ_LINE] = ls.irq1_level ? ASSERT_LINE : CLEAR_LINE;
+  m_irq_state[M6801_TIN_LINE] = ls.tin_level ? ASSERT_LINE : CLEAR_LINE;
+}
+
+u8 Mcu::lifted_bus_read(u16 addr)
+{
+  if (!m_lifted_core)
+    return read_byte(addr);
+
+  const bool prev_override = m_has_pc_override;
+  const u16 prev_pc = m_pc_override;
+  const bool prev_suppress_trace = m_suppress_mcu_trace;
+
+  m_has_pc_override = true;
+  m_pc_override = m_lifted_core->state().pc;
+  m_suppress_mcu_trace = true;
+  const u8 value = read_byte(addr);
+
+  m_has_pc_override = prev_override;
+  m_pc_override = prev_pc;
+  m_suppress_mcu_trace = prev_suppress_trace;
+  return value;
+}
+
+void Mcu::lifted_bus_write(u16 addr, u8 data)
+{
+  if (!m_lifted_core)
+  {
+    write_byte(addr, data);
+    return;
+  }
+
+  const bool prev_override = m_has_pc_override;
+  const u16 prev_pc = m_pc_override;
+  const bool prev_suppress_trace = m_suppress_mcu_trace;
+
+  m_has_pc_override = true;
+  m_pc_override = m_lifted_core->state().pc;
+  m_suppress_mcu_trace = true;
+  write_byte(addr, data);
+
+  m_has_pc_override = prev_override;
+  m_pc_override = prev_pc;
+  m_suppress_mcu_trace = prev_suppress_trace;
+}
+
+bool Mcu::is_traced_mmio_addr(u16 addr) const
+{
+  if (addr == 0x0002 || addr == 0x0003 || addr == 0x0008 || addr == 0x000d || addr == 0x000e)
+    return true;
+  if (addr >= 0x1000 && addr < 0x2000)
+    return true;
+  if (addr >= 0x4000 && addr <= 0xbfff)
+    return true;
+  return false;
+}
+
+Rd200CpuStateSnapshot Mcu::snapshot_state() const
+{
+  Rd200CpuStateSnapshot s;
+  s.cc = m_cc;
+  s.a = m_d.b.h;
+  s.b = m_d.b.l;
+  s.x = m_x.w.l;
+  s.s = m_s.w.l;
+  s.pc = m_pc.w.l;
+  s.tcsr = m_tcsr;
+  return s;
 }
 
 void Mcu::take_trap()
@@ -376,6 +649,11 @@ void Mcu::enter_interrupt(const char *message, u16 irq_vector)
   }
   SEI;
   PCD = RM16(irq_vector);
+  if (m_trace_sink != nullptr) {
+    Rd200CpuStateSnapshot s = snapshot_state();
+    m_trace_sink->onIrqEnter(s.pc, irq_vector, message, s);
+    m_trace_sink->onStateSnapshot(s.pc, "irq_boundary", s);
+  }
 
   increment_counter(cycles_to_eat);
 }
@@ -387,12 +665,17 @@ void Mcu::increment_counter(int amount)
 
 void Mcu::execute_set_input(int irqline, int state)
 {
+  if (m_runtime_mode == RuntimeMode::Lifted)
+    ensure_lifted_core();
+
   switch (irqline)
   {
   case INPUT_LINE_NMI:
     if (!m_nmi_state && state != CLEAR_LINE)
       m_nmi_pending = true;
     m_nmi_state = state;
+    if (m_lifted_core)
+      m_lifted_core->set_nmi_level(state != CLEAR_LINE);
     break;
 
   case M6801_TIN_LINE:
@@ -400,6 +683,8 @@ void Mcu::execute_set_input(int irqline, int state)
     {
       // printf("irq state %x\n", m_irq_state[irqline]);
       m_irq_state[M6801_TIN_LINE] = state;
+      if (m_lifted_core)
+        m_lifted_core->set_tin_level(state != CLEAR_LINE);
       //edge = (state == CLEAR_LINE) ? 2 : 0;
       if (((m_tcsr & TCSR_IEDG) ^ (state == CLEAR_LINE ? TCSR_IEDG : 0)) == 0)
         return;
@@ -412,6 +697,8 @@ void Mcu::execute_set_input(int irqline, int state)
 
   default:
     m_irq_state[irqline] = state;
+    if (m_lifted_core && irqline == M6800_IRQ_LINE)
+      m_lifted_core->set_irq1_level(state != CLEAR_LINE);
     break;
   }
 }
@@ -420,8 +707,42 @@ void Mcu::execute_run()
 {
   if (m_runtime_mode == RuntimeMode::Lifted)
   {
-    // Lifted runtime path will be wired here during migration.
-    execute_one();
+    ensure_lifted_core();
+
+    if (!commands_queue.empty())
+      execute_set_input(M6801_TIN_LINE, ASSERT_LINE);
+
+    if (sound_chip.m_irq_triggered)
+      execute_set_input(0, ASSERT_LINE);
+
+    if (!m_lifted_authoritative)
+      sync_interpreter_to_lifted();
+
+    m_lifted_step_attempts++;
+    if (m_lifted_core->step())
+    {
+      m_lifted_steps++;
+      m_lifted_authoritative = true;
+      return;
+    }
+
+    // Survey mode intentionally falls back one step to keep progressing and
+    // discover additional unlifted PCs in a single manual run.
+    if (lifted_survey_enabled())
+    {
+      if (m_lifted_authoritative)
+        sync_lifted_to_interpreter();
+      m_lifted_authoritative = false;
+      m_lifted_fallback_steps++;
+      check_irq_lines();
+      execute_one();
+      return;
+    }
+
+    // No interpreter fallback in lifted-default mode.
+    m_lifted_fallback_steps++;
+    if (lifted_debug_enabled() && m_lifted_core && m_lifted_core->halted())
+      std::fprintf(stderr, "rd200 lifted: halted at pc=%04X\n", m_lifted_core->state().pc);
     return;
   }
 
@@ -454,6 +775,11 @@ void Mcu::execute_one()
   PC++;
   // printf("PC: %04x, ireg: %02x\n", PCD, ireg);
   (this->*hd63701_insn[ireg])();
+  if (ireg == 0x3b && m_trace_sink != nullptr) {
+    Rd200CpuStateSnapshot s = snapshot_state();
+    m_trace_sink->onRti(s.pc, s);
+    m_trace_sink->onStateSnapshot(s.pc, "rti_boundary", s);
+  }
   increment_counter(cycles_63701[ireg]);
 }
 
@@ -475,16 +801,19 @@ void Mcu::tcsr_w(u8 data)
 
 u8 Mcu::read_byte(u16 addr)
 {
+  const u16 io_pc = current_pc_for_io();
+  u8 value = 0xff;
+
   // program rom
   if (addr >= 0xc000)
-    return program_rom[(addr - 0xc000) & 0xdfff];
+    value = program_rom[(addr - 0xc000) & 0xdfff];
   
   // port 1 DATA
   else if (addr == 0x0002) {
     u8 data_comm_bus = 0xff;
 
     // HACK: only works with the RD200 ROM
-    if (!commands_queue.empty() && (PCD == 0xE12B || PCD == 0xE15E || PCD == 0xE168))
+    if (!commands_queue.empty() && (io_pc == 0xE12B || io_pc == 0xE15E || io_pc == 0xE168))
     // if (!commands_queue.empty() && (PCD == 0xE0E4 || PCD == 0xE111 || PCD == 0xE11B))
     {
       data_comm_bus = commands_queue.front();
@@ -493,7 +822,7 @@ u8 Mcu::read_byte(u16 addr)
     }
 
     // printf("%04x: read port1 %02x\n", PCD, data_comm_bus);
-    return data_comm_bus;
+    value = data_comm_bus;
   }
   
   // port 2 CONTROL
@@ -501,46 +830,54 @@ u8 Mcu::read_byte(u16 addr)
     // printf("%04x: read port2\n", PCD);
 
     // HACK: only works with the RD200 ROM
-    if (PCD == 0xE15A) return 0xFF;
+    if (io_pc == 0xE15A) value = 0xFF;
     // if (PCD == 0xE10D) return 0xFF;
-    return 0x00;
+    else value = 0x00;
   }
 
   // tcsr
   else if (addr == 0x0008)
-    return tcsr_r();
+    value = tcsr_r();
   else if (addr == 0x000d) {
     if (!(m_pending_tcsr & TCSR_ICF))
       m_tcsr &= ~TCSR_ICF;
-    return (m_input_capture >> 0) & 0xff;
+    value = (m_input_capture >> 0) & 0xff;
   }
   else if (addr == 0x000e) {
-    return (m_input_capture >> 8) & 0xff;
+    value = (m_input_capture >> 8) & 0xff;
   }
   
   else if (addr < 0x20) {
-    printf("%04x: unk device read %04x\n", addr, PCD);
-    return 0xFF;
+    printf("%04x: unk device read %04x\n", addr, io_pc);
+    value = 0xFF;
   }
   
   // ram
   else if (addr < 0x1000)
-    return ram[addr];
+    value = ram[addr];
   
   // sound chip
   else if (addr < 0x2000)
-    return sound_chip.read(addr - 0x1000);
+    value = sound_chip.read(addr - 0x1000);
   
   // params rom
   else if (addr >= 0x4000 && addr <= 0xbfff)
-    return params_rom[(addr - 0x4000) | ((latch_val & 0b11) << 15)];
-  
-  printf("%04x: unk read %04x\n", PCD, addr);
-  return 0xFF;
+    value = params_rom[(addr - 0x4000) | ((latch_val & 0b11) << 15)];
+  else {
+    printf("%04x: unk read %04x\n", io_pc, addr);
+    value = 0xFF;
+  }
+
+  if (!m_suppress_mcu_trace && m_trace_sink != nullptr && is_traced_mmio_addr(addr))
+    m_trace_sink->onMmioRead(io_pc, addr, value);
+
+  return value;
 }
 
 void Mcu::write_byte(u16 addr, u8 data)
 {
+  const u16 io_pc = current_pc_for_io();
+
   // port dir
   if (addr == 0x0000 || addr == 0x0001) {
     // noop
@@ -567,7 +904,7 @@ void Mcu::write_byte(u16 addr, u8 data)
   }
   
   else if (addr < 0x20) {
-    printf("%04x unk device write %04x=%02x\n", PCD, addr, data);
+    printf("%04x unk device write %04x=%02x\n", io_pc, addr, data);
   }
   
   // ram
@@ -592,6 +929,9 @@ void Mcu::write_byte(u16 addr, u8 data)
     latch_val = data;
     // printf("latch write %04x=%02x\n", addr, data);
   }
+
+  if (!m_suppress_mcu_trace && m_trace_sink != nullptr && (is_traced_mmio_addr(addr) || addr >= 0x2000))
+    m_trace_sink->onMmioWrite(io_pc, addr, data);
 }
 
 s32 Mcu::generate_next_sample(bool sampleRate32)
@@ -632,6 +972,16 @@ void Mcu::sendMidiCmd(u8 data1, u8 data2, u8 data3)
   // sustain
   else if (command == 0xB && data2 == 64) {
      commands_queue.push(0x50 | (data3 >= 64 ? 0xF : 0x0));
+  }
+
+  // sostenuto
+  else if (command == 0xB && data2 == 66) {
+    commands_queue.push(0x60 | (data3 >= 64 ? 0xF : 0x0));
+  }
+
+  // soft pedal
+  else if (command == 0xB && data2 == 67) {
+    commands_queue.push(0x70 | (data3 >= 64 ? 0xF : 0x0));
   }
 }
 

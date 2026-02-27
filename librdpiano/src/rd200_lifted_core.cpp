@@ -60,6 +60,11 @@ void Rd200RomBLiftedCore::clear_blocks()
   m_blocks.fill(nullptr);
 }
 
+bool Rd200RomBLiftedCore::has_block(u16 pc) const
+{
+  return m_blocks[pc] != nullptr;
+}
+
 void Rd200RomBLiftedCore::set_irq1_level(bool asserted)
 {
   m_state.irq1_level = asserted;
@@ -100,22 +105,25 @@ const Rd200RomBLiftedCore::CpuState &Rd200RomBLiftedCore::state() const
 
 u8 Rd200RomBLiftedCore::read8(u16 addr)
 {
-  if (addr == 0x0008)
-    return tcsr_read();
+  u8 value = 0xff;
 
-  if (addr == 0x000d)
+  if (addr == 0x0008)
+    value = tcsr_read();
+  else if (addr == 0x000d)
   {
     if (!(m_state.pending_tcsr & TCSR_ICF))
       m_state.tcsr &= ~TCSR_ICF;
-    return static_cast<u8>(m_state.input_capture & 0xff);
+    value = static_cast<u8>(m_state.input_capture & 0xff);
   }
+  else if (addr == 0x000e)
+    value = static_cast<u8>((m_state.input_capture >> 8) & 0xff);
+  else if (m_bus.read8)
+    value = m_bus.read8(addr);
 
-  if (addr == 0x000e)
-    return static_cast<u8>((m_state.input_capture >> 8) & 0xff);
+  if (m_trace_sink != nullptr && is_traced_mmio_addr(addr))
+    m_trace_sink->onMmioRead(m_state.pc, addr, value);
 
-  if (!m_bus.read8)
-    return 0xff;
-  return m_bus.read8(addr);
+  return value;
 }
 
 void Rd200RomBLiftedCore::write8(u16 addr, u8 data)
@@ -123,11 +131,12 @@ void Rd200RomBLiftedCore::write8(u16 addr, u8 data)
   if (addr == 0x0008)
   {
     tcsr_write(data);
-    return;
   }
-
-  if (m_bus.write8)
+  else if (m_bus.write8)
     m_bus.write8(addr, data);
+
+  if (m_trace_sink != nullptr && (is_traced_mmio_addr(addr) || addr >= 0x2000))
+    m_trace_sink->onMmioWrite(m_state.pc, addr, data);
 }
 
 u16 Rd200RomBLiftedCore::read16(u16 addr)
@@ -204,6 +213,13 @@ void Rd200RomBLiftedCore::enter_interrupt(u16 vector, const char *name)
   m_state.cc |= CC_I;
   m_state.pc = read16(vector);
 
+  if (m_trace_sink != nullptr)
+  {
+    Rd200CpuStateSnapshot s = snapshot_state();
+    m_trace_sink->onIrqEnter(s.pc, vector, name, s);
+    m_trace_sink->onStateSnapshot(s.pc, "irq_boundary", s);
+  }
+
   if (m_config.trace_irq)
     std::printf("Lifted IRQ: %s vec=%04X new_pc=%04X from_wai=%u\n", name, vector, m_state.pc, from_wai ? 1 : 0);
 }
@@ -216,7 +232,17 @@ void Rd200RomBLiftedCore::rti()
   m_state.x = pop16();
   m_state.pc = pop16();
   m_state.in_ici_handler = false;
+
+  // Match interpreter-observed ordering around interrupt boundaries:
+  // pending IRQ/NMI can be taken immediately after RTI state restore.
   check_interrupts();
+
+  if (m_trace_sink != nullptr)
+  {
+    Rd200CpuStateSnapshot s = snapshot_state();
+    m_trace_sink->onRti(s.pc, s);
+    m_trace_sink->onStateSnapshot(s.pc, "rti_boundary", s);
+  }
 }
 
 void Rd200RomBLiftedCore::branch_rel8(s8 delta)
@@ -237,6 +263,11 @@ bool Rd200RomBLiftedCore::halted() const
 void Rd200RomBLiftedCore::halt()
 {
   m_halted = true;
+}
+
+void Rd200RomBLiftedCore::setTraceSink(Rd200TraceSink *trace_sink)
+{
+  m_trace_sink = trace_sink;
 }
 
 bool Rd200RomBLiftedCore::interrupt_masked() const
@@ -282,4 +313,28 @@ void Rd200RomBLiftedCore::tcsr_write(u8 data)
   m_state.tcsr = data | (m_state.tcsr & 0xe0);
   m_state.pending_tcsr &= m_state.tcsr;
   check_interrupts();
+}
+
+bool Rd200RomBLiftedCore::is_traced_mmio_addr(u16 addr) const
+{
+  if (addr == 0x0002 || addr == 0x0003 || addr == 0x0008 || addr == 0x000d || addr == 0x000e)
+    return true;
+  if (addr >= 0x1000 && addr < 0x2000)
+    return true;
+  if (addr >= 0x4000 && addr <= 0xbfff)
+    return true;
+  return false;
+}
+
+Rd200CpuStateSnapshot Rd200RomBLiftedCore::snapshot_state() const
+{
+  Rd200CpuStateSnapshot s;
+  s.cc = m_state.cc;
+  s.a = m_state.a;
+  s.b = m_state.b;
+  s.x = m_state.x;
+  s.s = m_state.s;
+  s.pc = m_state.pc;
+  s.tcsr = m_state.tcsr;
+  return s;
 }

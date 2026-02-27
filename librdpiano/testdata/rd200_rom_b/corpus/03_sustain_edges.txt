@@ -1,0 +1,12 @@
+# sustain pedal edge behavior
+program 6
+render 24
+cc 0 64 127
+note_on 0 60 90
+note_on 0 64 90
+render 24
+note_off 0 60 0
+note_off 0 64 0
+render 24
+cc 0 64 0
+render 24
