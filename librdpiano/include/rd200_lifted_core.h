@@ -42,7 +42,6 @@ public:
   };
 
   struct Config {
-    bool trace_irq = false;
     bool strict_dead_ops = false;
     bool halt_on_unlifted_pc = true;
     std::function<void(u16)> on_unlifted_pc;

@@ -1,6 +1,5 @@
 #include "../include/rd200_lifted_core.h"
 
-#include <cstdio>
 #include <utility>
 
 Rd200RomBLiftedCore::Rd200RomBLiftedCore(Bus bus)
@@ -219,9 +218,6 @@ void Rd200RomBLiftedCore::enter_interrupt(u16 vector, const char *name)
     m_trace_sink->onIrqEnter(s.pc, vector, name, s);
     m_trace_sink->onStateSnapshot(s.pc, "irq_boundary", s);
   }
-
-  if (m_config.trace_irq)
-    std::printf("Lifted IRQ: %s vec=%04X new_pc=%04X from_wai=%u\n", name, vector, m_state.pc, from_wai ? 1 : 0);
 }
 
 void Rd200RomBLiftedCore::rti()
@@ -232,10 +228,6 @@ void Rd200RomBLiftedCore::rti()
   m_state.x = pop16();
   m_state.pc = pop16();
   m_state.in_ici_handler = false;
-
-  // Match interpreter-observed ordering around interrupt boundaries:
-  // pending IRQ/NMI can be taken immediately after RTI state restore.
-  check_interrupts();
 
   if (m_trace_sink != nullptr)
   {

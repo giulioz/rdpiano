@@ -3,7 +3,6 @@
 #include "../generated/rd200_rom_b_lifted.h"
 
 #include <algorithm>
-#include <cstdlib>
 #include <utility>
 #include <vector>
 
@@ -53,22 +52,6 @@
 #define UNSCRAMBLE_DATA_PARAMS(_data) \
   bitswap<8>(_data,7,0,6,1,5,2,4,3)
 
-namespace {
-
-bool lifted_debug_enabled()
-{
-  const char *v = std::getenv("RDPIANO_LIFTED_DEBUG");
-  return v && v[0] != '\0' && v[0] != '0';
-}
-
-bool lifted_survey_enabled()
-{
-  const char *v = std::getenv("RDPIANO_LIFTED_SURVEY");
-  return v && v[0] != '\0' && v[0] != '0';
-}
-
-} // namespace
-
 Mcu::Mcu(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7, const u8 *temp_progrom, const u8 *temp_paramsrom)
   : sound_chip(temp_ic5, temp_ic6, temp_ic7)
 {
@@ -108,36 +91,7 @@ void Mcu::reset()
 }
 
 Mcu::~Mcu()
-{
-  if (!lifted_survey_enabled())
-    return;
-
-  std::vector<std::pair<u16, uint64_t>> hits = getLiftedUnliftedPcHits();
-  if (hits.empty())
-  {
-    std::fprintf(stderr, "rd200 lifted survey: no unlifted PCs encountered\n");
-    return;
-  }
-
-  std::fprintf(stderr, "rd200 lifted survey: unique_unlifted_pcs=%zu\n", hits.size());
-  for (const auto &it : hits)
-    std::fprintf(stderr, "  %04X hits=%llu\n", it.first, static_cast<unsigned long long>(it.second));
-
-  const char *out_path = std::getenv("RDPIANO_LIFTED_SURVEY_OUT");
-  if (out_path && out_path[0] != '\0')
-  {
-    FILE *f = std::fopen(out_path, "wb");
-    if (!f)
-    {
-      std::fprintf(stderr, "rd200 lifted survey: failed to open %s\n", out_path);
-      return;
-    }
-    for (const auto &it : hits)
-      std::fprintf(f, "%04X %llu\n", it.first, static_cast<unsigned long long>(it.second));
-    std::fclose(f);
-    std::fprintf(stderr, "rd200 lifted survey: wrote %s\n", out_path);
-  }
-}
+{}
 
 Mcu::LiftedStats Mcu::getLiftedStats() const
 {
@@ -206,25 +160,15 @@ void Mcu::ensure_lifted_core()
   bus.write8 = [this](u16 addr, u8 data) { this->lifted_bus_write(addr, data); };
 
   Rd200RomBLiftedCore::Config config;
-  config.halt_on_unlifted_pc = !lifted_survey_enabled();
+  config.halt_on_unlifted_pc = true;
   config.on_unlifted_pc = [this](u16 pc) {
     m_lifted_unlifted_hits++;
     m_lifted_unlifted_pcs.insert(pc);
     m_lifted_unlifted_pc_hits[pc]++;
-    if (lifted_debug_enabled())
-      std::fprintf(stderr, "rd200 lifted: unlifted pc=%04X\n", pc);
   };
   m_lifted_core = std::make_unique<Rd200RomBLiftedCore>(std::move(bus), std::move(config));
   rd200_rom_b_register_blocks(*m_lifted_core);
   m_lifted_core->setTraceSink(m_trace_sink);
-  if (lifted_debug_enabled())
-  {
-    std::fprintf(stderr, "rd200 lifted: has E0BE=%d E0BF=%d E0C1=%d E156=%d\n",
-                 m_lifted_core->has_block(0xE0BE) ? 1 : 0,
-                 m_lifted_core->has_block(0xE0BF) ? 1 : 0,
-                 m_lifted_core->has_block(0xE0C1) ? 1 : 0,
-                 m_lifted_core->has_block(0xE156) ? 1 : 0);
-  }
 }
 
 u8 Mcu::lifted_bus_read(u16 addr)
@@ -361,17 +305,9 @@ void Mcu::execute_set_input(int irqline, int state)
   case M6801_TIN_LINE:
     if (state != m_irq_state[M6801_TIN_LINE])
     {
-      // printf("irq state %x\n", m_irq_state[irqline]);
       m_irq_state[M6801_TIN_LINE] = state;
       if (m_lifted_core)
         m_lifted_core->set_tin_level(state != CLEAR_LINE);
-      //edge = (state == CLEAR_LINE) ? 2 : 0;
-      if (((m_tcsr & TCSR_IEDG) ^ (state == CLEAR_LINE ? TCSR_IEDG : 0)) == 0)
-        return;
-      /* active edge in */
-      m_tcsr |= TCSR_ICF;
-      m_pending_tcsr |= TCSR_ICF;
-      m_input_capture = CT;
     }
     break;
 
@@ -390,8 +326,7 @@ void Mcu::execute_run()
   if (!commands_queue.empty())
     execute_set_input(M6801_TIN_LINE, ASSERT_LINE);
 
-  if (sound_chip.m_irq_triggered)
-    execute_set_input(0, ASSERT_LINE);
+  execute_set_input(0, sound_chip.m_irq_triggered ? ASSERT_LINE : CLEAR_LINE);
 
   m_lifted_step_attempts++;
   if (m_lifted_core->step())
@@ -401,8 +336,6 @@ void Mcu::execute_run()
   }
 
   m_lifted_fallback_steps++;
-  if (lifted_debug_enabled() && m_lifted_core && m_lifted_core->halted())
-    std::fprintf(stderr, "rd200 lifted: halted at pc=%04X\n", m_lifted_core->state().pc);
 }
 
 u8 Mcu::tcsr_r()
@@ -417,7 +350,6 @@ void Mcu::tcsr_w(u8 data)
 
   m_tcsr = data | (m_tcsr & 0xe0);
   m_pending_tcsr &= m_tcsr;
-  check_irq_lines();
 }
 
 
@@ -428,7 +360,7 @@ u8 Mcu::read_byte(u16 addr)
 
   // program rom
   if (addr >= 0xc000)
-    value = program_rom[(addr - 0xc000) & 0xdfff];
+    value = program_rom[(addr - 0xc000) & 0x1fff];
   
   // port 1 DATA
   else if (addr == 0x0002) {
@@ -436,24 +368,18 @@ u8 Mcu::read_byte(u16 addr)
 
     // HACK: only works with the RD200 ROM
     if (!commands_queue.empty() && (io_pc == 0xE12B || io_pc == 0xE15E || io_pc == 0xE168))
-    // if (!commands_queue.empty() && (PCD == 0xE0E4 || PCD == 0xE111 || PCD == 0xE11B))
     {
       data_comm_bus = commands_queue.front();
       commands_queue.pop();
-      // printf("data\n");
     }
 
-    // printf("%04x: read port1 %02x\n", PCD, data_comm_bus);
     value = data_comm_bus;
   }
   
   // port 2 CONTROL
   else if (addr == 0x0003) {
-    // printf("%04x: read port2\n", PCD);
-
     // HACK: only works with the RD200 ROM
     if (io_pc == 0xE15A) value = 0xFF;
-    // if (PCD == 0xE10D) return 0xFF;
     else value = 0x00;
   }
 
@@ -470,7 +396,6 @@ u8 Mcu::read_byte(u16 addr)
   }
   
   else if (addr < 0x20) {
-    printf("%04x: unk device read %04x\n", addr, io_pc);
     value = 0xFF;
   }
   
@@ -486,7 +411,6 @@ u8 Mcu::read_byte(u16 addr)
   else if (addr >= 0x4000 && addr <= 0xbfff)
     value = params_rom[(addr - 0x4000) | ((latch_val & 0b11) << 15)];
   else {
-    printf("%04x: unk read %04x\n", io_pc, addr);
     value = 0xFF;
   }
 
@@ -507,13 +431,10 @@ void Mcu::write_byte(u16 addr, u8 data)
 
   // port 1 DATA
   else if (addr == 0x0002) {
-    // printf("%04x: port1 write %04x=%02x\n", PCD, addr, data);
   }
   
   // port 2 CONTROL
   else if (addr == 0x0003) {
-    // printf("%04x: port2 write %04x=%02x\n", PCD, addr, data);
-
     // TODO: Currently not working, investigate
     current_sample_rate = (data >> 2) & 1;
 
@@ -526,7 +447,7 @@ void Mcu::write_byte(u16 addr, u8 data)
   }
   
   else if (addr < 0x20) {
-    printf("%04x unk device write %04x=%02x\n", io_pc, addr, data);
+    (void)data;
   }
   
   // ram
@@ -537,8 +458,6 @@ void Mcu::write_byte(u16 addr, u8 data)
   // sound chip
   else if (addr >= 0x1000 && addr < 0x2000) {
     sound_chip.write(addr - 0x1000, data);
-    // printf("%04x: SA write %04x=%02x\n", PCD, addr, data);
-    // fflush(stdout);
 
     if (sound_chip.m_irq_triggered) {
       sound_chip.m_irq_triggered = false;
@@ -549,7 +468,6 @@ void Mcu::write_byte(u16 addr, u8 data)
   // latch
   else {
     latch_val = data;
-    // printf("latch write %04x=%02x\n", addr, data);
   }
 
   if (!m_suppress_mcu_trace && m_trace_sink != nullptr && (is_traced_mmio_addr(addr) || addr >= 0x2000))

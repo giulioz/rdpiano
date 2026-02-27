@@ -2872,11 +2872,19 @@ void block_e5ed(Rd200RomBLiftedCore &core)
 void block_e5ee(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
-  s.pc = 0xE5F3;
+  s.pc = 0xE5F1;
   const uint16_t a = static_cast<uint16_t>(s.x + 0xED);
   const uint8_t r = static_cast<uint8_t>(core.read8(a) & 0x40);
   core.write8(a, r);
   s.cc = and8_nzv(s.cc, r);
+}
+
+// E5F1: JSR E535
+void block_e5f1(Rd200RomBLiftedCore &core)
+{
+  auto &s = core.state();
+  core.push16(0xE5F4);
+  s.pc = 0xE535;
 }
 
 // E5F3: TXS
@@ -2885,7 +2893,7 @@ void block_e5f3(Rd200RomBLiftedCore &core)
   (void)core;
   auto &s = core.state();
   s.pc = 0xE5F4;
-  s.s = s.x;
+  s.s = static_cast<uint16_t>(s.x - 1);
 }
 
 // E5F4: JSR E540
@@ -6638,7 +6646,9 @@ bool exec_dynamic_e79b_ec83(Rd200RomBLiftedCore &core)
   {
     const u8 imm = fetch8();
     const u8 off = fetch8();
-    const u16 a = static_cast<u16>(s.x + off);
+    // HD63701 extension used by RD-200 ROM: postbyte 0x60 encodes "$00,S".
+    // S points one byte below the top stack value, so ",S" maps to S+1.
+    const u16 a = (off == 0x60) ? static_cast<u16>(s.s + 1) : static_cast<u16>(s.x + off);
     const u8 r = static_cast<u8>(core.read8(a) | imm);
     core.write8(a, r);
     s.cc = and8_nzv(s.cc, r);
@@ -6725,8 +6735,8 @@ bool exec_dynamic_e79b_ec83(Rd200RomBLiftedCore &core)
   }
   case 0x8D: // BSR
   {
-    const u16 ret = static_cast<u16>(pc + 1);
     const u16 tgt = rel8_target(fetch8());
+    const u16 ret = pc;
     core.push16(ret);
     s.pc = tgt;
     return true;
@@ -6770,10 +6780,12 @@ bool exec_dynamic_e79b_ec83(Rd200RomBLiftedCore &core)
     return true;
   }
   case 0x9E: // LDS dir
+  {
     s.s = core.read16(dir_addr());
     s.cc = nzv16(s.cc, s.s);
     s.pc = pc;
     return true;
+  }
   case 0x9B: // ADDA dir
   {
     const u8 a = s.a;
@@ -6785,10 +6797,12 @@ bool exec_dynamic_e79b_ec83(Rd200RomBLiftedCore &core)
     return true;
   }
   case 0x9F: // STS dir
+  {
     core.write16(dir_addr(), s.s);
     s.cc = nzv16(s.cc, s.s);
     s.pc = pc;
     return true;
+  }
   case 0xA6: // LDAA idx
     s.a = core.read8(idx_addr());
     s.cc = nzv8(s.cc, s.a);
@@ -7264,6 +7278,7 @@ void rd200_rom_b_register_blocks(Rd200RomBLiftedCore &core)
   core.register_block(0xE5EB, &block_e5eb);
   core.register_block(0xE5ED, &block_e5ed);
   core.register_block(0xE5EE, &block_e5ee);
+  core.register_block(0xE5F1, &block_e5f1);
   core.register_block(0xE5F3, &block_e5f3);
   core.register_block(0xE5F4, &block_e5f4);
   core.register_block(0xE5F7, &block_e5f7);
