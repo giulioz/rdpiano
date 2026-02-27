@@ -88,7 +88,6 @@ void Mcu::reset()
   m_x.d = 0;
   m_d.d = 0;
   m_cc = 0;
-  m_wai_state = 0;
   m_nmi_state = 0;
   m_nmi_pending = 0;
   std::fill(std::begin(m_irq_state), std::end(m_irq_state), 0);
@@ -97,7 +96,6 @@ void Mcu::reset()
   m_cc |= 0x10; /* IRQ disabled */
   PCD = RM16(0xfffe);
 
-  m_wai_state = 0;
   m_nmi_state = 0;
   m_nmi_pending = 0;
 
@@ -300,15 +298,12 @@ void Mcu::check_irq_lines()
 {
   if (m_nmi_pending)
   {
-    m_wai_state &= ~M6800_SLP;
     m_nmi_pending = false;
     enter_interrupt("NMI", 0xfffc);
   }
   else if (m_irq_state[M6800_IRQ_LINE] != CLEAR_LINE)
   {
     /* standard IRQ */
-    m_wai_state &= ~M6800_SLP;
-
     if (!(CC & 0x10))
     {
       // standard_irq_callback(M6800_IRQ_LINE, m_pc.w.l);
@@ -319,8 +314,6 @@ void Mcu::check_irq_lines()
   {
     // if (!(m_cc & 0x10))
     // 	standard_irq_callback(M6801_TIN_LINE, m_pc.w.l);
-    
-    m_wai_state &= ~M6800_SLP;
 
     if (!(CC & 0x10)) {
       enter_interrupt("ICI", 0xfff6);
@@ -337,22 +330,11 @@ u32 Mcu::RM16(u32 Addr)
 /* IRQ enter */
 void Mcu::enter_interrupt(const char *message, u16 irq_vector)
 {
-  int cycles_to_eat = 0;
-
-  if (m_wai_state & M6800_WAI)
-  {
-    cycles_to_eat = 4;
-    m_wai_state &= ~M6800_WAI;
-  }
-  else
-  {
-    PUSHWORD(pPC);
-    PUSHWORD(pX);
-    PUSHBYTE(A);
-    PUSHBYTE(B);
-    PUSHBYTE(CC);
-    cycles_to_eat = 12;
-  }
+  PUSHWORD(pPC);
+  PUSHWORD(pX);
+  PUSHBYTE(A);
+  PUSHBYTE(B);
+  PUSHBYTE(CC);
   m_cc |= 0x10;
   PCD = RM16(irq_vector);
   if (m_trace_sink != nullptr) {
@@ -360,13 +342,6 @@ void Mcu::enter_interrupt(const char *message, u16 irq_vector)
     m_trace_sink->onIrqEnter(s.pc, irq_vector, message, s);
     m_trace_sink->onStateSnapshot(s.pc, "irq_boundary", s);
   }
-
-  increment_counter(cycles_to_eat);
-}
-
-void Mcu::increment_counter(int amount)
-{
-  m_icount -= amount;
 }
 
 void Mcu::execute_set_input(int irqline, int state)

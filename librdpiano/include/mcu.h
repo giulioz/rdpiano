@@ -71,7 +71,6 @@ private:
   void check_irq_lines();
   u32 RM16(u32 addr);
   void enter_interrupt(const char *message, u16 irq_vector);
-  void increment_counter(int amount);
 
   u8 tcsr_r();
   void tcsr_w(u8 data);
@@ -91,7 +90,6 @@ private:
   PAIR m_x = {0, 0};
   PAIR m_d = {0, 0};
   u8 m_cc = 0;
-  u8 m_wai_state = 0;
   u8 m_nmi_state = 0;
   u8 m_nmi_pending = 0;
   u8 m_irq_state[5] = {0};
@@ -101,7 +99,6 @@ private:
   u8 m_pending_tcsr = 0;
   u16 m_input_capture = 0;
 
-  int m_icount = 0;
   Rd200TraceSink *m_trace_sink = nullptr;
   std::unique_ptr<Rd200RomBLiftedCore> m_lifted_core;
   bool m_has_pc_override = false;
@@ -114,12 +111,6 @@ private:
   uint64_t m_lifted_unlifted_hits = 0;
   std::unordered_set<u16> m_lifted_unlifted_pcs;
   std::unordered_map<u16, uint64_t> m_lifted_unlifted_pc_hits;
-
-  enum
-  {
-    M6800_WAI = 8,
-    M6800_SLP = 0x10
-  };
 };
 
 #endif
