@@ -257,6 +257,8 @@ Mcu::Mcu(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7, const u8 *t
   }
 
   loadSounds(temp_ic5, temp_ic6, temp_ic7, temp_paramsrom, 0x00);
+
+  reset();
 }
 
 void Mcu::reset()
@@ -286,6 +288,16 @@ void Mcu::reset()
 }
 
 Mcu::~Mcu() {}
+
+void Mcu::setRuntimeMode(RuntimeMode mode)
+{
+  m_runtime_mode = mode;
+}
+
+Mcu::RuntimeMode Mcu::getRuntimeMode() const
+{
+  return m_runtime_mode;
+}
 
 void Mcu::take_trap()
 {
@@ -319,8 +331,9 @@ void Mcu::check_irq_lines()
     
     m_wai_state &= ~M6800_SLP;
 
-    if (!(CC & 0x10))
+    if (!(CC & 0x10)) {
       enter_interrupt("ICI", 0xfff6);
+    }
   }
 }
 
@@ -405,6 +418,13 @@ void Mcu::execute_set_input(int irqline, int state)
 
 void Mcu::execute_run()
 {
+  if (m_runtime_mode == RuntimeMode::Lifted)
+  {
+    // Lifted runtime path will be wired here during migration.
+    execute_one();
+    return;
+  }
+
   if (!commands_queue.empty())
     execute_set_input(M6801_TIN_LINE, ASSERT_LINE);
 
@@ -494,8 +514,9 @@ u8 Mcu::read_byte(u16 addr)
       m_tcsr &= ~TCSR_ICF;
     return (m_input_capture >> 0) & 0xff;
   }
-  else if (addr == 0x000e)
+  else if (addr == 0x000e) {
     return (m_input_capture >> 8) & 0xff;
+  }
   
   else if (addr < 0x20) {
     printf("%04x: unk device read %04x\n", addr, PCD);

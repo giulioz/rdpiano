@@ -24,6 +24,11 @@ enum
 
 class Mcu {
 public:
+  enum class RuntimeMode {
+    Interpreter = 0,
+    Lifted = 1
+  };
+
   Mcu(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7, const u8 *temp_progrom, const u8 *temp_paramsrom);
   ~Mcu();
   
@@ -41,6 +46,8 @@ public:
 	void sendMidiCmd(u8 cmd, u8 data1, u8 data2);
 	void loadSounds(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7, const u8 *temp_paramsrom, size_t from_addr);
 	void reset();
+  void setRuntimeMode(RuntimeMode mode);
+  RuntimeMode getRuntimeMode() const;
 
 private:
   // Board specific
@@ -54,6 +61,7 @@ private:
   u8 params_rom[0x20000];
   u8 params_rom_tmp[0x20000];
   u8 ram[0x10000] = {0};
+  RuntimeMode m_runtime_mode = RuntimeMode::Interpreter;
 
   // Generic CPU
   void take_trap();

@@ -57,10 +57,12 @@
           <FILE id="aLG0ce" name="mame_utils.h" compile="0" resource="0" file="../librdpiano/include/mame_utils.h"/>
           <FILE id="sJyALN" name="mcu.h" compile="0" resource="0" file="../librdpiano/include/mcu.h"/>
           <FILE id="rHYnaa" name="mcu_ops.h" compile="0" resource="0" file="../librdpiano/include/mcu_ops.h"/>
+          <FILE id="k7kS6E" name="rdpiano_program_map.h" compile="0" resource="0" file="../librdpiano/include/rdpiano_program_map.h"/>
           <FILE id="HRZ8GO" name="sound_chip.h" compile="0" resource="0" file="../librdpiano/include/sound_chip.h"/>
         </GROUP>
         <GROUP id="{4841733A-2FA6-3B64-6697-19A463ECA7EC}" name="src">
           <FILE id="PJENE4" name="mcu.cpp" compile="1" resource="0" file="../librdpiano/src/mcu.cpp"/>
+          <FILE id="RzC4W7" name="rdpiano_program_map.cpp" compile="1" resource="0" file="../librdpiano/src/rdpiano_program_map.cpp"/>
           <FILE id="KW8xd0" name="sound_chip.cpp" compile="1" resource="0" file="../librdpiano/src/sound_chip.cpp"/>
         </GROUP>
       </GROUP>

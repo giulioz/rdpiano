@@ -27,7 +27,13 @@ endif()
 include_directories(${SDL2_INCLUDE_DIRS} ${PORTMIDI_INCLUDE_DIR} "include")
 
 # library target
-add_library(librdpiano src/mcu.cpp src/sound_chip.cpp)
+add_library(librdpiano
+    src/mcu.cpp
+    src/sound_chip.cpp
+    src/rd200_lifted_core.cpp
+    src/rdpiano_program_map.cpp
+    generated/rd200_rom_b_lifted.cpp
+)
 
 # test application target
 add_executable(rdpiano_standalone test/standalone.cpp)
@@ -38,3 +44,8 @@ target_link_libraries(rdpiano_standalone ${SDL2_LIBRARIES} ${PORTMIDI_LIBRARY} l
 # include directories for specific targets
 target_include_directories(librdpiano PRIVATE src)
 target_include_directories(rdpiano_standalone PRIVATE test)
+
+enable_testing()
+add_executable(rdpiano_program_map_test test/program_map_test.cpp)
+target_link_libraries(rdpiano_program_map_test librdpiano)
+add_test(NAME rdpiano_program_map_test COMMAND rdpiano_program_map_test)

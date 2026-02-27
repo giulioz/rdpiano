@@ -8,6 +8,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "../../librdpiano/include/rdpiano_program_map.h"
 #include <cmath>
 
 const char *rd200PatchNames[] = {"MKS-20: Piano 1",   "MKS-20: Piano 2",
@@ -19,13 +20,6 @@ const char *mk80PatchNames[] = {"MK-80: Classic",    "MK-80: Special",
                                 "MK-80: Blend",      "MK-80: Contemporary",
                                 "MK-80: A. Piano 1", "MK-80: A. Piano 2",
                                 "MK-80: Clavi",      "MK-80: Vibraphone"};
-
-struct RomSet {
-  const uint8_t *ic5;
-  const uint8_t *ic6;
-  const uint8_t *ic7;
-  const uint8_t *ic18;
-};
 
 const RomSet mks20ARomSet = {(const uint8_t *)BinaryData::mks20_15179738_BIN,
                              (const uint8_t *)BinaryData::mks20_15179737_BIN,
@@ -39,40 +33,6 @@ const RomSet mk80RomSet = {(const uint8_t *)BinaryData::MK80_IC5_bin,
                            (const uint8_t *)BinaryData::MK80_IC6_bin,
                            (const uint8_t *)BinaryData::MK80_IC7_bin,
                            (const uint8_t *)BinaryData::MK80_IC18_bin};
-
-const RomSet *patchToRomSet[] = {
-    &mks20ARomSet, &mks20ARomSet, &mks20ARomSet, &mks20BRomSet,
-    &mks20BRomSet, &mks20BRomSet, &mks20BRomSet, &mks20BRomSet,
-    &mk80RomSet,   &mk80RomSet,   &mk80RomSet,   &mk80RomSet,
-    &mk80RomSet,   &mk80RomSet,   &mk80RomSet,   &mk80RomSet};
-
-const size_t patchToOffset[] = {
-    // MKS-20
-    0x000000, // Piano 1
-    0x008000, // Piano 2
-    0x010000, // Piano 3
-    0x018000, // Harpsichord
-    0x003c20, // Clavi
-    0x00ab50, // Vibraphone
-    0x014260, // E-Piano 1
-    0x01bef0, // E-Piano 2
-
-    // MK80
-    0x000020, // Classic
-    0x008000, // Special
-    0x010000, // Blend
-    0x018000, // Contemporary
-    0x002c00, // A. Piano 1
-    0x00b1f0, // A. Piano 2
-    0x012910, // Clavi
-    0x0199f0, // Vibraphone
-};
-
-const int sampleRates[] = {
-    // MKS-20
-    20000, 20000, 20000, 32000, 32000, 20000, 20000, 32000,
-    // MK80
-    20000, 20000, 20000, 32000, 20000, 20000, 32000, 20000};
 
 const int chorusRateToMsPeriod[] = {
     2700, // 1
@@ -116,10 +76,13 @@ RdPiano_juceAudioProcessor::RdPiano_juceAudioProcessor()
           BusesProperties()
               .withInput("Input", juce::AudioChannelSet::stereo(), true)
               .withOutput("Output", juce::AudioChannelSet::stereo(), true)) {
+  set_program_rom_sets(&mks20ARomSet, &mks20BRomSet, &mk80RomSet);
+  const ProgramConfig initialProgram = get_program_config(0);
+
   mcu = new Mcu(
-      patchToRomSet[0]->ic5, patchToRomSet[0]->ic6, patchToRomSet[0]->ic7,
+      initialProgram.rom_set->ic5, initialProgram.rom_set->ic6, initialProgram.rom_set->ic7,
       // (const uint8_t *)BinaryData::mks20_cpub_1_0_bin,
-      (const uint8_t *)BinaryData::RD200_B_bin, patchToRomSet[0]->ic18);
+      (const uint8_t *)BinaryData::RD200_B_bin, initialProgram.rom_set->ic18);
 
   spaceD = new SpaceD();
   phaser = new Phaser();
@@ -128,7 +91,7 @@ RdPiano_juceAudioProcessor::RdPiano_juceAudioProcessor()
   spaceD->reset();
   phaser->reset();
 
-  sourceSampleRate = sampleRates[0];
+  sourceSampleRate = initialProgram.source_sample_rate;
 
   // DAW parameters
   addParameter(volume = new juce::AudioParameterFloat(
@@ -239,7 +202,7 @@ bool RdPiano_juceAudioProcessor::isMidiEffect() const { return false; }
 
 double RdPiano_juceAudioProcessor::getTailLengthSeconds() const { return 0.0; }
 
-int RdPiano_juceAudioProcessor::getNumPrograms() { return 8 + 8; }
+int RdPiano_juceAudioProcessor::getNumPrograms() { return kProgramCount; }
 
 int RdPiano_juceAudioProcessor::getCurrentProgram() { return currentPatch; }
 
@@ -247,18 +210,18 @@ void RdPiano_juceAudioProcessor::setCurrentProgram(int index) {
   if (index < 0 || index >= getNumPrograms())
     return;
 
+  const ProgramConfig programConfig = get_program_config(index);
+
   mcuLock.enter();
-  // if (patchToRomSet[index] != patchToRomSet[currentPatch]) {
-  mcu->loadSounds(patchToRomSet[index]->ic5, patchToRomSet[index]->ic6,
-                  patchToRomSet[index]->ic7, patchToRomSet[index]->ic18,
-                  patchToOffset[index]);
-  // }
+  mcu->loadSounds(programConfig.rom_set->ic5, programConfig.rom_set->ic6,
+                  programConfig.rom_set->ic7, programConfig.rom_set->ic18,
+                  programConfig.params_offset);
 
   currentPatch = index;
   mcu->commands_queue.push(0x31);
   mcu->commands_queue.push(0x30);
   mcuLock.exit();
-  sourceSampleRate = sampleRates[currentPatch];
+  sourceSampleRate = programConfig.source_sample_rate;
 
   sendChangeMessage();
 }
@@ -640,16 +603,17 @@ void RdPiano_juceAudioProcessor::setStateInformation(const void *data,
   setMasterTune(masterTune);
 
   mcuLock.enter();
-  mcu->loadSounds(
-      patchToRomSet[currentPatch]->ic5, patchToRomSet[currentPatch]->ic6,
-      patchToRomSet[currentPatch]->ic7, patchToRomSet[currentPatch]->ic18,
-      patchToOffset[currentPatch]);
+  const ProgramConfig programConfig = get_program_config(currentPatch);
+
+  mcu->loadSounds(programConfig.rom_set->ic5, programConfig.rom_set->ic6,
+                  programConfig.rom_set->ic7, programConfig.rom_set->ic18,
+                  programConfig.params_offset);
 
   mcu->commands_queue.push(0x31);
   mcu->commands_queue.push(0x30);
   mcuLock.exit();
 
-  sourceSampleRate = sampleRates[currentPatch];
+  sourceSampleRate = programConfig.source_sample_rate;
 }
 
 //==============================================================================
