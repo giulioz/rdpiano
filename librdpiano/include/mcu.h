@@ -63,10 +63,9 @@ public:
 private:
   u8 read_byte(u16 addr);
   void write_byte(u16 addr, u8 data);
-  u8 lifted_bus_read(u16 addr);
-  void lifted_bus_write(u16 addr, u8 data);
+  u8 lifted_mmio_read(u16 addr, u16 pc);
+  void lifted_mmio_write(u16 addr, u8 data, u16 pc);
   void ensure_lifted_core();
-  u16 current_pc_for_io() const;
 
   void check_irq_lines();
   u32 RM16(u32 addr);
@@ -101,9 +100,6 @@ private:
 
   Rd200TraceSink *m_trace_sink = nullptr;
   std::unique_ptr<Rd200RomBLiftedCore> m_lifted_core;
-  bool m_has_pc_override = false;
-  u16 m_pc_override = 0;
-  bool m_suppress_mcu_trace = false;
 
   uint64_t m_lifted_step_attempts = 0;
   uint64_t m_lifted_steps = 0;

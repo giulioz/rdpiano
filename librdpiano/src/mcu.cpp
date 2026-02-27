@@ -145,19 +145,16 @@ void Mcu::setTraceSink(Rd200TraceSink *trace_sink)
     m_lifted_core->setTraceSink(trace_sink);
 }
 
-u16 Mcu::current_pc_for_io() const
-{
-  return m_has_pc_override ? m_pc_override : PCD;
-}
-
 void Mcu::ensure_lifted_core()
 {
   if (m_lifted_core)
     return;
 
   Rd200RomBLiftedCore::Bus bus;
-  bus.read8 = [this](u16 addr) { return this->lifted_bus_read(addr); };
-  bus.write8 = [this](u16 addr, u8 data) { this->lifted_bus_write(addr, data); };
+  bus.program_rom = program_rom;
+  bus.params_rom = params_rom;
+  bus.mmio_read8 = [this](u16 addr, u16 pc) { return this->lifted_mmio_read(addr, pc); };
+  bus.mmio_write8 = [this](u16 addr, u8 data, u16 pc) { this->lifted_mmio_write(addr, data, pc); };
 
   Rd200RomBLiftedCore::Config config;
   config.halt_on_unlifted_pc = true;
@@ -171,46 +168,55 @@ void Mcu::ensure_lifted_core()
   m_lifted_core->setTraceSink(m_trace_sink);
 }
 
-u8 Mcu::lifted_bus_read(u16 addr)
+u8 Mcu::lifted_mmio_read(u16 addr, u16 pc)
 {
-  if (!m_lifted_core)
-    return read_byte(addr);
+  // port 1 DATA
+  if (addr == 0x0002)
+  {
+    u8 data_comm_bus = 0xff;
+    if (!commands_queue.empty() && (pc == 0xE12B || pc == 0xE15E || pc == 0xE168))
+    {
+      data_comm_bus = commands_queue.front();
+      commands_queue.pop();
+    }
+    return data_comm_bus;
+  }
 
-  const bool prev_override = m_has_pc_override;
-  const u16 prev_pc = m_pc_override;
-  const bool prev_suppress_trace = m_suppress_mcu_trace;
+  // port 2 CONTROL
+  if (addr == 0x0003)
+    return (pc == 0xE15A) ? 0xFF : 0x00;
 
-  m_has_pc_override = true;
-  m_pc_override = m_lifted_core->state().pc;
-  m_suppress_mcu_trace = true;
-  const u8 value = read_byte(addr);
+  // sound chip
+  if (addr >= 0x1000 && addr < 0x2000)
+    return sound_chip.read(addr - 0x1000);
 
-  m_has_pc_override = prev_override;
-  m_pc_override = prev_pc;
-  m_suppress_mcu_trace = prev_suppress_trace;
-  return value;
+  if (addr < 0x20)
+    return 0xFF;
+
+  return 0xFF;
 }
 
-void Mcu::lifted_bus_write(u16 addr, u8 data)
+void Mcu::lifted_mmio_write(u16 addr, u8 data, u16 /*pc*/)
 {
-  if (!m_lifted_core)
+  // port 2 CONTROL
+  if (addr == 0x0003)
   {
-    write_byte(addr, data);
+    // TODO: Currently not working, investigate
+    current_sample_rate = (data >> 2) & 1;
+    execute_set_input(M6801_TIN_LINE, CLEAR_LINE);
     return;
   }
 
-  const bool prev_override = m_has_pc_override;
-  const u16 prev_pc = m_pc_override;
-  const bool prev_suppress_trace = m_suppress_mcu_trace;
-
-  m_has_pc_override = true;
-  m_pc_override = m_lifted_core->state().pc;
-  m_suppress_mcu_trace = true;
-  write_byte(addr, data);
-
-  m_has_pc_override = prev_override;
-  m_pc_override = prev_pc;
-  m_suppress_mcu_trace = prev_suppress_trace;
+  // sound chip
+  if (addr >= 0x1000 && addr < 0x2000)
+  {
+    sound_chip.write(addr - 0x1000, data);
+    if (sound_chip.m_irq_triggered)
+    {
+      sound_chip.m_irq_triggered = false;
+      execute_set_input(0, CLEAR_LINE);
+    }
+  }
 }
 
 bool Mcu::is_traced_mmio_addr(u16 addr) const
@@ -355,7 +361,7 @@ void Mcu::tcsr_w(u8 data)
 
 u8 Mcu::read_byte(u16 addr)
 {
-  const u16 io_pc = current_pc_for_io();
+  const u16 io_pc = PCD;
   u8 value = 0xff;
 
   // program rom
@@ -414,7 +420,7 @@ u8 Mcu::read_byte(u16 addr)
     value = 0xFF;
   }
 
-  if (!m_suppress_mcu_trace && m_trace_sink != nullptr && is_traced_mmio_addr(addr))
+  if (m_trace_sink != nullptr && is_traced_mmio_addr(addr))
     m_trace_sink->onMmioRead(io_pc, addr, value);
 
   return value;
@@ -422,7 +428,7 @@ u8 Mcu::read_byte(u16 addr)
 
 void Mcu::write_byte(u16 addr, u8 data)
 {
-  const u16 io_pc = current_pc_for_io();
+  const u16 io_pc = PCD;
 
   // port dir
   if (addr == 0x0000 || addr == 0x0001) {
@@ -470,7 +476,7 @@ void Mcu::write_byte(u16 addr, u8 data)
     latch_val = data;
   }
 
-  if (!m_suppress_mcu_trace && m_trace_sink != nullptr && (is_traced_mmio_addr(addr) || addr >= 0x2000))
+  if (m_trace_sink != nullptr && (is_traced_mmio_addr(addr) || addr >= 0x2000))
     m_trace_sink->onMmioWrite(io_pc, addr, data);
 }
 

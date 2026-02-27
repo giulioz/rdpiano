@@ -106,7 +106,9 @@ u8 Rd200RomBLiftedCore::read8(u16 addr)
 {
   u8 value = 0xff;
 
-  if (addr == 0x0008)
+  if (addr >= 0xc000 && m_bus.program_rom != nullptr)
+    value = m_bus.program_rom[(addr - 0xc000) & 0x1fff];
+  else if (addr == 0x0008)
     value = tcsr_read();
   else if (addr == 0x000d)
   {
@@ -116,8 +118,12 @@ u8 Rd200RomBLiftedCore::read8(u16 addr)
   }
   else if (addr == 0x000e)
     value = static_cast<u8>((m_state.input_capture >> 8) & 0xff);
-  else if (m_bus.read8)
-    value = m_bus.read8(addr);
+  else if (addr >= 0x0020 && addr < 0x1000)
+    value = m_state.ram[addr];
+  else if (addr >= 0x4000 && addr <= 0xbfff && m_bus.params_rom != nullptr)
+    value = m_bus.params_rom[(addr - 0x4000) | ((m_state.latch_val & 0x03) << 15)];
+  else if (m_bus.mmio_read8)
+    value = m_bus.mmio_read8(addr, m_state.pc);
 
   if (m_trace_sink != nullptr && is_traced_mmio_addr(addr))
     m_trace_sink->onMmioRead(m_state.pc, addr, value);
@@ -131,8 +137,16 @@ void Rd200RomBLiftedCore::write8(u16 addr, u8 data)
   {
     tcsr_write(data);
   }
-  else if (m_bus.write8)
-    m_bus.write8(addr, data);
+  else if (addr >= 0x0020 && addr < 0x1000)
+  {
+    m_state.ram[addr] = data;
+  }
+  else if (addr >= 0x2000)
+  {
+    m_state.latch_val = data;
+  }
+  else if (m_bus.mmio_write8)
+    m_bus.mmio_write8(addr, data, m_state.pc);
 
   if (m_trace_sink != nullptr && (is_traced_mmio_addr(addr) || addr >= 0x2000))
     m_trace_sink->onMmioWrite(m_state.pc, addr, data);
@@ -147,6 +161,62 @@ void Rd200RomBLiftedCore::write16(u16 addr, u16 data)
 {
   write8(addr, static_cast<u8>((data >> 8) & 0xff));
   write8(addr + 1, static_cast<u8>(data & 0xff));
+}
+
+u8 Rd200RomBLiftedCore::read8_fast(u16 addr)
+{
+  if (addr >= 0x0020 && addr < 0x1000)
+    return m_state.ram[addr];
+  return read8(addr);
+}
+
+void Rd200RomBLiftedCore::write8_fast(u16 addr, u8 data)
+{
+  if (addr >= 0x0020 && addr < 0x1000)
+  {
+    m_state.ram[addr] = data;
+    return;
+  }
+  write8(addr, data);
+}
+
+u16 Rd200RomBLiftedCore::read16_fast(u16 addr)
+{
+  if (addr >= 0x0020 && addr < 0x0fff)
+    return static_cast<u16>((static_cast<u16>(m_state.ram[addr]) << 8) | m_state.ram[addr + 1]);
+  return read16(addr);
+}
+
+void Rd200RomBLiftedCore::write16_fast(u16 addr, u16 data)
+{
+  if (addr >= 0x0020 && addr < 0x0fff)
+  {
+    m_state.ram[addr] = static_cast<u8>((data >> 8) & 0xff);
+    m_state.ram[addr + 1] = static_cast<u8>(data & 0xff);
+    return;
+  }
+  write16(addr, data);
+}
+
+u8 Rd200RomBLiftedCore::ram_read8(u16 addr) const
+{
+  return m_state.ram[addr];
+}
+
+void Rd200RomBLiftedCore::ram_write8(u16 addr, u8 data)
+{
+  m_state.ram[addr] = data;
+}
+
+u16 Rd200RomBLiftedCore::ram_read16(u16 addr) const
+{
+  return static_cast<u16>((static_cast<u16>(m_state.ram[addr]) << 8) | m_state.ram[addr + 1]);
+}
+
+void Rd200RomBLiftedCore::ram_write16(u16 addr, u16 data)
+{
+  m_state.ram[addr] = static_cast<u8>((data >> 8) & 0xff);
+  m_state.ram[addr + 1] = static_cast<u8>(data & 0xff);
 }
 
 void Rd200RomBLiftedCore::push8(u8 v)

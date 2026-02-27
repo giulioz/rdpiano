@@ -34,11 +34,16 @@ public:
     bool irq1_level = false;
     bool tin_level = false;
     bool in_ici_handler = false;
+
+    std::array<u8, 0x1000> ram{};
+    u8 latch_val = 0;
   };
 
   struct Bus {
-    std::function<u8(u16)> read8;
-    std::function<void(u16, u8)> write8;
+    const u8 *program_rom = nullptr;
+    const u8 *params_rom = nullptr;
+    std::function<u8(u16, u16)> mmio_read8;
+    std::function<void(u16, u8, u16)> mmio_write8;
   };
 
   struct Config {
@@ -71,6 +76,14 @@ public:
   void write8(u16 addr, u8 data);
   u16 read16(u16 addr);
   void write16(u16 addr, u16 data);
+  u8 read8_fast(u16 addr);
+  void write8_fast(u16 addr, u8 data);
+  u16 read16_fast(u16 addr);
+  void write16_fast(u16 addr, u16 data);
+  u8 ram_read8(u16 addr) const;
+  void ram_write8(u16 addr, u8 data);
+  u16 ram_read16(u16 addr) const;
+  void ram_write16(u16 addr, u16 data);
 
   void push8(u8 v);
   void push16(u16 v);

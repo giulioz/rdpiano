@@ -307,7 +307,7 @@ void block_e04a(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE04C;
-  core.write8(0x00BB, s.a);
+  core.ram_write8(0x00BB, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -378,7 +378,7 @@ void block_e05c(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE05E;
-  core.write8(0x00BA, s.a);
+  core.ram_write8(0x00BA, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -471,7 +471,7 @@ void block_e06c(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xE06E;
   const uint16_t d = static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b);
-  core.write16(0x00A5, d);
+  core.ram_write16(0x00A5, d);
   s.cc = nzv16(s.cc, d);
 }
 
@@ -495,7 +495,7 @@ void block_e071(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xE073;
   const uint16_t d = static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b);
-  core.write16(0x00A7, d);
+  core.ram_write16(0x00A7, d);
   s.cc = nzv16(s.cc, d);
 }
 
@@ -519,7 +519,7 @@ void block_e076(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xE078;
   const uint16_t d = static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b);
-  core.write16(0x00A9, d);
+  core.ram_write16(0x00A9, d);
   s.cc = nzv16(s.cc, d);
 }
 
@@ -581,7 +581,7 @@ void block_e12e(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE130;
-  core.write8(0x00DC, s.a);
+  core.ram_write8(0x00DC, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -682,7 +682,7 @@ void block_e16b(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xE16D;
   const uint16_t d = static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b);
-  core.write16(0x00E1, d);
+  core.ram_write16(0x00E1, d);
   s.cc = nzv16(s.cc, d);
 }
 
@@ -698,7 +698,7 @@ void block_e134(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE136;
-  s.b = core.read8(0x00DC);
+  s.b = core.ram_read8(0x00DC);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -807,7 +807,7 @@ void block_e149(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE14B;
-  s.a = core.read8(0x00A3);
+  s.a = core.ram_read8(0x00A3);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -987,7 +987,7 @@ void block_e27d(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE27F;
-  s.x = core.read16(0x0090);
+  s.x = core.ram_read16(0x0090);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -996,7 +996,7 @@ void block_e27f(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE281;
-  s.a = core.read8(static_cast<uint16_t>(s.x + 0x70));
+  s.a = core.read8_fast(static_cast<uint16_t>(s.x + 0x70));
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1014,7 +1014,7 @@ void block_e28a(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE28C;
-  s.a = core.read8(0x0091);
+  s.a = core.ram_read8(0x0091);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1054,7 +1054,7 @@ void block_e291(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE293;
-  core.write8(0x0091, s.a);
+  core.ram_write8(0x0091, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1063,7 +1063,7 @@ void block_e293(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE295;
-  s.a = core.read8(0x00B1);
+  s.a = core.ram_read8(0x00B1);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1079,7 +1079,7 @@ void block_e296(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE298;
-  core.write8(0x00B1, s.a);
+  core.ram_write8(0x00B1, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1088,7 +1088,7 @@ void block_e298(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE29A;
-  const uint16_t d = core.read16(0x00B5);
+  const uint16_t d = core.ram_read16(0x00B5);
   s.a = static_cast<uint8_t>((d >> 8) & 0xff);
   s.b = static_cast<uint8_t>(d & 0xff);
   s.cc = nzv16(s.cc, d);
@@ -1113,7 +1113,7 @@ void block_e29d(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE29F;
-  core.write16(0x00B5, static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
+  core.ram_write16(0x00B5, static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
   s.cc = nzv16(s.cc, static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
 }
 
@@ -1158,7 +1158,7 @@ void block_e2a7(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2A9;
-  core.write8(0x00DB, s.a);
+  core.ram_write8(0x00DB, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1167,7 +1167,7 @@ void block_e2a9(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2AB;
-  s.a = core.read8(static_cast<uint16_t>(s.x + 0x70));
+  s.a = core.read8_fast(static_cast<uint16_t>(s.x + 0x70));
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1176,7 +1176,7 @@ void block_e2ab(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2AD;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x71)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x71)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -1185,7 +1185,7 @@ void block_e2ad(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2AF;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x72)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x72)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -1194,7 +1194,7 @@ void block_e2af(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2B1;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x73)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x73)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -1203,7 +1203,7 @@ void block_e2b1(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2B3;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x74)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x74)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -1212,7 +1212,7 @@ void block_e2b3(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2B5;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x75)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x75)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -1221,7 +1221,7 @@ void block_e2b5(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2B7;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x76)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x76)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -1230,7 +1230,7 @@ void block_e2b7(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2B9;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x77)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x77)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -1239,7 +1239,7 @@ void block_e2b9(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2BB;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x78)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x78)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -1248,7 +1248,7 @@ void block_e2bb(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2BD;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x79)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x79)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -1257,7 +1257,7 @@ void block_e2bd(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2BF;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x7a)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x7a)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -1266,7 +1266,7 @@ void block_e2bf(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2C1;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x7b)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x7b)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -1275,7 +1275,7 @@ void block_e2c1(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2C3;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x7c)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x7c)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -1284,7 +1284,7 @@ void block_e2c3(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2C5;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x7d)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x7d)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -1293,7 +1293,7 @@ void block_e2c5(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2C7;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x7e)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x7e)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -1302,7 +1302,7 @@ void block_e2c7(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2C9;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x7f)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x7f)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -1347,7 +1347,7 @@ void block_e19c(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE19E;
-  core.write8(0x00A3, s.a);
+  core.ram_write8(0x00A3, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1373,7 +1373,7 @@ void block_e1a3(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE1A5;
-  s.b = core.read8(0x00DC);
+  s.b = core.ram_read8(0x00DC);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -1392,7 +1392,7 @@ void block_e1a7(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE1A9;
-  core.write8(0x00BB, s.b);
+  core.ram_write8(0x00BB, s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -1491,7 +1491,7 @@ void block_e1bb(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xE1BD;
   const uint16_t d = static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b);
-  core.write16(0x00A5, d);
+  core.ram_write16(0x00A5, d);
   s.cc = nzv16(s.cc, d);
 }
 
@@ -1515,7 +1515,7 @@ void block_e1c0(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xE1C2;
   const uint16_t d = static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b);
-  core.write16(0x00A7, d);
+  core.ram_write16(0x00A7, d);
   s.cc = nzv16(s.cc, d);
 }
 
@@ -1539,7 +1539,7 @@ void block_e1c5(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xE1C7;
   const uint16_t d = static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b);
-  core.write16(0x00A9, d);
+  core.ram_write16(0x00A9, d);
   s.cc = nzv16(s.cc, d);
 }
 
@@ -1548,7 +1548,7 @@ void block_e1c7(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE1C9;
-  s.x = core.read16(0x00A5);
+  s.x = core.ram_read16(0x00A5);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -1567,7 +1567,7 @@ void block_e1cb(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE1CD;
-  core.write8(0x00A4, s.b);
+  core.ram_write8(0x00A4, s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -1585,7 +1585,7 @@ void block_e1cf(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE1D1;
-  core.write8(0x00BA, s.b);
+  core.ram_write8(0x00BA, s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -1653,7 +1653,7 @@ void block_e1eb(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE1ED;
-  core.write8(0x0093, s.a);
+  core.ram_write8(0x0093, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1662,7 +1662,7 @@ void block_e1ed(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE1EF;
-  core.write8(0x008F, s.b);
+  core.ram_write8(0x008F, s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -1681,7 +1681,7 @@ void block_e1f2(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE1F4;
-  s.b = core.read8(0x00BB);
+  s.b = core.ram_read8(0x00BB);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -1718,7 +1718,7 @@ void block_e1f9(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE1FB;
-  core.write8(0x00BC, s.a);
+  core.ram_write8(0x00BC, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1739,7 +1739,7 @@ void block_e1fd(Rd200RomBLiftedCore &core)
   (void)core;
   auto &s = core.state();
   s.pc = 0xE200;
-  const uint8_t t = core.read8(0x00BD);
+  const uint8_t t = core.ram_read8(0x00BD);
   s.cc = static_cast<uint8_t>(s.cc & ~(CC_N | CC_Z | CC_V | CC_C));
   if (t & 0x80)
     s.cc |= CC_N;
@@ -1761,7 +1761,7 @@ void block_e204(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE206;
-  core.write8(0x00BE, s.a);
+  core.ram_write8(0x00BE, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1770,7 +1770,7 @@ void block_e206(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE208;
-  core.write8(0x00BF, s.b);
+  core.ram_write8(0x00BF, s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -1786,7 +1786,7 @@ void block_e209(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE20B;
-  core.write8(0x00A2, s.a);
+  core.ram_write8(0x00A2, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1795,7 +1795,7 @@ void block_e20b(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE20D;
-  core.write8(0x00A0, s.a);
+  core.ram_write8(0x00A0, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1804,7 +1804,7 @@ void block_e20d(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE20F;
-  core.write8(0x00A1, s.a);
+  core.ram_write8(0x00A1, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1823,7 +1823,7 @@ void block_e211(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE213;
-  core.write8(0x009E, s.a);
+  core.ram_write8(0x009E, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1844,7 +1844,7 @@ void block_e216(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xE218;
   const uint16_t d = static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b);
-  core.write16(0x0094, d);
+  core.ram_write16(0x0094, d);
   s.cc = nzv16(s.cc, d);
 }
 
@@ -1854,7 +1854,7 @@ void block_e218(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xE21A;
   const uint16_t d = static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b);
-  core.write16(0x0096, d);
+  core.ram_write16(0x0096, d);
   s.cc = nzv16(s.cc, d);
 }
 
@@ -1864,7 +1864,7 @@ void block_e21a(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xE21C;
   const uint16_t d = static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b);
-  core.write16(0x0098, d);
+  core.ram_write16(0x0098, d);
   s.cc = nzv16(s.cc, d);
 }
 
@@ -1874,7 +1874,7 @@ void block_e21c(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xE21E;
   const uint16_t d = static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b);
-  core.write16(0x009A, d);
+  core.ram_write16(0x009A, d);
   s.cc = nzv16(s.cc, d);
 }
 
@@ -1884,7 +1884,7 @@ void block_e21e(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xE220;
   const uint16_t d = static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b);
-  core.write16(0x009C, d);
+  core.ram_write16(0x009C, d);
   s.cc = nzv16(s.cc, d);
 }
 
@@ -1893,7 +1893,7 @@ void block_e220(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE222;
-  core.write8(0x0090, s.a);
+  core.ram_write8(0x0090, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1902,7 +1902,7 @@ void block_e222(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE224;
-  core.write8(0x008C, s.a);
+  core.ram_write8(0x008C, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1911,7 +1911,7 @@ void block_e224(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE226;
-  core.write8(0x008E, s.a);
+  core.ram_write8(0x008E, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1920,7 +1920,7 @@ void block_e226(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE228;
-  core.write8(0x0092, s.a);
+  core.ram_write8(0x0092, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1953,7 +1953,7 @@ void block_e236(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE238;
-  core.write8(0x0080, s.a);
+  core.ram_write8(0x0080, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1962,7 +1962,7 @@ void block_e238(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE23A;
-  core.write8(0x0081, s.a);
+  core.ram_write8(0x0081, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1971,7 +1971,7 @@ void block_e23a(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE23C;
-  core.write8(0x0082, s.a);
+  core.ram_write8(0x0082, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -1980,7 +1980,7 @@ void block_e23c(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE23E;
-  core.write8(0x0083, s.a);
+  core.ram_write8(0x0083, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -2006,7 +2006,7 @@ void block_e241(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE243;
-  s.x = core.read16(0x0094);
+  s.x = core.ram_read16(0x0094);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -2025,7 +2025,7 @@ void block_e271(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE273;
-  core.write8(0x0091, s.a);
+  core.ram_write8(0x0091, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -2046,7 +2046,7 @@ void block_e276(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xE278;
   const uint16_t d = static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b);
-  core.write16(0x00B5, d);
+  core.ram_write16(0x00B5, d);
   s.cc = nzv16(s.cc, d);
 }
 
@@ -2067,7 +2067,7 @@ void block_e27b(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xE27D;
   const uint16_t d = static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b);
-  core.write16(0x00B1, d);
+  core.ram_write16(0x00B1, d);
   s.cc = nzv16(s.cc, d);
 }
 
@@ -2076,7 +2076,7 @@ void block_e243(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE245;
-  core.write8(static_cast<uint16_t>(s.x + 0x20), s.b);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x20), s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -2085,7 +2085,7 @@ void block_e245(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE247;
-  core.write8(static_cast<uint16_t>(s.x + 0x30), s.b);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x30), s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -2094,7 +2094,7 @@ void block_e247(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE249;
-  core.write8(static_cast<uint16_t>(s.x + 0x50), 0x00);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x50), 0x00);
   s.cc = static_cast<uint8_t>((s.cc & 0xf0) | CC_Z);
 }
 
@@ -2103,7 +2103,7 @@ void block_e249(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE24B;
-  core.write8(static_cast<uint16_t>(s.x + 0x70), 0x00);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x70), 0x00);
   s.cc = static_cast<uint8_t>((s.cc & 0xf0) | CC_Z);
 }
 
@@ -2112,7 +2112,7 @@ void block_e24b(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE24D;
-  core.write8(static_cast<uint16_t>(s.x + 0x60), s.a);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x60), s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -2182,7 +2182,7 @@ void block_e51b(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE51D;
-  s.x = core.read16(0x0094);
+  s.x = core.ram_read16(0x0094);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -2191,7 +2191,7 @@ void block_e51d(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE51F;
-  s.b = core.read8(static_cast<uint16_t>(s.x + 0x20));
+  s.b = core.read8_fast(static_cast<uint16_t>(s.x + 0x20));
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -2210,7 +2210,7 @@ void block_e520(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xE522;
   const uint16_t a = s.x;
-  const uint16_t b = core.read16(0x0092);
+  const uint16_t b = core.ram_read16(0x0092);
   const uint16_t r = static_cast<uint16_t>(a - b);
   s.cc = sub16_nzvc(s.cc, a, b, r);
 }
@@ -2239,7 +2239,7 @@ void block_e527(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE529;
-  core.write16(0x0094, s.x);
+  core.ram_write16(0x0094, s.x);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -2255,7 +2255,7 @@ void block_e52a(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE52C;
-  s.b = core.read8(0x0097);
+  s.b = core.ram_read8(0x0097);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -2274,7 +2274,7 @@ void block_e52d(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE52F;
-  const uint8_t m = core.read8(0x0093);
+  const uint8_t m = core.ram_read8(0x0093);
   const uint8_t r = static_cast<uint8_t>(s.b - m);
   s.cc = sub8_nzvc(s.cc, s.b, m, r);
 }
@@ -2303,7 +2303,7 @@ void block_e532(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE534;
-  core.write8(0x0097, s.b);
+  core.ram_write8(0x0097, s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -2319,7 +2319,7 @@ void block_e535(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE537;
-  s.b = core.read8(0x0099);
+  s.b = core.ram_read8(0x0099);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -2361,7 +2361,7 @@ void block_e53d(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE53F;
-  core.write8(0x0099, s.b);
+  core.ram_write8(0x0099, s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -2377,7 +2377,7 @@ void block_e540(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE542;
-  s.b = core.read8(0x009B);
+  s.b = core.ram_read8(0x009B);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -2419,7 +2419,7 @@ void block_e548(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE54A;
-  core.write8(0x009B, s.b);
+  core.ram_write8(0x009B, s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -2435,7 +2435,7 @@ void block_e54b(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE54D;
-  s.b = core.read8(0x009D);
+  s.b = core.ram_read8(0x009D);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -2477,7 +2477,7 @@ void block_e553(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE555;
-  core.write8(0x009D, s.b);
+  core.ram_write8(0x009D, s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -2517,7 +2517,7 @@ void block_e5a2(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE5A4;
-  core.write8(0x00A2, s.a);
+  core.ram_write8(0x00A2, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -2561,7 +2561,7 @@ void block_e5ac(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE5AE;
-  s.a = core.read8(0x00A1);
+  s.a = core.ram_read8(0x00A1);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -2579,7 +2579,7 @@ void block_e5b0(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE5B2;
-  s.b = core.read8(0x00E2);
+  s.b = core.ram_read8(0x00E2);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -2622,7 +2622,7 @@ void block_e5b6(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE5B8;
-  s.a = core.read8(0x00E1);
+  s.a = core.ram_read8(0x00E1);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -2631,7 +2631,7 @@ void block_e5b8(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE5BA;
-  s.x = core.read16(0x00A5);
+  s.x = core.ram_read16(0x00A5);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -2660,7 +2660,7 @@ void block_e5be(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE5C0;
-  const uint16_t d = core.read16(0x00E1);
+  const uint16_t d = core.ram_read16(0x00E1);
   s.a = static_cast<uint8_t>((d >> 8) & 0xff);
   s.b = static_cast<uint8_t>(d & 0xff);
   s.cc = nzv16(s.cc, d);
@@ -2696,7 +2696,7 @@ void block_e5c5(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE5C7;
-  core.write8(0x00C0, s.b);
+  core.ram_write8(0x00C0, s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -2705,7 +2705,7 @@ void block_e5c7(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE5C9;
-  core.write8(0x009F, s.a);
+  core.ram_write8(0x009F, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -2722,7 +2722,7 @@ void block_e5cc(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE5CE;
-  core.write8(0x0091, s.b);
+  core.ram_write8(0x0091, s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -2731,7 +2731,7 @@ void block_e5ce(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE5D0;
-  s.x = core.read16(0x009E);
+  s.x = core.ram_read16(0x009E);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -2750,7 +2750,7 @@ void block_e5d2(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE5D4;
-  core.write8(static_cast<uint16_t>(s.x + 0xED), s.b);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0xED), s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -2759,7 +2759,7 @@ void block_e5d4(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE5D6;
-  s.x = core.read16(0x0090);
+  s.x = core.ram_read16(0x0090);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -2768,7 +2768,7 @@ void block_e5d6(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE5D8;
-  s.b = core.read8(0x00C0);
+  s.b = core.ram_read8(0x00C0);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -2777,7 +2777,7 @@ void block_e5d8(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE5DA;
-  core.write8(static_cast<uint16_t>(s.x + 0x40), s.b);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x40), s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -2797,7 +2797,7 @@ void block_e5dd(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE5DF;
-  s.b = core.read8(static_cast<uint16_t>(s.x + 0x50));
+  s.b = core.read8_fast(static_cast<uint16_t>(s.x + 0x50));
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -2850,7 +2850,7 @@ void block_e5e9(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE5EB;
-  s.b = core.read8(static_cast<uint16_t>(s.x + 0x30));
+  s.b = core.read8_fast(static_cast<uint16_t>(s.x + 0x30));
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -2928,7 +2928,7 @@ void block_e5fd(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE5FF;
-  s.x = core.read16(0x0090);
+  s.x = core.ram_read16(0x0090);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -2937,7 +2937,7 @@ void block_e5ff(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE601;
-  s.a = core.read8(0x00A2);
+  s.a = core.ram_read8(0x00A2);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -2946,7 +2946,7 @@ void block_e601(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE603;
-  s.a = static_cast<uint8_t>(s.a | core.read8(0x00A0));
+  s.a = static_cast<uint8_t>(s.a | core.ram_read8(0x00A0));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -2965,7 +2965,7 @@ void block_e605(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE607;
-  core.write8(static_cast<uint16_t>(s.x + 0x50), s.a);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x50), s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -2974,7 +2974,7 @@ void block_e607(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE609;
-  s.a = core.read8(0x009F);
+  s.a = core.ram_read8(0x009F);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -2983,7 +2983,7 @@ void block_e609(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE60B;
-  core.write8(static_cast<uint16_t>(s.x + 0x30), s.a);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x30), s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -2992,7 +2992,7 @@ void block_e60b(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE60D;
-  s.b = core.read8(0x0091);
+  s.b = core.ram_read8(0x0091);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -3009,7 +3009,7 @@ void block_e60f(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE611;
-  s.a = core.read8(0x009F);
+  s.a = core.ram_read8(0x009F);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -3165,7 +3165,7 @@ void block_e65d(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE65F;
-  const uint8_t m = core.read8(static_cast<uint16_t>(s.x + 0x80));
+  const uint8_t m = core.read8_fast(static_cast<uint16_t>(s.x + 0x80));
   const uint8_t r = static_cast<uint8_t>(s.a - m);
   s.cc = sub8_nzvc(s.cc, s.a, m, r);
 }
@@ -3201,7 +3201,7 @@ void block_e664(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE666;
-  const uint16_t m = core.read16(0x008E);
+  const uint16_t m = core.ram_read16(0x008E);
   const uint16_t r = static_cast<uint16_t>(s.x - m);
   s.cc = sub16_nzvc(s.cc, s.x, m, r);
 }
@@ -3254,7 +3254,7 @@ void block_e670(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE672;
-  const uint8_t t = core.read8(static_cast<uint16_t>(s.x + 0x80));
+  const uint8_t t = core.read8_fast(static_cast<uint16_t>(s.x + 0x80));
   s.cc = static_cast<uint8_t>(s.cc & ~(CC_N | CC_Z | CC_V | CC_C));
   if (t & 0x80)
     s.cc |= CC_N;
@@ -3276,7 +3276,7 @@ void block_e674(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE676;
-  core.write8(static_cast<uint16_t>(s.x + 0x80), s.a);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x80), s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -3285,7 +3285,7 @@ void block_e676(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE678;
-  core.write8(static_cast<uint16_t>(s.x + 0x84), s.b);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x84), s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -3294,7 +3294,7 @@ void block_e678(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE67A;
-  s.a = core.read8(0x00C0);
+  s.a = core.ram_read8(0x00C0);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -3303,7 +3303,7 @@ void block_e67a(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE67C;
-  core.write8(static_cast<uint16_t>(s.x + 0x88), s.a);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x88), s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -3326,7 +3326,7 @@ void block_e67f(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE681;
-  core.write8(static_cast<uint16_t>(s.x + 0x60), s.b);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x60), s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -3342,7 +3342,7 @@ void block_e682(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE684;
-  core.write16(0x008C, s.x);
+  core.ram_write16(0x008C, s.x);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -3351,7 +3351,7 @@ void block_e684(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE686;
-  s.x = core.read16(0x008E);
+  s.x = core.ram_read16(0x008E);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -3376,7 +3376,7 @@ void block_e68a(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE68C;
-  s.a = core.read8(static_cast<uint16_t>(s.x + 0x84));
+  s.a = core.read8_fast(static_cast<uint16_t>(s.x + 0x84));
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -3385,7 +3385,7 @@ void block_e68c(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE68E;
-  s.b = core.read8(0x0091);
+  s.b = core.ram_read8(0x0091);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -3402,7 +3402,7 @@ void block_e68f(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE691;
-  core.write8(0x0091, s.a);
+  core.ram_write8(0x0091, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -3421,7 +3421,7 @@ void block_e693(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE695;
-  s.x = core.read16(0x0090);
+  s.x = core.ram_read16(0x0090);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -3430,7 +3430,7 @@ void block_e695(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE697;
-  core.write8(static_cast<uint16_t>(s.x + 0x60), s.b);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x60), s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -3439,7 +3439,7 @@ void block_e697(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE699;
-  const uint8_t t = core.read8(static_cast<uint16_t>(s.x + 0x50));
+  const uint8_t t = core.read8_fast(static_cast<uint16_t>(s.x + 0x50));
   s.cc = static_cast<uint8_t>(s.cc & ~(CC_N | CC_Z | CC_V | CC_C));
   if (t & 0x80)
     s.cc |= CC_N;
@@ -3508,7 +3508,7 @@ void block_e6aa(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE6AC;
-  core.write8(0x0091, s.b);
+  core.ram_write8(0x0091, s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -3524,7 +3524,7 @@ void block_e6ae(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE6B0;
-  const uint16_t m = core.read16(0x008C);
+  const uint16_t m = core.ram_read16(0x008C);
   const uint16_t r = static_cast<uint16_t>(s.x - m);
   s.cc = sub16_nzvc(s.cc, s.x, m, r);
 }
@@ -3552,7 +3552,7 @@ void block_e6b3(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE6B5;
-  s.a = core.read8(static_cast<uint16_t>(s.x + 0x80));
+  s.a = core.read8_fast(static_cast<uint16_t>(s.x + 0x80));
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -3570,7 +3570,7 @@ void block_e6b7(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE6B9;
-  core.write8(static_cast<uint16_t>(s.x + 0x81), s.a);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x81), s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -3579,7 +3579,7 @@ void block_e6b9(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE6BB;
-  s.a = core.read8(static_cast<uint16_t>(s.x + 0x88));
+  s.a = core.read8_fast(static_cast<uint16_t>(s.x + 0x88));
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -3588,7 +3588,7 @@ void block_e6bb(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE6BD;
-  core.write8(static_cast<uint16_t>(s.x + 0x89), s.a);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x89), s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -3597,7 +3597,7 @@ void block_e6bd(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE6BF;
-  s.b = core.read8(static_cast<uint16_t>(s.x + 0x84));
+  s.b = core.read8_fast(static_cast<uint16_t>(s.x + 0x84));
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -3606,7 +3606,7 @@ void block_e6bf(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE6C1;
-  core.write8(static_cast<uint16_t>(s.x + 0x85), s.b);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x85), s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -3665,7 +3665,7 @@ void block_e6cb(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE6CD;
-  s.a = core.read8(0x009F);
+  s.a = core.ram_read8(0x009F);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -3674,7 +3674,7 @@ void block_e6cd(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE6CF;
-  s.b = core.read8(0x0091);
+  s.b = core.ram_read8(0x0091);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -3790,7 +3790,7 @@ void block_e080(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE082;
-  core.write16(0x00B1, s.x);
+  core.ram_write16(0x00B1, s.x);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -3808,7 +3808,7 @@ void block_e084(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE086;
-  const uint16_t d = core.read16(0x00B1);
+  const uint16_t d = core.ram_read16(0x00B1);
   s.a = static_cast<uint8_t>((d >> 8) & 0xff);
   s.b = static_cast<uint8_t>(d & 0xff);
   s.cc = nzv16(s.cc, d);
@@ -4040,7 +4040,7 @@ void block_eb05(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xEB07;
-  s.x = core.read16(0x00B1);
+  s.x = core.ram_read16(0x00B1);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -4050,7 +4050,7 @@ void block_eb07(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xEB09;
   const uint16_t d = static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b);
-  core.write16(static_cast<uint16_t>(s.x + 0x94), d);
+  core.write16_fast(static_cast<uint16_t>(s.x + 0x94), d);
   s.cc = nzv16(s.cc, d);
 }
 
@@ -4059,7 +4059,7 @@ void block_eb09(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xEB0B;
-  s.x = core.read16(0x00B1);
+  s.x = core.ram_read16(0x00B1);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -4068,7 +4068,7 @@ void block_eb0b(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xEB0D;
-  s.b = core.read8(0x00A4);
+  s.b = core.ram_read8(0x00A4);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -4088,7 +4088,7 @@ void block_eb0f(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xEB11;
   const uint16_t d = static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b);
-  core.write16(static_cast<uint16_t>(s.x + 0x96), d);
+  core.write16_fast(static_cast<uint16_t>(s.x + 0x96), d);
   s.cc = nzv16(s.cc, d);
 }
 
@@ -4120,7 +4120,7 @@ void block_eb16(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xEB18;
-  s.a = core.read8(0x00C2);
+  s.a = core.ram_read8(0x00C2);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -4162,7 +4162,7 @@ void block_eb1d(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xEB1F;
   const uint16_t d = static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b);
-  core.write16(0x00B7, d);
+  core.ram_write16(0x00B7, d);
   s.cc = nzv16(s.cc, d);
 }
 
@@ -4179,7 +4179,7 @@ void block_eb20(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xEB22;
   const uint8_t a = s.a;
-  const uint8_t b = core.read8(0x00C2);
+  const uint8_t b = core.ram_read8(0x00C2);
   const uint8_t r = static_cast<uint8_t>(a - b);
   s.a = r;
   s.cc = sub8_nzvc(s.cc, a, b, r);
@@ -4207,7 +4207,7 @@ void block_eb25(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xEB27;
   const uint16_t a = static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b);
-  const uint16_t b = core.read16(0x00B7);
+  const uint16_t b = core.ram_read16(0x00B7);
   const uint16_t r = static_cast<uint16_t>(a + b);
   s.a = static_cast<uint8_t>((r >> 8) & 0xff);
   s.b = static_cast<uint8_t>(r & 0xff);
@@ -4227,7 +4227,7 @@ void block_eb28(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xEB2A;
-  s.a = core.read8(0x00C3);
+  s.a = core.ram_read8(0x00C3);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -4276,7 +4276,7 @@ void block_eb32(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xEB34;
   const uint8_t a = s.a;
-  const uint8_t b = core.read8(0x00C3);
+  const uint8_t b = core.ram_read8(0x00C3);
   const uint8_t r = static_cast<uint8_t>(a - b);
   s.a = r;
   s.cc = sub8_nzvc(s.cc, a, b, r);
@@ -4349,7 +4349,7 @@ void block_ed00(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xED02;
-  s.b = core.read8(0x00D0);
+  s.b = core.ram_read8(0x00D0);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -4520,7 +4520,7 @@ void block_ed1e(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xED20;
-  core.write8(0x00D0, s.b);
+  core.ram_write8(0x00D0, s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -4556,7 +4556,7 @@ void block_ed25(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xED27;
-  s.b = core.read8(0x00D0);
+  s.b = core.ram_read8(0x00D0);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -4620,7 +4620,7 @@ void block_ed31(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xED33;
-  core.write16(0x00D3, s.x);
+  core.ram_write16(0x00D3, s.x);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -4638,7 +4638,7 @@ void block_ed35(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xED37;
-  core.write8(0x00D2, s.b);
+  core.ram_write8(0x00D2, s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -4665,7 +4665,7 @@ void block_ed3b(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xED3D;
-  core.write16(0x00D5, s.x);
+  core.ram_write16(0x00D5, s.x);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -4674,7 +4674,7 @@ void block_ed3d(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xED3F;
-  s.b = core.read8(0x00D0);
+  s.b = core.ram_read8(0x00D0);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -4725,7 +4725,7 @@ void block_ed47(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xED49;
-  s.b = core.read8(static_cast<uint16_t>(s.x + 0x40));
+  s.b = core.read8_fast(static_cast<uint16_t>(s.x + 0x40));
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -4754,7 +4754,7 @@ void block_ed4a(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xED4C;
-  core.write8(0x00D1, s.b);
+  core.ram_write8(0x00D1, s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -4763,7 +4763,7 @@ void block_ed4c(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xED4E;
-  s.x = core.read16(0x00D5);
+  s.x = core.ram_read16(0x00D5);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -4793,7 +4793,7 @@ void block_ed52(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xED54;
-  s.x = core.read16(0x00D3);
+  s.x = core.ram_read16(0x00D3);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -4819,7 +4819,7 @@ void block_ed57(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xED59;
-  s.b = core.read8(0x00D0);
+  s.b = core.ram_read8(0x00D0);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -4873,7 +4873,7 @@ void block_ed5f(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xED61;
   const uint16_t d = static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b);
-  core.write16(0x00D7, d);
+  core.ram_write16(0x00D7, d);
   s.cc = nzv16(s.cc, d);
 }
 
@@ -4882,7 +4882,7 @@ void block_ed61(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xED63;
-  s.a = core.read8(0x00D1);
+  s.a = core.ram_read8(0x00D1);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -4931,7 +4931,7 @@ void block_ed6b(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xED6D;
   const uint8_t a = s.a;
-  const uint8_t b = core.read8(0x00D1);
+  const uint8_t b = core.ram_read8(0x00D1);
   const uint8_t r = static_cast<uint8_t>(a - b);
   s.a = r;
   s.cc = sub8_nzvc(s.cc, a, b, r);
@@ -4973,7 +4973,7 @@ void block_ed73(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xED75;
-  s.a = core.read8(0x00D2);
+  s.a = core.ram_read8(0x00D2);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -5022,7 +5022,7 @@ void block_ed7d(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xED7F;
   const uint8_t a = s.a;
-  const uint8_t b = core.read8(0x00D2);
+  const uint8_t b = core.ram_read8(0x00D2);
   const uint8_t r = static_cast<uint8_t>(a - b);
   s.a = r;
   s.cc = sub8_nzvc(s.cc, a, b, r);
@@ -5064,7 +5064,7 @@ void block_ed85(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xED87;
-  s.x = core.read16(0x00D7);
+  s.x = core.ram_read16(0x00D7);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -5107,7 +5107,7 @@ void block_ed8d(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xED8F;
-  s.x = core.read16(0x00D3);
+  s.x = core.ram_read16(0x00D3);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -5182,9 +5182,9 @@ void block_e2cb(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2CE;
-  uint8_t v = core.read8(0x00DB);
+  uint8_t v = core.ram_read8(0x00DB);
   v = static_cast<uint8_t>(v - 1);
-  core.write8(0x00DB, v);
+  core.ram_write8(0x00DB, v);
   s.cc = dec8_nzv(s.cc, v);
 }
 
@@ -5218,7 +5218,7 @@ void block_e2d2(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2D4;
-  core.write8(0x0091, s.a);
+  core.ram_write8(0x0091, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -5239,7 +5239,7 @@ void block_e2d7(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xE2D9;
   const uint16_t d = static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b);
-  core.write16(0x00B1, d);
+  core.ram_write16(0x00B1, d);
   s.cc = nzv16(s.cc, d);
 }
 
@@ -5248,7 +5248,7 @@ void block_e2d9(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2DB;
-  s.x = core.read16(0x0090);
+  s.x = core.ram_read16(0x0090);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -5257,7 +5257,7 @@ void block_e2db(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2DD;
-  s.a = core.read8(static_cast<uint16_t>(s.x + 0x70));
+  s.a = core.read8_fast(static_cast<uint16_t>(s.x + 0x70));
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -5285,7 +5285,7 @@ void block_e2e1(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2E3;
-  core.write8(static_cast<uint16_t>(s.x + 0x70), s.a);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x70), s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -5305,7 +5305,7 @@ void block_e2e6(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2E8;
-  s.x = core.read16(0x00B1);
+  s.x = core.ram_read16(0x00B1);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -5322,7 +5322,7 @@ void block_e2eb(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2ED;
-  s.a = core.read8(0x0091);
+  s.a = core.ram_read8(0x0091);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -5359,7 +5359,7 @@ void block_e2f2(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2F4;
-  core.write8(0x0091, s.a);
+  core.ram_write8(0x0091, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -5368,7 +5368,7 @@ void block_e2f4(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2F6;
-  s.a = core.read8(0x00B1);
+  s.a = core.ram_read8(0x00B1);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -5384,7 +5384,7 @@ void block_e2f7(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE2F9;
-  core.write8(0x00B1, s.a);
+  core.ram_write8(0x00B1, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -5426,7 +5426,7 @@ void block_e301(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE303;
-  core.write8(0x00DB, s.a);
+  core.ram_write8(0x00DB, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -5435,7 +5435,7 @@ void block_e303(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE305;
-  s.a = core.read8(static_cast<uint16_t>(s.x + 0x70));
+  s.a = core.read8_fast(static_cast<uint16_t>(s.x + 0x70));
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -5444,7 +5444,7 @@ void block_e305(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE307;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x71)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x71)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -5453,7 +5453,7 @@ void block_e307(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE309;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x72)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x72)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -5462,7 +5462,7 @@ void block_e309(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE30B;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x73)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x73)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -5471,7 +5471,7 @@ void block_e30b(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE30D;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x74)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x74)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -5480,7 +5480,7 @@ void block_e30d(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE30F;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x75)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x75)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -5489,7 +5489,7 @@ void block_e30f(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE311;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x76)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x76)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -5498,7 +5498,7 @@ void block_e311(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE313;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x77)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x77)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -5507,7 +5507,7 @@ void block_e313(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE315;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x78)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x78)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -5516,7 +5516,7 @@ void block_e315(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE317;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x79)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x79)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -5525,7 +5525,7 @@ void block_e317(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE319;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x7A)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x7A)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -5534,7 +5534,7 @@ void block_e319(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE31B;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x7B)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x7B)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -5543,7 +5543,7 @@ void block_e31b(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE31D;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x7C)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x7C)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -5552,7 +5552,7 @@ void block_e31d(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE31F;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x7D)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x7D)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -5561,7 +5561,7 @@ void block_e31f(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE321;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x7E)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x7E)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -5570,7 +5570,7 @@ void block_e321(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE323;
-  s.a = static_cast<uint8_t>(s.a | core.read8(static_cast<uint16_t>(s.x + 0x7F)));
+  s.a = static_cast<uint8_t>(s.a | core.read8_fast(static_cast<uint16_t>(s.x + 0x7F)));
   s.cc = and8_nzv(s.cc, s.a);
 }
 
@@ -5588,9 +5588,9 @@ void block_e325(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE328;
-  uint8_t v = core.read8(0x00DB);
+  uint8_t v = core.ram_read8(0x00DB);
   v = static_cast<uint8_t>(v - 1);
-  core.write8(0x00DB, v);
+  core.ram_write8(0x00DB, v);
   s.cc = dec8_nzv(s.cc, v);
 }
 
@@ -5608,7 +5608,7 @@ void block_e32c(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE32E;
-  s.x = core.read16(0x00B5);
+  s.x = core.ram_read16(0x00B5);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -5634,7 +5634,7 @@ void block_e330(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE332;
-  core.write16(static_cast<uint16_t>(s.x + 0x02), static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
+  core.write16_fast(static_cast<uint16_t>(s.x + 0x02), static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
   s.cc = nzv16(s.cc, static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
 }
 
@@ -5643,7 +5643,7 @@ void block_e332(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE334;
-  core.write16(static_cast<uint16_t>(s.x + 0x08), static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
+  core.write16_fast(static_cast<uint16_t>(s.x + 0x08), static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
   s.cc = nzv16(s.cc, static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
 }
 
@@ -5652,7 +5652,7 @@ void block_e334(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE336;
-  core.write16(static_cast<uint16_t>(s.x + 0x0E), static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
+  core.write16_fast(static_cast<uint16_t>(s.x + 0x0E), static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
   s.cc = nzv16(s.cc, static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
 }
 
@@ -5661,7 +5661,7 @@ void block_e336(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE338;
-  core.write16(static_cast<uint16_t>(s.x + 0x14), static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
+  core.write16_fast(static_cast<uint16_t>(s.x + 0x14), static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
   s.cc = nzv16(s.cc, static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
 }
 
@@ -5670,7 +5670,7 @@ void block_e338(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE33A;
-  core.write16(static_cast<uint16_t>(s.x + 0x1A), static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
+  core.write16_fast(static_cast<uint16_t>(s.x + 0x1A), static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
   s.cc = nzv16(s.cc, static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
 }
 
@@ -5679,7 +5679,7 @@ void block_e33a(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE33C;
-  core.write16(static_cast<uint16_t>(s.x + 0x20), static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
+  core.write16_fast(static_cast<uint16_t>(s.x + 0x20), static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
   s.cc = nzv16(s.cc, static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
 }
 
@@ -5688,7 +5688,7 @@ void block_e33c(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE33E;
-  core.write16(static_cast<uint16_t>(s.x + 0x26), static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
+  core.write16_fast(static_cast<uint16_t>(s.x + 0x26), static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
   s.cc = nzv16(s.cc, static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
 }
 
@@ -5697,7 +5697,7 @@ void block_e33e(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE340;
-  core.write16(static_cast<uint16_t>(s.x + 0x2C), static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
+  core.write16_fast(static_cast<uint16_t>(s.x + 0x2C), static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
   s.cc = nzv16(s.cc, static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
 }
 
@@ -5706,7 +5706,7 @@ void block_e340(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE342;
-  core.write16(static_cast<uint16_t>(s.x + 0x32), static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
+  core.write16_fast(static_cast<uint16_t>(s.x + 0x32), static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
   s.cc = nzv16(s.cc, static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
 }
 
@@ -5715,7 +5715,7 @@ void block_e342(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE344;
-  core.write16(static_cast<uint16_t>(s.x + 0x38), static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
+  core.write16_fast(static_cast<uint16_t>(s.x + 0x38), static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
   s.cc = nzv16(s.cc, static_cast<uint16_t>((static_cast<uint16_t>(s.a) << 8) | s.b));
 }
 
@@ -5735,7 +5735,7 @@ void block_e347(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE349;
-  s.x = core.read16(0x00B1);
+  s.x = core.ram_read16(0x00B1);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -5758,7 +5758,7 @@ void block_e4fa(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE4FC;
-  s.x = core.read16(0x0096);
+  s.x = core.ram_read16(0x0096);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -5784,7 +5784,7 @@ void block_e509(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE50B;
-  s.a = core.read8(static_cast<uint16_t>(s.x + 0x20));
+  s.a = core.read8_fast(static_cast<uint16_t>(s.x + 0x20));
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -5793,7 +5793,7 @@ void block_e50b(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE50D;
-  core.write8(static_cast<uint16_t>(s.x + 0x20), s.b);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x20), s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -5803,7 +5803,7 @@ void block_e50d(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xE50F;
   const uint8_t a = s.a;
-  const uint8_t b = core.read8(0x0091);
+  const uint8_t b = core.ram_read8(0x0091);
   const uint8_t r = static_cast<uint8_t>(a - b);
   s.cc = sub8_nzvc(s.cc, a, b, r);
 }
@@ -5835,7 +5835,7 @@ void block_e512(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xE514;
   const uint16_t a = s.x;
-  const uint16_t b = core.read16(0x0092);
+  const uint16_t b = core.ram_read16(0x0092);
   const uint16_t r = static_cast<uint16_t>(a - b);
   s.cc = sub16_nzvc(s.cc, a, b, r);
 }
@@ -5854,7 +5854,7 @@ void block_e3c4(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE3C6;
-  core.write8(0x008D, s.b);
+  core.ram_write8(0x008D, s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -5873,7 +5873,7 @@ void block_e3c8(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE3CA;
-  core.write8(static_cast<uint16_t>(s.x + 0x60), s.b);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x60), s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -5882,7 +5882,7 @@ void block_e3ca(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE3CC;
-  s.x = core.read16(0x008C);
+  s.x = core.ram_read16(0x008C);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -5892,7 +5892,7 @@ void block_e3cc(Rd200RomBLiftedCore &core)
   auto &s = core.state();
   s.pc = 0xE3CE;
   const uint16_t a = s.x;
-  const uint16_t b = core.read16(0x008E);
+  const uint16_t b = core.ram_read16(0x008E);
   const uint16_t r = static_cast<uint16_t>(a - b);
   s.cc = sub16_nzvc(s.cc, a, b, r);
 }
@@ -5911,7 +5911,7 @@ void block_e3d0(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE3D2;
-  s.a = core.read8(static_cast<uint16_t>(s.x + 0x81));
+  s.a = core.read8_fast(static_cast<uint16_t>(s.x + 0x81));
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -5920,7 +5920,7 @@ void block_e3d2(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE3D4;
-  core.write8(static_cast<uint16_t>(s.x + 0x80), s.a);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x80), s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -5938,7 +5938,7 @@ void block_e3d6(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE3D8;
-  s.a = core.read8(static_cast<uint16_t>(s.x + 0x89));
+  s.a = core.read8_fast(static_cast<uint16_t>(s.x + 0x89));
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -5947,7 +5947,7 @@ void block_e3d8(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE3DA;
-  core.write8(static_cast<uint16_t>(s.x + 0x88), s.a);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x88), s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -5956,7 +5956,7 @@ void block_e3da(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE3DC;
-  s.b = core.read8(static_cast<uint16_t>(s.x + 0x85));
+  s.b = core.read8_fast(static_cast<uint16_t>(s.x + 0x85));
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -5965,7 +5965,7 @@ void block_e3dc(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE3DE;
-  core.write8(static_cast<uint16_t>(s.x + 0x84), s.b);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x84), s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -6037,7 +6037,7 @@ void block_e3ea(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE3EC;
-  core.write8(static_cast<uint16_t>(s.x + 0x80), s.a);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x80), s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -6046,7 +6046,7 @@ void block_e3ec(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE3EE;
-  core.write8(static_cast<uint16_t>(s.x + 0x84), s.b);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x84), s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -6070,7 +6070,7 @@ void block_e502(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE504;
-  s.x = core.read16(0x009A);
+  s.x = core.ram_read16(0x009A);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -6086,7 +6086,7 @@ void block_e556(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE558;
-  s.a = core.read8(0x00E1);
+  s.a = core.ram_read8(0x00E1);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -6095,7 +6095,7 @@ void block_e558(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE55A;
-  core.write8(0x009F, s.a);
+  core.ram_write8(0x009F, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -6104,7 +6104,7 @@ void block_e55a(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE55C;
-  s.x = core.read16(0x009E);
+  s.x = core.ram_read16(0x009E);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -6113,7 +6113,7 @@ void block_e55c(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE55E;
-  s.a = core.read8(static_cast<uint16_t>(s.x + 0xED));
+  s.a = core.read8_fast(static_cast<uint16_t>(s.x + 0xED));
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -6181,7 +6181,7 @@ void block_e56b(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE56D;
-  core.write8(0x0091, s.a);
+  core.ram_write8(0x0091, s.a);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -6190,7 +6190,7 @@ void block_e56d(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE56F;
-  s.x = core.read16(0x0090);
+  s.x = core.ram_read16(0x0090);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -6199,7 +6199,7 @@ void block_e56f(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE571;
-  s.b = core.read8(static_cast<uint16_t>(s.x + 0x50));
+  s.b = core.read8_fast(static_cast<uint16_t>(s.x + 0x50));
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -6218,7 +6218,7 @@ void block_e573(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE575;
-  core.write8(static_cast<uint16_t>(s.x + 0x50), s.b);
+  core.write8_fast(static_cast<uint16_t>(s.x + 0x50), s.b);
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -6246,7 +6246,7 @@ void block_e579(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE57B;
-  const uint8_t v = core.read8(static_cast<uint16_t>(s.x + 0x60));
+  const uint8_t v = core.read8_fast(static_cast<uint16_t>(s.x + 0x60));
   s.cc &= static_cast<uint8_t>(~(CC_N | CC_Z | CC_V | CC_C));
   if (v & 0x80)
     s.cc |= CC_N;
@@ -6291,7 +6291,7 @@ void block_e583(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE585;
-  s.b = core.read8(static_cast<uint16_t>(s.x + 0x60));
+  s.b = core.read8_fast(static_cast<uint16_t>(s.x + 0x60));
   s.cc = nzv8(s.cc, s.b);
 }
 
@@ -6317,7 +6317,7 @@ void block_e58a(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE58C;
-  s.a = core.read8(0x0091);
+  s.a = core.ram_read8(0x0091);
   s.cc = nzv8(s.cc, s.a);
 }
 
@@ -6350,7 +6350,7 @@ void block_e593(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE595;
-  s.x = core.read16(0x0090);
+  s.x = core.ram_read16(0x0090);
   s.cc = nzv16(s.cc, s.x);
 }
 
@@ -6359,7 +6359,7 @@ void block_e595(Rd200RomBLiftedCore &core)
 {
   auto &s = core.state();
   s.pc = 0xE597;
-  const uint8_t v = core.read8(static_cast<uint16_t>(s.x + 0x70));
+  const uint8_t v = core.read8_fast(static_cast<uint16_t>(s.x + 0x70));
   s.cc &= static_cast<uint8_t>(~(CC_N | CC_Z | CC_V | CC_C));
   if (v & 0x80)
     s.cc |= CC_N;
@@ -6657,7 +6657,7 @@ bool exec_dynamic_e79b_ec83(Rd200RomBLiftedCore &core)
   }
   case 0x6D: // TST indexed
   {
-    const u8 v = core.read8(idx_addr());
+    const u8 v = core.read8_fast(idx_addr());
     s.cc &= static_cast<u8>(~(CC_N | CC_Z | CC_V | CC_C));
     if (v & 0x80)
       s.cc |= CC_N;
@@ -6804,21 +6804,21 @@ bool exec_dynamic_e79b_ec83(Rd200RomBLiftedCore &core)
     return true;
   }
   case 0xA6: // LDAA idx
-    s.a = core.read8(idx_addr());
+    s.a = core.read8_fast(idx_addr());
     s.cc = nzv8(s.cc, s.a);
     s.pc = pc;
     return true;
   case 0xA1: // CMPA idx
   {
     const u8 a = s.a;
-    const u8 b = core.read8(idx_addr());
+    const u8 b = core.read8_fast(idx_addr());
     const u8 r = static_cast<u8>(a - b);
     s.cc = sub8_nzvc(s.cc, a, b, r);
     s.pc = pc;
     return true;
   }
   case 0xA7: // STAA idx
-    core.write8(idx_addr(), s.a);
+    core.write8_fast(idx_addr(), s.a);
     s.cc = nzv8(s.cc, s.a);
     s.pc = pc;
     return true;
@@ -6973,19 +6973,19 @@ bool exec_dynamic_e79b_ec83(Rd200RomBLiftedCore &core)
     s.pc = pc;
     return true;
   case 0xE6: // LDAB idx
-    s.b = core.read8(idx_addr());
+    s.b = core.read8_fast(idx_addr());
     s.cc = nzv8(s.cc, s.b);
     s.pc = pc;
     return true;
   case 0xE7: // STAB idx
-    core.write8(idx_addr(), s.b);
+    core.write8_fast(idx_addr(), s.b);
     s.cc = nzv8(s.cc, s.b);
     s.pc = pc;
     return true;
   case 0xEB: // ADDB idx
   {
     const u8 a = s.b;
-    const u8 b = core.read8(idx_addr());
+    const u8 b = core.read8_fast(idx_addr());
     const u8 r = static_cast<u8>(a + b);
     s.b = r;
     s.cc = add8_hnzvc(s.cc, a, b, r);
@@ -6994,7 +6994,7 @@ bool exec_dynamic_e79b_ec83(Rd200RomBLiftedCore &core)
   }
   case 0xEC: // LDD idx
   {
-    const u16 d = core.read16(idx_addr());
+    const u16 d = core.read16_fast(idx_addr());
     s.a = static_cast<u8>((d >> 8) & 0xff);
     s.b = static_cast<u8>(d & 0xff);
     s.cc = nzv16(s.cc, d);
@@ -7004,13 +7004,13 @@ bool exec_dynamic_e79b_ec83(Rd200RomBLiftedCore &core)
   case 0xED: // STD idx
   {
     const u16 d = static_cast<u16>((static_cast<u16>(s.a) << 8) | s.b);
-    core.write16(idx_addr(), d);
+    core.write16_fast(idx_addr(), d);
     s.cc = nzv16(s.cc, d);
     s.pc = pc;
     return true;
   }
   case 0xEE: // LDX idx
-    s.x = core.read16(idx_addr());
+    s.x = core.read16_fast(idx_addr());
     s.cc = nzv16(s.cc, s.x);
     s.pc = pc;
     return true;
