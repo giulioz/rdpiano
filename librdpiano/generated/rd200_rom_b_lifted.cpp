@@ -6731,6 +6731,11 @@ bool exec_dynamic_e79b_ec83(Rd200RomBLiftedCore &core)
     s.pc = tgt;
     return true;
   }
+  case 0x8E: // LDS #imm16
+    s.s = fetch16();
+    s.cc = nzv16(s.cc, s.s);
+    s.pc = pc;
+    return true;
   case 0x91: // CMPA direct
   {
     const u8 a = s.a;

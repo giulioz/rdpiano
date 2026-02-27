@@ -13,6 +13,10 @@
 #include "rd200_trace.h"
 #include "sound_chip.h"
 
+#ifndef RDPIANO_ENABLE_INTERPRETER
+#define RDPIANO_ENABLE_INTERPRETER 0
+#endif
+
 class Rd200RomBLiftedCore;
 
 enum
@@ -40,17 +44,13 @@ public:
     size_t unique_unlifted_pcs = 0;
   };
 
-  enum class RuntimeMode {
-    Interpreter = 0,
-    Lifted = 1
-  };
-
   Mcu(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7, const u8 *temp_progrom, const u8 *temp_paramsrom);
   ~Mcu();
-  
-  typedef void (Mcu::*op_func)();
 
+#if RDPIANO_ENABLE_INTERPRETER
+  typedef void (Mcu::*op_func)();
   void execute_one();
+#endif
   void execute_set_input(int irqline, int state);
   void execute_run();
 
@@ -59,11 +59,9 @@ public:
 	s32 generate_next_sample(bool sampleRate32 = false);
 	bool current_sample_rate = false;
 
-	void sendMidiCmd(u8 cmd, u8 data1, u8 data2);
+  void sendMidiCmd(u8 cmd, u8 data1, u8 data2);
 	void loadSounds(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7, const u8 *temp_paramsrom, size_t from_addr);
   void reset();
-  void setRuntimeMode(RuntimeMode mode);
-  RuntimeMode getRuntimeMode() const;
   void setTraceSink(Rd200TraceSink *trace_sink);
   LiftedStats getLiftedStats() const;
   std::vector<u16> getLiftedUnliftedPcs() const;
@@ -77,8 +75,6 @@ private:
   u8 lifted_bus_read(u16 addr);
   void lifted_bus_write(u16 addr, u8 data);
   void ensure_lifted_core();
-  void sync_interpreter_to_lifted();
-  void sync_lifted_to_interpreter();
   u16 current_pc_for_io() const;
 
   SoundChip sound_chip;
@@ -88,7 +84,6 @@ private:
   u8 params_rom[0x20000];
   u8 params_rom_tmp[0x20000];
   u8 ram[0x10000] = {0};
-  RuntimeMode m_runtime_mode = RuntimeMode::Lifted;
 
   // Generic CPU
   void take_trap();
@@ -124,7 +119,6 @@ private:
   int m_icount = 0;
   Rd200TraceSink *m_trace_sink = nullptr;
   std::unique_ptr<Rd200RomBLiftedCore> m_lifted_core;
-  bool m_lifted_authoritative = false;
   bool m_has_pc_override = false;
   u16 m_pc_override = 0;
   bool m_suppress_mcu_trace = false;
@@ -135,14 +129,15 @@ private:
   std::unordered_set<u16> m_lifted_unlifted_pcs;
   std::unordered_map<u16, uint64_t> m_lifted_unlifted_pc_hits;
 
+  enum
+  {
+    M6800_WAI = 8,    // set when WAI is waiting for an interrupt
+    M6800_SLP = 0x10  // HD63701 only
+  };
+
+#if RDPIANO_ENABLE_INTERPRETER
   static const u8 flags8i[256];
 	static const u8 flags8d[256];
-  enum
-	{
-		M6800_WAI = 8,    // set when WAI is waiting for an interrupt
-		M6800_SLP = 0x10  // HD63701 only
-	};
-
   static const u8 cycles_63701[256];
   
   static const op_func hd63701_insn[256];
@@ -395,6 +390,7 @@ private:
 	void trap();
 	void btst_ix();
 	void stx_nsc();
+#endif
 };
 
 #endif

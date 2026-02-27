@@ -143,9 +143,9 @@ bool parse_cli(int argc, char **argv, CliArgs *args)
     }
   }
 
-  if (args->runtime != "interpreter" && args->runtime != "lifted")
+  if (args->runtime != "lifted")
   {
-    std::fprintf(stderr, "runtime must be interpreter or lifted\n");
+    std::fprintf(stderr, "runtime must be lifted\n");
     return false;
   }
 
@@ -415,7 +415,7 @@ bool write_lifted_stats(const std::string &path, const Mcu::LiftedStats &stats,
 void print_usage(const char *argv0)
 {
   std::fprintf(stderr,
-               "Usage: %s --runtime <interpreter|lifted> --corpus <file> --out <jsonl> [--stats-out <json>] [--rom-dir <dir>] [--program <0..15>]\n",
+               "Usage: %s --runtime <lifted> --corpus <file> --out <jsonl> [--stats-out <json>] [--rom-dir <dir>] [--program <0..15>]\n",
                argv0);
 }
 
@@ -442,10 +442,6 @@ int main(int argc, char **argv)
   }
 
   Mcu mcu(cfg.rom_set->ic5, cfg.rom_set->ic6, cfg.rom_set->ic7, roms.rd200_b.data(), cfg.rom_set->ic18);
-  if (args.runtime == "lifted")
-    mcu.setRuntimeMode(Mcu::RuntimeMode::Lifted);
-  else
-    mcu.setRuntimeMode(Mcu::RuntimeMode::Interpreter);
 
   FILE *outf = std::fopen(args.out.c_str(), "wb");
   if (!outf)

@@ -87,6 +87,7 @@
 #define SET_V8(a,b,r)   CC|=((((a)^(b)^(r)^((r)>>1))&0x80)>>6)
 #define SET_V16(a,b,r)  CC|=((((a)^(b)^(r)^((r)>>1))&0x8000)>>14)
 
+#if RDPIANO_ENABLE_INTERPRETER
 const u8 Mcu::flags8i[256]= /* increment */
 {
 0x04,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
@@ -236,6 +237,7 @@ const u8 Mcu::cycles_63701[256] =
   /*E*/  4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5,
   /*F*/  4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5
 };
+#endif
 
 #define TCSR_IEDG   0x02
 #define TCSR_EICI   0x10
@@ -254,23 +256,6 @@ const u8 Mcu::cycles_63701[256] =
   bitswap<8>(_data,7,0,6,1,5,2,4,3)
 
 namespace {
-
-Mcu::RuntimeMode runtime_mode_from_env()
-{
-  const char *force_interpreter = std::getenv("RDPIANO_FORCE_INTERPRETER");
-  if (force_interpreter && force_interpreter[0] != '\0' && force_interpreter[0] != '0')
-    return Mcu::RuntimeMode::Interpreter;
-
-  const char *runtime = std::getenv("RDPIANO_MCU_RUNTIME");
-  if (!runtime)
-    return Mcu::RuntimeMode::Lifted;
-
-  if (runtime[0] == 'i' || runtime[0] == 'I')
-    return Mcu::RuntimeMode::Interpreter;
-  if (runtime[0] == 'l' || runtime[0] == 'L')
-    return Mcu::RuntimeMode::Lifted;
-  return Mcu::RuntimeMode::Lifted;
-}
 
 bool lifted_debug_enabled()
 {
@@ -294,8 +279,6 @@ Mcu::Mcu(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7, const u8 *t
   }
 
   loadSounds(temp_ic5, temp_ic6, temp_ic7, temp_paramsrom, 0x00);
-
-  m_runtime_mode = runtime_mode_from_env();
   reset();
 }
 
@@ -314,18 +297,19 @@ void Mcu::reset()
   std::fill(std::begin(m_irq_state), std::end(m_irq_state), 0);
 
   m_cc = 0xc0;
-  SEI; /* IRQ disabled */
+  m_cc |= 0x10; /* IRQ disabled */
   PCD = RM16(0xfffe);
 
   m_wai_state = 0;
   m_nmi_state = 0;
   m_nmi_pending = 0;
 
-  // We need to run the CPU for a bit before being able to send commands to it
-  for (size_t i = 0; i < 1024 * 8; i++)
-    execute_one();
+  ensure_lifted_core();
+  m_lifted_core->reset(PCD);
 
-  m_lifted_authoritative = false;
+  // We need to run the CPU for a bit before being able to send commands to it.
+  for (size_t i = 0; i < 1024 * 8; i++)
+    execute_run();
 }
 
 Mcu::~Mcu()
@@ -358,16 +342,6 @@ Mcu::~Mcu()
     std::fclose(f);
     std::fprintf(stderr, "rd200 lifted survey: wrote %s\n", out_path);
   }
-}
-
-void Mcu::setRuntimeMode(RuntimeMode mode)
-{
-  m_runtime_mode = mode;
-}
-
-Mcu::RuntimeMode Mcu::getRuntimeMode() const
-{
-  return m_runtime_mode;
 }
 
 Mcu::LiftedStats Mcu::getLiftedStats() const
@@ -456,54 +430,6 @@ void Mcu::ensure_lifted_core()
                  m_lifted_core->has_block(0xE0C1) ? 1 : 0,
                  m_lifted_core->has_block(0xE156) ? 1 : 0);
   }
-  m_lifted_authoritative = false;
-}
-
-void Mcu::sync_interpreter_to_lifted()
-{
-  if (!m_lifted_core)
-    return;
-
-  auto &ls = m_lifted_core->state();
-  ls.pc = m_pc.w.l;
-  ls.s = m_s.w.l;
-  ls.x = m_x.w.l;
-  ls.a = m_d.b.h;
-  ls.b = m_d.b.l;
-  ls.cc = m_cc;
-  ls.tcsr = m_tcsr;
-  ls.pending_tcsr = m_pending_tcsr;
-  ls.input_capture = m_input_capture;
-  ls.free_running_counter = m_counter.w.l;
-  ls.wai = (m_wai_state & M6800_WAI) != 0;
-  ls.slp = (m_wai_state & M6800_SLP) != 0;
-  ls.nmi_pending = m_nmi_pending != 0;
-  ls.nmi_level = m_nmi_state != CLEAR_LINE;
-  ls.irq1_level = m_irq_state[M6800_IRQ_LINE] != CLEAR_LINE;
-  ls.tin_level = m_irq_state[M6801_TIN_LINE] != CLEAR_LINE;
-}
-
-void Mcu::sync_lifted_to_interpreter()
-{
-  if (!m_lifted_core)
-    return;
-
-  const auto &ls = m_lifted_core->state();
-  m_pc.w.l = ls.pc;
-  m_s.w.l = ls.s;
-  m_x.w.l = ls.x;
-  m_d.b.h = ls.a;
-  m_d.b.l = ls.b;
-  m_cc = ls.cc;
-  m_tcsr = ls.tcsr;
-  m_pending_tcsr = ls.pending_tcsr;
-  m_input_capture = ls.input_capture;
-  m_counter.w.l = ls.free_running_counter;
-  m_wai_state = (ls.wai ? M6800_WAI : 0) | (ls.slp ? M6800_SLP : 0);
-  m_nmi_pending = ls.nmi_pending ? 1 : 0;
-  m_nmi_state = ls.nmi_level ? ASSERT_LINE : CLEAR_LINE;
-  m_irq_state[M6800_IRQ_LINE] = ls.irq1_level ? ASSERT_LINE : CLEAR_LINE;
-  m_irq_state[M6801_TIN_LINE] = ls.tin_level ? ASSERT_LINE : CLEAR_LINE;
 }
 
 u8 Mcu::lifted_bus_read(u16 addr)
@@ -647,7 +573,7 @@ void Mcu::enter_interrupt(const char *message, u16 irq_vector)
     PUSHBYTE(CC);
     cycles_to_eat = 12;
   }
-  SEI;
+  m_cc |= 0x10;
   PCD = RM16(irq_vector);
   if (m_trace_sink != nullptr) {
     Rd200CpuStateSnapshot s = snapshot_state();
@@ -665,8 +591,7 @@ void Mcu::increment_counter(int amount)
 
 void Mcu::execute_set_input(int irqline, int state)
 {
-  if (m_runtime_mode == RuntimeMode::Lifted)
-    ensure_lifted_core();
+  ensure_lifted_core();
 
   switch (irqline)
   {
@@ -705,69 +630,27 @@ void Mcu::execute_set_input(int irqline, int state)
 
 void Mcu::execute_run()
 {
-  if (m_runtime_mode == RuntimeMode::Lifted)
-  {
-    ensure_lifted_core();
-
-    if (!commands_queue.empty())
-      execute_set_input(M6801_TIN_LINE, ASSERT_LINE);
-
-    if (sound_chip.m_irq_triggered)
-      execute_set_input(0, ASSERT_LINE);
-
-    if (!m_lifted_authoritative)
-      sync_interpreter_to_lifted();
-
-    m_lifted_step_attempts++;
-    if (m_lifted_core->step())
-    {
-      m_lifted_steps++;
-      m_lifted_authoritative = true;
-      return;
-    }
-
-    // Survey mode intentionally falls back one step to keep progressing and
-    // discover additional unlifted PCs in a single manual run.
-    if (lifted_survey_enabled())
-    {
-      if (m_lifted_authoritative)
-        sync_lifted_to_interpreter();
-      m_lifted_authoritative = false;
-      m_lifted_fallback_steps++;
-      check_irq_lines();
-      execute_one();
-      return;
-    }
-
-    // No interpreter fallback in lifted-default mode.
-    m_lifted_fallback_steps++;
-    if (lifted_debug_enabled() && m_lifted_core && m_lifted_core->halted())
-      std::fprintf(stderr, "rd200 lifted: halted at pc=%04X\n", m_lifted_core->state().pc);
-    return;
-  }
+  ensure_lifted_core();
 
   if (!commands_queue.empty())
     execute_set_input(M6801_TIN_LINE, ASSERT_LINE);
 
   if (sound_chip.m_irq_triggered)
-      execute_set_input(0, ASSERT_LINE);
-  check_irq_lines();
+    execute_set_input(0, ASSERT_LINE);
 
-  // do
-  // {
-  //   // failsafe
-  //   if (m_icount > 10000)
-  //     m_icount = 0;
-    
-  //   if (m_wai_state & (M6800_WAI | M6800_SLP))
-  //     eat_cycles();
-  //   else
-  //     execute_one();
-  // } while (m_icount > 0);
+  m_lifted_step_attempts++;
+  if (m_lifted_core->step())
+  {
+    m_lifted_steps++;
+    return;
+  }
 
-  execute_one();
+  m_lifted_fallback_steps++;
+  if (lifted_debug_enabled() && m_lifted_core && m_lifted_core->halted())
+    std::fprintf(stderr, "rd200 lifted: halted at pc=%04X\n", m_lifted_core->state().pc);
 }
 
+#if RDPIANO_ENABLE_INTERPRETER
 void Mcu::execute_one()
 {
   pPPC = pPC;
@@ -782,6 +665,7 @@ void Mcu::execute_one()
   }
   increment_counter(cycles_63701[ireg]);
 }
+#endif
 
 u8 Mcu::tcsr_r()
 {

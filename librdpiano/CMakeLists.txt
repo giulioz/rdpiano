@@ -35,6 +35,7 @@ add_library(librdpiano
     src/rdpiano_program_map.cpp
     generated/rd200_rom_b_lifted.cpp
 )
+target_compile_definitions(librdpiano PRIVATE RDPIANO_ENABLE_INTERPRETER=0)
 
 # test application target
 add_executable(rdpiano_standalone test/standalone.cpp)
