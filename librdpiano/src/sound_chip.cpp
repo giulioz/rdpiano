@@ -170,6 +170,10 @@ u8 SoundChip::read(size_t offset)
 
 void SoundChip::write(size_t offset, u8 data)
 {
+    if (log_writes) {
+        write_log.push_back({offset, data});
+    }
+
     uint8_t voiceI = offset / 0x100;
     uint8_t partI = offset % 0x100 / 0x10;
     uint8_t field = offset % 8;

@@ -2,7 +2,14 @@
 #define SOUND_CHIP_H
 
 #include <stdio.h>
+#include <vector>
 #include "mame_utils.h"
+
+struct SoundChipWrite {
+  size_t offset;
+  uint8_t value;
+};
+
 
 class SoundChip {
 public:
@@ -17,6 +24,10 @@ public:
 
   // if there is an IRQ currently waiting
   bool m_irq_triggered = false;
+
+  // Write logging for comparison harness
+  bool log_writes = false;
+  std::vector<SoundChipWrite> write_log;
 
 private:
   static constexpr unsigned NUM_VOICES = 16;

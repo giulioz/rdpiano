@@ -42,6 +42,8 @@ public:
 	void loadSounds(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7, const u8 *temp_paramsrom, size_t from_addr);
 	void reset();
 
+	SoundChip& getSoundChip() { return sound_chip; }
+
 private:
   // Board specific
   u8 read_byte(u16 addr);

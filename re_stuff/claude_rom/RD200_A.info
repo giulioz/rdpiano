@@ -1,0 +1,394 @@
+* RD200 CPU A (Front Panel / MIDI) - f9dasm info file
+* HD63B03RP, not scrambled, mapped at E000-FFFF
+
+OPTION 6301
+
+* =============================================
+* CPU Internal Registers (0x0000-0x001F)
+* =============================================
+LABEL 0000 PORT1_DDR
+LABEL 0001 PORT2_DDR
+LABEL 0002 PORT1_DATA
+LABEL 0003 PORT2_CTRL
+LABEL 0005 PORT3_DDR
+LABEL 0008 TCSR
+LABEL 0009 COUNTER_HI
+LABEL 000B OCR_HI
+LABEL 0010 RMCR
+LABEL 0011 TRCSR
+LABEL 0012 SCI_RDR
+LABEL 0013 SCI_TDR
+
+* =============================================
+* Internal RAM (0x0080-0x00FF)
+* =============================================
+LABEL 0080 midi_channel
+LABEL 0081 rx_buf_write_hi
+LABEL 0082 rx_buf_write_lo
+LABEL 0083 rx_buf_read_hi
+LABEL 0084 rx_buf_read_lo
+LABEL 0085 tx_buf_write_hi
+LABEL 0086 tx_buf_write_lo
+LABEL 0087 tx_buf_read_hi
+LABEL 0088 tx_buf_read_lo
+LABEL 0089 timer_counter
+LABEL 008A timer_state
+LABEL 008B timer_reload
+LABEL 008D note_slot_ptr_hi
+LABEL 008E note_number
+LABEL 008F velocity
+LABEL 0090 chorus_hw_flag
+LABEL 0092 service_switch
+LABEL 0093 service_param
+LABEL 0094 test_mode_flag1
+LABEL 0095 test_mode_flag2
+LABEL 0096 hw_config_bit2
+LABEL 0097 cc_threshold
+LABEL 0098 led_state
+LABEL 0099 program_change_pending
+LABEL 009A effect_config
+LABEL 009B program_change_flag
+LABEL 009C program_sub_var
+LABEL 009E cc_channel
+LABEL 009F mode_flags
+LABEL 00A0 key_scan_counter
+LABEL 00A1 midi_status
+LABEL 00A2 midi_byte_count
+LABEL 00A3 midi_running_status
+LABEL 00A4 active_sensing
+LABEL 00A6 sustain_half_pedal
+LABEL 00A7 sustain_state
+LABEL 00A8 sustain_prev
+LABEL 00A9 soft_pedal_hw
+LABEL 00AA soft_state
+LABEL 00AB soft_prev
+LABEL 00AC sostenuto_hw
+LABEL 00AD sostenuto_state
+LABEL 00AE sostenuto_prev
+LABEL 00AF key_range_limit
+LABEL 00B0 active_note_count
+LABEL 00B1 tx_last_status
+LABEL 00B2 sci_error_flag
+LABEL 00B3 sci_tx_pending
+LABEL 00B4 key_scan_buf_0
+LABEL 00B5 key_scan_buf_1
+LABEL 00B6 key_scan_buf_2
+LABEL 00B7 key_scan_buf_3
+LABEL 00B8 led_pattern_hi
+LABEL 00B9 led_pattern_lo
+LABEL 00BA led_pattern_scan
+LABEL 00BB midi_thru_program
+LABEL 00BC key_scan_phase
+LABEL 00BD hw_key_count
+LABEL 00BE key_range_base
+LABEL 00BF key_range_top
+LABEL 00C0 hw_model_config
+LABEL 00C2 test_button_state
+LABEL 00C3 current_program_num
+LABEL 00C5 program_effect_table
+LABEL 00CD tuning_smoothed
+LABEL 00CE tuning_range
+LABEL 00CF effect_routing
+LABEL 00D0 half_pedal_enable
+LABEL 00D1 feature_flags
+LABEL 00D2 output_config
+LABEL 00D3 output_param
+LABEL 00D4 sustain_mode_var
+LABEL 00D6 led_default_hi
+LABEL 00D7 led_default_lo
+LABEL 00D8 key_velocity_buf
+LABEL 00D9 key_sustain_temp
+LABEL 00DA init_marker_1
+LABEL 00DB init_marker_2
+LABEL 00DC midi_thru_channel_b
+LABEL 00DD midi_thru_channel_a
+LABEL 00DE midi_tx_channel
+LABEL 00DF effect_route_mask
+LABEL 00E8 button_debounce
+LABEL 00EB cpub_send_byte1
+LABEL 00EC cpub_send_byte2
+LABEL 00ED cpub_send_byte3
+LABEL 00F1 test_active_flag
+
+* =============================================
+* External RAM
+* =============================================
+LABEL 0900 key_note_table
+LABEL 0958 key_note_end
+LABEL 0980 key_state_table
+LABEL 097C key_scanner_data
+LABEL 097D key_scanner_vel
+LABEL 097F key_config_mode
+LABEL 0A00 velocity_table
+LABEL 0A80 voice_alloc_table
+LABEL 0AC0 voice_flags_table
+LABEL 0B00 voice_flags_end
+LABEL 0B40 rx_midi_buf
+LABEL 0BC0 rx_midi_buf2
+LABEL 0C40 tx_midi_buf
+LABEL 0D40 tx_midi_end
+LABEL 0FFF stack_top
+
+* =============================================
+* Memory-mapped I/O
+* =============================================
+LABEL 1000 KEY_SCANNER_IN
+LABEL 1800 VOLUME_ADC_IN
+LABEL 2000 LED_OUTPUT
+LABEL 2800 LED_OUTPUT_2
+LABEL 3000 DAC_OUTPUT
+
+* =============================================
+* DATA: Serial configs (E000-E00B)
+* =============================================
+DATA E000-E00B
+LABEL E000 serial_config_0
+LABEL E006 serial_config_1
+
+* =============================================
+* CODE: Init helper (E00C-E124)
+* =============================================
+CODE E00C-E124
+LABEL E00C load_serial_config
+LABEL E125 memclear
+
+* =============================================
+* CODE: Reset handler (E12D-E297)
+* =============================================
+CODE E12D-E297
+LABEL E12D reset_handler
+LABEL E180 reset_read_buttons
+LABEL E19F reset_read_hw_config
+LABEL E1B1 reset_set_serial_config
+LABEL E1D5 reset_set_cc_threshold
+LABEL E1E6 reset_calc_key_range
+LABEL E1F7 reset_build_note_table
+LABEL E21C reset_set_key_config
+LABEL E236 reset_init_buffers
+LABEL E254 reset_check_test_mode
+LABEL E26C reset_enter_test_via_button
+LABEL E26F reset_check_ram_test
+LABEL E276 main_scan_loop
+
+* =============================================
+* CODE: Main loop - key scanning & processing (E276-E578)
+* =============================================
+CODE E276-E578
+LABEL E276 main_key_scan
+LABEL E28A main_process_scan_row
+LABEL E320 main_process_midi_buf
+LABEL E382 sustain_pedal_handler
+LABEL E3AF sustain_update_state
+LABEL E3BC sustain_send_to_cpub
+LABEL E3CB sustain_off_check
+LABEL E3D3 soft_pedal_handler
+LABEL E409 soft_update_state
+LABEL E42D sostenuto_handler
+LABEL E463 sostenuto_update_state
+
+* =============================================
+* CODE: Note processing & CPU B send (E579-E5F8)
+* =============================================
+CODE E579-E5F8
+LABEL E579 check_note_off_needed
+LABEL E57F send_note_off
+LABEL E58D note_off_done
+LABEL E58E send_note_set_flag
+LABEL E593 send_note_on
+LABEL E5A4 send_note_on_select_layer
+LABEL E5AD send_note_on_first_byte
+LABEL E5BB cpub_send_first_byte
+LABEL E5C8 cpub_wait_bus_ack
+LABEL E5D4 cpub_send_extra_bytes
+LABEL E5DF cpub_send_byte3_wait
+LABEL E5EA cpub_send_3byte_msg
+LABEL E5EE cpub_send_1byte_msg
+LABEL E5F0 cpub_send_wait_final_ack
+LABEL E5F9 process_one_midi_msg
+
+* =============================================
+* CODE: MIDI message dispatcher (E5F9-E748)
+* =============================================
+CODE E5F9-E748
+LABEL E60A dispatch_cc_or_special
+LABEL E62A dispatch_all_notes_off_check
+LABEL E63A all_notes_off
+LABEL E63D all_notes_off_loop
+LABEL E65C cc64_sustain_handler
+LABEL E666 cc67_soft_handler
+LABEL E66D cc66_sostenuto_handler
+LABEL E674 cc93_chorus_depth
+LABEL E686 cc92_tremolo_depth
+LABEL E6BC dispatch_note_on_off
+LABEL E6D6 note_off_path
+LABEL E6DB note_off_clear_voice
+LABEL E6EC program_change_handler
+LABEL E717 program_change_apply
+LABEL E737 program_change_send_to_cpub
+LABEL E749 midi_tx_cc
+LABEL E751 midi_tx_note_on
+LABEL E759 midi_tx_status
+LABEL E76D midi_tx_data
+LABEL E789 midi_tx_advance_ptr
+
+* =============================================
+* CODE: SCI handler - MIDI receive (E793-E88A)
+* =============================================
+CODE E793-E88A
+LABEL E793 sci_handler
+LABEL E795 sci_check_rdrf
+LABEL E7C8 sci_error
+LABEL E7D0 sci_program_change_store
+LABEL E7D6 sci_process_data_byte
+LABEL E7F8 sci_cc_first_byte
+LABEL E816 sci_cc_generic
+LABEL E817 sci_cc_store_with_flag
+LABEL E819 sci_store_first_byte
+LABEL E81E sci_ignore
+LABEL E81F sci_second_byte
+LABEL E840 sci_second_note_off_check
+LABEL E845 sci_store_second_byte
+LABEL E848 sci_status_byte
+LABEL E85F sci_store_status
+LABEL E867 sci_clear_byte_count
+LABEL E86B sci_realtime
+LABEL E872 midi_buf_advance
+LABEL E87C midi_buf_store_second
+
+* =============================================
+* DATA: CC mode table (E88B-E892)
+* Embedded in code area, accessed via E80F+ABX
+* =============================================
+DATA E88B-E892
+LABEL E88B cc_mode_mask_table
+LABEL E88F cc_mode_set_table
+
+* =============================================
+* CODE: Timer handlers (E893-E8FF)
+* =============================================
+CODE E893-E8FF
+LABEL E893 tof_handler
+LABEL E8EA irq1_handler
+LABEL E900 ocf_handler
+
+* =============================================
+* CODE: Key scanning & velocity (E900-EAFF)
+* =============================================
+LABEL E947 key_scan_process
+LABEL EAB2 front_panel_adc_read
+LABEL EAD0 adc_lookup
+LABEL EAF6 send_tuning_to_cpub
+
+* =============================================
+* DATA: Front panel ADC lookup table (EB00-EB1F)
+* =============================================
+DATA EB00-EB1F
+LABEL EB00 adc_tuning_lut
+
+* =============================================
+* CODE: Button/pedal processing (EB20-EC0D)
+* =============================================
+CODE EB20-EC0D
+LABEL EB9E key_handler_dispatch_sustain
+LABEL EBBE key_handler_dispatch_soft
+LABEL EBDC key_handler_dispatch_sost
+
+* =============================================
+* DATA: Key handler pointer tables (EC0E-EC31)
+* =============================================
+WORD EC0E-EC19
+LABEL EC0E sustain_handler_ptrs
+WORD EC1A-EC25
+LABEL EC1A soft_handler_ptrs
+WORD EC26-EC31
+LABEL EC26 sost_handler_ptrs
+
+* =============================================
+* CODE: Key configuration routines (EC32-EC6B)
+* =============================================
+CODE EC32-EC6B
+LABEL EC32 key_config_default
+LABEL EC61 output_config_calc
+
+* =============================================
+* DATA: Bit mask table (EC6C-EC73)
+* =============================================
+DATA EC6C-EC73
+LABEL EC6C bit_mask_table
+
+* =============================================
+* CODE: Key config routines continued (EC74-EF00)
+* =============================================
+CODE EC74-EF00
+LABEL EC74 key_sustain_mode_0
+LABEL EC79 key_soft_mode_0
+LABEL ECCB key_sustain_mode_1
+LABEL ECEC key_soft_mode_1
+LABEL EC33 output_config_send
+LABEL ED9A key_sustain_mode_2
+LABEL EDBB key_soft_mode_2
+LABEL EE69 key_sustain_mode_3
+LABEL EE8C key_soft_mode_3
+LABEL EED3 key_sustain_mode_4
+LABEL EED8 key_soft_mode_4
+LABEL EF0D key_sost_mode_4
+
+* =============================================
+* DATA: Transpose note table (EF01-EF0C)
+* =============================================
+DATA EF01-EF0C
+LABEL EF01 transpose_note_table
+
+* =============================================
+* CODE: Remaining routines (EF0D-F085)
+* =============================================
+CODE EF0D-F085
+LABEL EF36 key_sustain_mode_5
+LABEL EF3B key_soft_mode_5
+LABEL EF44 key_sost_mode_5
+LABEL F04B key_scanner_dispatch
+
+* =============================================
+* DATA: Key scanner map (F086-F098)
+* =============================================
+DATA F086-F098
+LABEL F086 key_scanner_map
+
+* =============================================
+* CODE: Key scanner routines (F099-F120)
+* =============================================
+CODE F099-F120
+
+* =============================================
+* CODE: Test mode (F121-F297)
+* =============================================
+CODE F121-F297
+LABEL F121 test_mode_entry
+LABEL F15A test_loop
+LABEL F15E test_loop_body
+LABEL F1C9 test_send_note_on
+LABEL F1D6 test_send_note_off
+LABEL F1DF ram_test_mode
+LABEL F1FA ram_test_loop
+LABEL F23D test_query_cpub
+LABEL F247 cpub_send_alt
+LABEL F24D cpub_send_alt_wait_bus
+LABEL F297 cpub_send_alt_done
+
+* =============================================
+* UNUSED: Padding (F298-FFEF)
+* =============================================
+UNUSED F298-FFEF
+
+* =============================================
+* DATA: Vector table (FFF0-FFFF)
+* =============================================
+WORD FFF0-FFFF
+LABEL FFF0 vec_sci
+LABEL FFF2 vec_tof
+LABEL FFF4 vec_ocf
+LABEL FFF6 vec_icf
+LABEL FFF8 vec_irq1
+LABEL FFFA vec_swi
+LABEL FFFC vec_nmi
+LABEL FFFE vec_reset

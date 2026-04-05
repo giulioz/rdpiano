@@ -1,0 +1,420 @@
+* RD200 CPU B (Sound Engine) - f9dasm info file
+* HD63B03RP, ROM descrambled, mapped at E000-FFFF
+
+OPTION 6301
+
+* =============================================
+* CPU Internal Registers (0x0000-0x001F)
+* =============================================
+LABEL 0000 PORT1_DDR
+LABEL 0001 PORT2_DDR
+LABEL 0002 PORT1_DATA
+LABEL 0003 PORT2_CTRL
+LABEL 0004 PORT3_DDR
+LABEL 0005 PORT3_DATA
+LABEL 0008 TCSR
+LABEL 0009 COUNTER_HI
+LABEL 000D ICR_LO
+LABEL 000E ICR_HI
+
+* =============================================
+* Internal RAM - Voice Management (0x0080-0x00FF)
+* =============================================
+LABEL 0080 voice_note_queue_0
+LABEL 0081 voice_note_queue_1
+LABEL 0082 voice_note_queue_2
+LABEL 0083 voice_note_queue_3
+LABEL 0084 voice_param_queue_0
+LABEL 0085 voice_param_queue_1
+LABEL 0086 voice_param_queue_2
+LABEL 0087 voice_param_queue_3
+LABEL 0088 voice_wavep_queue_0
+LABEL 0089 voice_wavep_queue_1
+LABEL 008A voice_wavep_queue_2
+LABEL 008B voice_wavep_queue_3
+LABEL 008C voice_alloc_base
+LABEL 008D voice_temp_ptr
+LABEL 008E voice_alloc_limit
+LABEL 008F sample_rate_mode
+LABEL 0090 cur_voice_slot
+LABEL 0091 cur_sub_param
+LABEL 0092 num_voice_slots
+LABEL 0093 num_active_parts
+LABEL 0094 voice_rr_ptr_lo
+LABEL 0095 voice_rr_ptr_hi
+LABEL 0096 sched_rr_A_lo
+LABEL 0097 sched_rr_A_hi
+LABEL 0098 sched_rr_B_lo
+LABEL 0099 sched_rr_B_hi
+LABEL 009A sched_rr_C_lo
+LABEL 009B sched_rr_C_hi
+LABEL 009C sched_rr_D_lo
+LABEL 009D sched_rr_D_hi
+LABEL 009E note_lookup_lo
+LABEL 009F note_number
+LABEL 00A0 sustain_release_mode
+LABEL 00A1 soft_pedal_flag
+LABEL 00A2 layer_flag
+LABEL 00A3 velocity_mode
+LABEL 00A4 env_init_value
+LABEL 00A5 params_base_hi
+LABEL 00A6 params_base_lo
+LABEL 00A7 note_map_offset_hi
+LABEL 00A8 note_map_offset_lo
+LABEL 00A9 env_map_offset_hi
+LABEL 00AA env_map_offset_lo
+LABEL 00AB env_chain_ptr_hi
+LABEL 00AC env_chain_ptr_lo
+LABEL 00AD note_entry_ptr_hi
+LABEL 00AE note_entry_ptr_lo
+LABEL 00AF env_data_ptr_hi
+LABEL 00B0 env_data_ptr_lo
+LABEL 00B1 sound_chip_ptr_hi
+LABEL 00B2 sound_chip_ptr_lo
+LABEL 00B3 saved_sp_hi
+LABEL 00B4 saved_sp_lo
+LABEL 00B5 voice_ram_ptr_hi
+LABEL 00B6 voice_ram_ptr_lo
+LABEL 00B7 env_interp_hi
+LABEL 00B8 env_interp_lo
+LABEL 00B9 global_env_offset
+LABEL 00BA program_flags
+LABEL 00BB current_program
+LABEL 00BC voice_release_mask
+LABEL 00BD release_mask_override
+LABEL 00BE release_threshold
+LABEL 00BF release_param
+LABEL 00C0 wave_param
+LABEL 00C1 wave_param_quarter
+LABEL 00C2 wave_param_double
+LABEL 00C3 env_velocity_temp
+LABEL 00C4 wave_param_offset_hi
+LABEL 00C5 wave_param_offset_lo
+LABEL 00C6 release_env_lo_0
+LABEL 00C7 release_env_hi_0
+LABEL 00C8 release_env_lo_1
+LABEL 00C9 release_env_hi_1
+LABEL 00CA release_env_lo_2
+LABEL 00CB release_env_hi_2
+LABEL 00CC release_env_lo_3
+LABEL 00CD release_env_hi_3
+LABEL 00D0 irq_status_byte
+LABEL 00D1 irq_wave_param
+LABEL 00D2 irq_velocity
+LABEL 00D3 irq_voice_ram_hi
+LABEL 00D4 irq_voice_ram_lo
+LABEL 00D5 irq_env_chain_hi
+LABEL 00D6 irq_env_chain_lo
+LABEL 00D7 irq_sndchip_hi
+LABEL 00D8 irq_sndchip_lo
+LABEL 00DC rx_command
+LABEL 00DD rx_data_buf
+LABEL 00E1 rx_data_byte2
+LABEL 00E2 rx_data_byte3
+LABEL 00E3 tuning_value_hi
+LABEL 00E4 tuning_value_lo
+LABEL 00E5 tuning_prev_hi
+LABEL 00E6 tuning_prev_lo
+LABEL 00E7 cmd_queue_rd_hi
+LABEL 00E8 cmd_queue_rd_lo
+LABEL 00E9 cmd_queue_wr_hi
+LABEL 00EA cmd_queue_wr_lo
+LABEL 00EB sound_chip_iter_hi
+LABEL 00EC sound_chip_iter_lo
+LABEL 00ED voice_state_start
+
+* =============================================
+* External RAM
+* =============================================
+LABEL 0200 VOICE_RAM_BASE
+
+* =============================================
+* Memory-mapped devices
+* =============================================
+LABEL 1000 SOUND_CHIP_BASE
+LABEL 4000 PARAMS_ROM_BASE
+
+* =============================================
+* Bank select latch
+* =============================================
+LABEL E000 BANK_LATCH
+
+* =============================================
+* CODE: Init routines (E000-E16D)
+* =============================================
+CODE E000-E16D
+LABEL E000 clear_ram_20
+LABEL E006 clear_ram_loop
+LABEL E00F reset_handler
+LABEL E03D reset_init_voice_env
+LABEL E04A reset_load_program
+LABEL E078 reset_init_soundchip
+LABEL E07B reset_init_voice_loop
+LABEL E097 reset_init_env_offset
+LABEL E09D reset_env_offset_loop
+LABEL E0A8 reset_delay_loop
+LABEL E0AB reset_clear_env_dest
+LABEL E0AF reset_clear_env_loop
+LABEL E0C1 main_loop
+LABEL E0D0 process_note_commands
+LABEL E0DF process_note_next
+LABEL E0F9 process_note_active
+LABEL E11A process_note_advance
+LABEL E120 process_note_done
+
+* =============================================
+* CODE: ICF handler - inter-CPU receive (E121-E16D)
+* =============================================
+CODE E121-E16D
+LABEL E121 icf_handler
+LABEL E124 icf_wait_clock_low
+LABEL E134 icf_dispatch
+LABEL E143 icf_wait_bus_release
+LABEL E14F icf_cleanup
+LABEL E157 icf_read_extra_bytes
+LABEL E161 icf_wait_clock_low_2
+
+* =============================================
+* DATA: Command dispatch table (E16E-E18D)
+* =============================================
+WORD E16E-E18D
+LABEL E16E cmd_dispatch_table
+
+* =============================================
+* CODE: Command handlers (E18E-E253)
+* =============================================
+CODE E18E-E253
+LABEL E18E cmd_E0_tuning
+LABEL E19B cmd_30_program_change
+LABEL E1A0 program_change_reload
+LABEL E1D5 set_samplerate_20khz
+LABEL E1E1 set_samplerate_32khz
+LABEL E1EB program_set_params
+LABEL E204 program_clear_state
+
+* =============================================
+* DATA: Program config table (E254-E26B)
+* =============================================
+DATA E254-E26B
+LABEL E254 program_config_table
+
+* =============================================
+* CODE: Voice management (E26C-E3F1)
+* =============================================
+CODE E26C-E3F1
+LABEL E26C all_voices_off
+LABEL E27D all_voices_off_loop
+LABEL E372 voice_update_tick
+LABEL E379 voice_update_loop
+LABEL E386 voice_update_clear
+LABEL E388 voice_update_next
+LABEL E38E voice_update_done
+LABEL E38F voice_finished
+LABEL E3A0 voice_finish_shift_queue
+LABEL E3AE voice_finish_release
+LABEL E3B6 voice_finish_cleanup
+LABEL E3C4 voice_start_release
+
+* =============================================
+* CODE: Pedal handlers (E3F2-E4F9)
+* =============================================
+CODE E3F2-E4F9
+LABEL E3F2 cmd_70_soft_pedal
+LABEL E3FD cmd_60_sostenuto
+LABEL E406 sostenuto_off_loop
+LABEL E416 sostenuto_off_next
+LABEL E41C sostenuto_release_voice
+LABEL E43E sostenuto_on
+LABEL E441 sostenuto_on_loop
+LABEL E44F cmd_50_sustain
+LABEL E45A sustain_off_loop
+LABEL E466 sustain_off_clear
+LABEL E46A sustain_off_next
+LABEL E470 sustain_off_release
+LABEL E4AF sustain_on
+LABEL E4B6 sustain_on_loop
+LABEL E4FA voice_sched_from_96
+LABEL E4FE voice_sched_from_98
+LABEL E502 voice_sched_from_9A
+LABEL E506 voice_sched_from_9C
+LABEL E508 voice_sched_common
+
+* =============================================
+* CODE: Voice allocation (E51B-E655)
+* =============================================
+CODE E51B-E655
+LABEL E51B voice_alloc_next
+LABEL E52A sched_advance_A
+LABEL E535 sched_advance_B
+LABEL E540 sched_advance_C
+LABEL E54B sched_advance_D
+LABEL E556 cmd_B0_note_off
+LABEL E583 note_off_release
+LABEL E59D cmd_D0_note_on_L2
+LABEL E5A1 cmd_C0_note_on_L1
+LABEL E5BE note_on_normal
+LABEL E5C2 note_on_lookup
+LABEL E5FF note_on_set_flags
+LABEL E621 note_on_setup_voice
+LABEL E629 voice_steal_check
+LABEL E633 voice_steal_do
+LABEL E656 voice_find_slot
+
+* =============================================
+* CODE: Voice setup from IC18 (E656-E6D0)
+* =============================================
+CODE E656-E6D0
+LABEL E656 find_voice_slot
+LABEL E65D find_slot_loop
+LABEL E668 find_slot_new
+LABEL E670 find_slot_insert
+LABEL E674 find_slot_assign
+LABEL E682 find_slot_extend
+LABEL E6D1 voice_release_sub
+
+* =============================================
+* CODE: Voice param update handlers (E777-E79A)
+* =============================================
+CODE E777-E79A
+LABEL E777 cmd_A0_param_update_hi
+LABEL E77D cmd_80_param_update
+LABEL E77F param_update_common
+LABEL E78D param_update_store
+LABEL E79B note_setup_from_ic18
+
+* =============================================
+* CODE: Note setup - pitch and envelope (E79B-EBA0)
+* =============================================
+CODE E79B-EBB6
+LABEL E79B setup_voice_params
+LABEL E7C7 setup_wave_param_offset
+LABEL E7D9 setup_start_voice
+LABEL E7E8 write_pitch_to_soundchip
+LABEL E80B load_pitch_from_ic18
+LABEL E88D load_envelope_from_ic18
+LABEL E920 setup_envelope_chain
+LABEL E927 load_env_scaling
+LABEL E92D load_env_part0_scaling
+
+* =============================================
+* CODE: Voice release/reassign (EBB7-ECA0)
+* =============================================
+CODE EBB7-ECAA
+LABEL EBB7 cmd_00_voice_reset
+LABEL EBBF voice_release_common
+LABEL EBC7 voice_release_write_env
+LABEL EBD0 voice_release_setup
+
+* =============================================
+* CODE: Voice release helper (ECAB-ED19)
+* =============================================
+CODE ECAB-ED19
+LABEL ECAB voice_kill
+LABEL ED00 irq_voice_done
+
+* =============================================
+* CODE: IRQ handler - sound chip envelope (ED1A-ED9C)
+* =============================================
+CODE ED1A-ED9C
+LABEL ED1A irq_handler
+LABEL ED73 irq_interp_velocity
+LABEL ED84 irq_write_envelope
+LABEL ED8D irq_clear_chain
+LABEL ED93 irq_no_wave_param
+LABEL ED98 irq_no_velocity
+
+* =============================================
+* DATA: Envelope scaling pointer table (ED9D-EDBC)
+* =============================================
+WORD ED9D-EDBC
+LABEL ED9D env_scaling_ptr_table
+
+* =============================================
+* CODE: F0 config command (EDBD-EDFE)
+* =============================================
+CODE EDBD-EDFE
+LABEL EDBD cmd_F0_config
+LABEL EDD7 f0_05_set_release_mask
+LABEL EDDA f0_00_velocity_mode
+LABEL EDE1 f0_00_store
+LABEL EDE4 f0_01_sample_rate
+LABEL EDED f0_01_rate_A
+LABEL EDF4 f0_03_set_global_param
+LABEL EDF7 f0_04_bank_latch
+LABEL EDFB f0_04_write_latch
+LABEL EDFF f0_02_params_table
+
+* =============================================
+* DATA: F0 sub-dispatch table (EDCB-EDD6)
+* =============================================
+WORD EDCB-EDD6
+LABEL EDCB f0_subdispatch_table
+
+* =============================================
+* DATA: Params pointer tables (EE0F-EE26)
+* =============================================
+WORD EE0F-EE16
+LABEL EE0F params_ptr_index
+WORD EE17-EE26
+LABEL EE17 params_ptr_entries
+
+* =============================================
+* DATA: Alternative note mappings (EE27-EE50)
+* =============================================
+DATA EE27-EE50
+LABEL EE27 alt_note_map_0
+LABEL EE3C alt_note_map_1
+
+* =============================================
+* DATA: Default envelope chains (EE51-EEDD)
+* =============================================
+DATA EE51-EEDD
+LABEL EE51 env_chain_template_A
+LABEL EE97 env_chain_template_B
+LABEL EEDD env_chain_template_C
+
+* =============================================
+* DATA: Release envelope table (EF23-F048)
+* =============================================
+DATA EF23-F048
+LABEL EF23 release_env_chain_start
+LABEL EF29 release_env_table
+
+* =============================================
+* DATA: Per-part envelope scaling curves (F049-F448)
+* =============================================
+DATA F049-F448
+LABEL F049 env_scale_part00
+LABEL F089 env_scale_part01
+LABEL F0C9 env_scale_part02
+LABEL F109 env_scale_part03
+LABEL F149 env_scale_part04
+LABEL F189 env_scale_part05
+LABEL F1C9 env_scale_part06
+LABEL F209 env_scale_part07
+LABEL F249 env_scale_part08
+LABEL F289 env_scale_part09
+LABEL F2C9 env_scale_part10
+LABEL F309 env_scale_part11
+LABEL F349 env_scale_part12
+LABEL F389 env_scale_part13
+LABEL F3C9 env_scale_part14
+LABEL F409 env_scale_part15
+
+* =============================================
+* UNUSED: Padding (F449-FFEF)
+* =============================================
+UNUSED F449-FFEF
+
+* =============================================
+* DATA: Vector table (FFF0-FFFF)
+* =============================================
+WORD FFF0-FFFF
+LABEL FFF0 vec_trap
+LABEL FFF2 vec_sci
+LABEL FFF4 vec_tof
+LABEL FFF6 vec_ocf
+LABEL FFF8 vec_icf
+LABEL FFFA vec_irq1
+LABEL FFFC vec_swi
+LABEL FFFE vec_reset
