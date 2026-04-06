@@ -1,7 +1,8 @@
 #include <cstddef>
-#include "sound_chip.h"
-
 #include <cmath>
+#include <algorithm>
+#include "sound_chip.h"
+#include "bitswap.h"
 
 // LUT for the address speed
 static constexpr uint32_t env_table[] = {
@@ -47,21 +48,9 @@ static constexpr uint32_t env_table[] = {
 static constexpr uint16_t addr_table[] = {0x1e0, 0x080, 0x060, 0x04d, 0x040, 0x036, 0x02d, 0x026,
                                           0x020, 0x01b, 0x016, 0x011, 0x00d, 0x00a, 0x006, 0x003};
 
-#define UNSCRAMBLE_ADDR_WAVE(i) \
-	((BIT(i, 16) << 16) | (BIT(i, 15) << 15) | (BIT(i, 14) << 14) | \
-	(BIT(i, 1) << 13)   | (BIT(i, 4) << 12)  | (BIT(i, 9) << 11)  | \
-	(BIT(i, 5) << 10)   | (BIT(i, 10) << 9)  | (BIT(i, 3) << 8)   | \
-	(BIT(i, 0) << 7)    | (BIT(i, 6) << 6)   | (BIT(i, 11) << 5)  | \
-	(BIT(i, 7) << 4)    | (BIT(i, 2) << 3)   | (BIT(i, 12) << 2)  | \
-	(BIT(i, 8) << 1)    | (BIT(i, 13) << 0))
-#define UNSCRAMBLE_DATA_WAVE(_data) \
-	bitswap<8>(_data,7,6,5,4,3,2,1,0)
-
-SoundChip::SoundChip(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7)
+SoundChip::SoundChip()
 {
-    load_samples(temp_ic5, temp_ic6, temp_ic7);
-
-    // Exp table to for the subphase
+    // Exp table for the subphase
     // TODO: This is bit accurate, but I want to believe there is a better way to compute this function
     for (size_t i = 0; i < 0x10000; i++)
     {
@@ -165,9 +154,9 @@ SoundChip::SoundChip(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7)
 }
 
 
-s32 SoundChip::update()
+int32_t SoundChip::update()
 {
-    s32 result = 0;
+    int32_t result = 0;
     
     for (size_t voiceI = 0; voiceI < NUM_VOICES; voiceI++)
     {
@@ -304,79 +293,11 @@ s32 SoundChip::update()
     return result;
 }
 
-void SoundChip::load_samples(const u8 *temp_ic5, const u8 *temp_ic6, const u8 *temp_ic7)
-{
-    u8 ic5[0x20000];
-    u8 ic6[0x20000];
-    u8 ic7[0x20000];
-    for (size_t srcpos = 0x00; srcpos < 0x20000; srcpos++) {
-		ic5[srcpos] = UNSCRAMBLE_DATA_WAVE(temp_ic5[UNSCRAMBLE_ADDR_WAVE(srcpos)]);
-	}
-	for (size_t srcpos = 0x00; srcpos < 0x20000; srcpos++) {
-		ic6[srcpos] = UNSCRAMBLE_DATA_WAVE(temp_ic6[UNSCRAMBLE_ADDR_WAVE(srcpos)]);
-	}
-	for (size_t srcpos = 0x00; srcpos < 0x20000; srcpos++) {
-		ic7[srcpos] = UNSCRAMBLE_DATA_WAVE(temp_ic7[UNSCRAMBLE_ADDR_WAVE(srcpos)]);
-	}
-
-    // Wave rom values
-    for (size_t i = 0; i < 0x20000; i++)
-    {
-        size_t descrambled_i = (
-            ((i >> 0) & 1) << 0 |
-            ((~i >> 1) & 1) << 1 |
-            ((i >> 2) & 1) << 2 |
-            ((~i >> 3) & 1) << 3 |
-            ((i >> 4) & 1) << 4 |
-            ((~i >> 5) & 1) << 5 |
-            ((i >> 6) & 1) << 6 |
-            ((i >> 7) & 1) << 7 |
-            ((~i >> 8) & 1) << 8 |
-            ((~i >> 9) & 1) << 9 |
-            ((i >> 10) & 1) << 10 |
-            ((i >> 11) & 1) << 11 |
-            ((i >> 12) & 1) << 12 |
-            ((i >> 13) & 1) << 13 |
-            ((i >> 14) & 1) << 14 |
-            ((i >> 15) & 1) << 15 |
-            ((i >> 16) & 1) << 16
-        );
-
-        uint16_t exp_sample = (
-            ((ic5[descrambled_i] >> 0) & 1) << 13 |
-            ((ic6[descrambled_i] >> 4) & 1) << 12 |
-            ((ic7[descrambled_i] >> 4) & 1) << 11 |
-            ((~ic6[descrambled_i] >> 0) & 1) << 10 |
-            ((ic7[descrambled_i] >> 7) & 1) << 9 |
-            ((ic5[descrambled_i] >> 7) & 1) << 8 |
-            ((~ic5[descrambled_i] >> 5) & 1) << 7 |
-            ((ic6[descrambled_i] >> 2) & 1) << 6 |
-            ((ic7[descrambled_i] >> 2) & 1) << 5 |
-            ((ic7[descrambled_i] >> 1) & 1) << 4 |
-            ((~ic5[descrambled_i] >> 1) & 1) << 3 |
-            ((ic5[descrambled_i] >> 3) & 1) << 2 |
-            ((ic6[descrambled_i] >> 5) & 1) << 1 |
-            ((~ic6[descrambled_i] >> 7) & 1) << 0
-        );
-        bool exp_sign = (~ic7[descrambled_i] >> 3) & 1;
-        samples_exp[i] = exp_sample;
-        samples_exp_sign[i] = exp_sign;
-
-        uint16_t delta_sample = (
-            ((~ic7[descrambled_i] >> 6) & 1) << 8 |
-            ((ic5[descrambled_i] >> 4) & 1) << 7 |
-            ((ic7[descrambled_i] >> 0) & 1) << 6 |
-            ((~ic6[descrambled_i] >> 3) & 1) << 5 |
-            ((ic5[descrambled_i] >> 2) & 1) << 4 |
-            ((~ic5[descrambled_i] >> 6) & 1) << 3 |
-            ((ic6[descrambled_i] >> 6) & 1) << 2 |
-            ((ic7[descrambled_i] >> 5) & 1) << 1 |
-            ((~ic6[descrambled_i] >> 7) & 1) << 0
-        );
-        bool delta_sign = (ic6[descrambled_i] >> 1) & 1;
-        samples_delta[i] = delta_sample;
-        samples_delta_sign[i] = delta_sign;
-    }
+void SoundChip::loadSamples(const SampleData &data) {
+    std::copy(data.exp, data.exp + 0x20000, samples_exp);
+    std::copy(data.exp_sign, data.exp_sign + 0x20000, samples_exp_sign);
+    std::copy(data.delta, data.delta + 0x20000, samples_delta);
+    std::copy(data.delta_sign, data.delta_sign + 0x20000, samples_delta_sign);
 }
 
 // ============================================================================

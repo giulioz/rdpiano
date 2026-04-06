@@ -12,52 +12,43 @@
  */
 
 #include <cstdio>
-#include <cstdlib>
 #include <cstring>
-#include <cstdarg>
 #include <atomic>
+#include <memory>
+#include <vector>
 
 #define SDL_MAIN_HANDLED
 #include "SDL.h"
 #include <portmidi.h>
 
 #include "synth_firmware.h"
-#include "sound_chip.h"
+#include "bitswap.h"
 
 // ============================================================================
 // Globals
 // ============================================================================
 
-static SynthFirmware *firmware = nullptr;
-static SoundChip *sound_chip = nullptr;
-PatchSet patch_set;
+static std::unique_ptr<SynthFirmware> firmware;
+static PatchSet patch_set;
 static SDL_AudioDeviceID sdl_audio;
 static SDL_SpinLock fw_lock;
 static std::atomic<bool> quit_requested{false};
-static int current_sample_rate = 20000;
 static constexpr int OUTPUT_SCALE = 4;
 
 // For MKS-20: extra sample ROMs for patches 3-7
-static uint8_t *ic5b_data = nullptr, *ic6b_data = nullptr, *ic7b_data = nullptr;
+static std::vector<uint8_t> ic5b_data, ic6b_data, ic7b_data;
 static bool has_rom_set_b = false;
 
 // ============================================================================
 // ROM loading
 // ============================================================================
 
-template<int W> static unsigned bitswap(unsigned val, ...) {
-    va_list ap; va_start(ap, val); int bits[W];
-    for (int i = W-1; i >= 0; i--) bits[i] = va_arg(ap, int);
-    va_end(ap); unsigned r = 0;
-    for (int i = 0; i < W; i++) if (val & (1 << bits[i])) r |= (1 << i);
-    return r;
-}
-
-static uint8_t* load_rom(const char *path, size_t sz) {
+static std::vector<uint8_t> load_rom(const char *path, size_t sz) {
     FILE *f = fopen(path, "rb");
-    if (!f) { fprintf(stderr, "Error opening %s\n", path); return nullptr; }
-    uint8_t *d = (uint8_t*)malloc(sz);
-    fread(d, 1, sz, f); fclose(f);
+    if (!f) { fprintf(stderr, "Error opening %s\n", path); return {}; }
+    std::vector<uint8_t> d(sz);
+    fread(d.data(), 1, sz, f);
+    fclose(f);
     return d;
 }
 
@@ -66,21 +57,63 @@ static void descramble_params(const uint8_t *src, uint8_t *dst, size_t size) {
         dst[i] = bitswap<8>(src[bitswap<17>(i,16,15,13,12,14,11,8,9,10,7,6,5,4,3,2,1,0)],7,0,6,1,5,2,4,3);
 }
 
+static void descramble_wave_rom(const uint8_t *src, uint8_t *dst, size_t size) {
+    for (size_t i = 0; i < size; i++) {
+        uint32_t addr = (BIT(i, 16) << 16) | (BIT(i, 15) << 15) | (BIT(i, 14) << 14) |
+                        (BIT(i, 1) << 13)  | (BIT(i, 4) << 12)  | (BIT(i, 9) << 11)  |
+                        (BIT(i, 5) << 10)  | (BIT(i, 10) << 9)  | (BIT(i, 3) << 8)   |
+                        (BIT(i, 0) << 7)   | (BIT(i, 6) << 6)   | (BIT(i, 11) << 5)  |
+                        (BIT(i, 7) << 4)   | (BIT(i, 2) << 3)   | (BIT(i, 12) << 2)  |
+                        (BIT(i, 8) << 1)   | (BIT(i, 13) << 0);
+        dst[i] = src[addr];
+    }
+}
+
+static SampleData parse_wave_roms(const uint8_t *ic5, const uint8_t *ic6, const uint8_t *ic7) {
+    SampleData data;
+    for (size_t i = 0; i < 0x20000; i++) {
+        size_t di = (
+            ((i >> 0) & 1) << 0  | ((~i >> 1) & 1) << 1  | ((i >> 2) & 1) << 2  |
+            ((~i >> 3) & 1) << 3 | ((i >> 4) & 1) << 4   | ((~i >> 5) & 1) << 5 |
+            ((i >> 6) & 1) << 6  | ((i >> 7) & 1) << 7   | ((~i >> 8) & 1) << 8 |
+            ((~i >> 9) & 1) << 9 | ((i >> 10) & 1) << 10 | ((i >> 11) & 1) << 11 |
+            ((i >> 12) & 1) << 12 | ((i >> 13) & 1) << 13 | ((i >> 14) & 1) << 14 |
+            ((i >> 15) & 1) << 15 | ((i >> 16) & 1) << 16
+        );
+        data.exp[i] = (
+            ((ic5[di] >> 0) & 1) << 13 | ((ic6[di] >> 4) & 1) << 12 |
+            ((ic7[di] >> 4) & 1) << 11 | ((~ic6[di] >> 0) & 1) << 10 |
+            ((ic7[di] >> 7) & 1) << 9  | ((ic5[di] >> 7) & 1) << 8 |
+            ((~ic5[di] >> 5) & 1) << 7 | ((ic6[di] >> 2) & 1) << 6 |
+            ((ic7[di] >> 2) & 1) << 5  | ((ic7[di] >> 1) & 1) << 4 |
+            ((~ic5[di] >> 1) & 1) << 3 | ((ic5[di] >> 3) & 1) << 2 |
+            ((ic6[di] >> 5) & 1) << 1  | ((~ic6[di] >> 7) & 1) << 0
+        );
+        data.exp_sign[i] = (~ic7[di] >> 3) & 1;
+        data.delta[i] = (
+            ((~ic7[di] >> 6) & 1) << 8 | ((ic5[di] >> 4) & 1) << 7 |
+            ((ic7[di] >> 0) & 1) << 6  | ((~ic6[di] >> 3) & 1) << 5 |
+            ((ic5[di] >> 2) & 1) << 4  | ((~ic5[di] >> 6) & 1) << 3 |
+            ((ic6[di] >> 6) & 1) << 2  | ((ic7[di] >> 5) & 1) << 1 |
+            ((~ic6[di] >> 7) & 1) << 0
+        );
+        data.delta_sign[i] = (ic6[di] >> 1) & 1;
+    }
+    return data;
+}
+
 // ============================================================================
 // Audio callback
 // ============================================================================
 
 void audio_callback(void *, Uint8 *stream, int len) {
-    int16_t *out = (int16_t *)stream;
+    auto *out = reinterpret_cast<int16_t *>(stream);
     int samples = len / 4;  // stereo 16-bit
 
     SDL_AtomicLock(&fw_lock);
-    bool sr32 = firmware->sampleRate32k;
     for (int i = 0; i < samples; i++) {
         int32_t raw = firmware->generateSample() / OUTPUT_SCALE;
-        if (raw > 32767) raw = 32767;
-        if (raw < -32768) raw = -32768;
-        int16_t s = (int16_t)raw;
+        int16_t s = static_cast<int16_t>(std::clamp(raw, -32768, 32767));
         out[i * 2] = s;
         out[i * 2 + 1] = s;
     }
@@ -135,7 +168,6 @@ void MIDI_Quit() {
 // Maps ASDF... row to white keys, WER... row to black keys
 // ============================================================================
 
-// QWERTY keyboard → MIDI note mapping (middle octave starting at C4=60)
 static int key_to_note(SDL_Keycode key) {
     switch (key) {
         // Lower row: C4-B4 white keys
@@ -195,6 +227,12 @@ void handle_keyboard(SDL_Event &ev) {
             send_midi(0xB0, 64, 127);
             printf("Sustain ON\n");
         }
+        if (ev.key.keysym.sym == SDLK_PERIOD) {
+            SDL_AtomicLock(&fw_lock);
+            firmware->setTuning(100);
+            SDL_AtomicUnlock(&fw_lock);
+            printf("Tuning changed\n");
+        }
     }
     if (ev.type == SDL_KEYUP) {
         int note = key_to_note(ev.key.keysym.sym);
@@ -219,11 +257,11 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    uint8_t *ic5 = load_rom(argv[1], 0x20000);
-    uint8_t *ic6 = load_rom(argv[2], 0x20000);
-    uint8_t *ic7 = load_rom(argv[3], 0x20000);
-    uint8_t *paramsrom_raw = load_rom(argv[4], 0x20000);
-    if (!ic5 || !ic6 || !ic7 || !paramsrom_raw) return 1;
+    auto ic5 = load_rom(argv[1], 0x20000);
+    auto ic6 = load_rom(argv[2], 0x20000);
+    auto ic7 = load_rom(argv[3], 0x20000);
+    auto paramsrom_raw = load_rom(argv[4], 0x20000);
+    if (ic5.empty() || ic6.empty() || ic7.empty() || paramsrom_raw.empty()) return 1;
 
     bool is_rd200 = (strcmp(argv[5], "rd200") == 0);
     auto fmt = is_rd200 ? ParamsRomFormat::RD200 : ParamsRomFormat::MKS20;
@@ -232,19 +270,26 @@ int main(int argc, char *argv[]) {
         ic5b_data = load_rom(argv[6], 0x20000);
         ic6b_data = load_rom(argv[7], 0x20000);
         ic7b_data = load_rom(argv[8], 0x20000);
-        has_rom_set_b = (ic5b_data && ic6b_data && ic7b_data);
+        has_rom_set_b = (!ic5b_data.empty() && !ic6b_data.empty() && !ic7b_data.empty());
         if (has_rom_set_b)
             printf("MKS-20 mode: ROM set B loaded for patches 3-7\n");
     }
 
-    // Descramble params ROM
+    // Descramble and parse ROMs
     uint8_t paramsrom[0x20000];
-    descramble_params(paramsrom_raw, paramsrom, 0x20000);
+    descramble_params(paramsrom_raw.data(), paramsrom, 0x20000);
 
-    // Parse patches and create firmware
-    sound_chip = new SoundChip(ic5, ic6, ic7);
+    std::vector<uint8_t> ic5d(0x20000), ic6d(0x20000), ic7d(0x20000);
+    descramble_wave_rom(ic5.data(), ic5d.data(), 0x20000);
+    descramble_wave_rom(ic6.data(), ic6d.data(), 0x20000);
+    descramble_wave_rom(ic7.data(), ic7d.data(), 0x20000);
+
+    SampleData samples = parse_wave_roms(ic5d.data(), ic6d.data(), ic7d.data());
     patch_set.load(paramsrom, fmt);
-    firmware = new SynthFirmware(*sound_chip);
+
+    // Create firmware and load data
+    firmware = std::make_unique<SynthFirmware>();
+    firmware->loadSamples(samples);
     firmware->loadPatch(patch_set.patches[0]);
 
     printf("%s mode. Send MIDI to 'RdPiano Native' virtual port.\n",
@@ -260,7 +305,7 @@ int main(int argc, char *argv[]) {
 
     SDL_AudioSpec spec = {}, actual = {};
     spec.format = AUDIO_S16SYS;
-    spec.freq = 20000;  // will be updated per program
+    spec.freq = 20000;
     spec.channels = 2;
     spec.callback = audio_callback;
     spec.samples = 256;
@@ -309,10 +354,6 @@ int main(int argc, char *argv[]) {
     MIDI_Quit();
     SDL_Quit();
 
-    delete firmware;
-    delete sound_chip;
-    free(ic5); free(ic6); free(ic7); free(paramsrom_raw);
-    if (ic5b_data) { free(ic5b_data); free(ic6b_data); free(ic7b_data); }
-
+    // unique_ptrs clean up automatically, vectors too
     return 0;
 }

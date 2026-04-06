@@ -8,7 +8,6 @@
 #pragma once
 #include <cstdint>
 #include <vector>
-#include <cstring>
 #include "constants.h"
 
 enum class ParamsRomFormat {
@@ -60,8 +59,6 @@ struct PatchData {
 // ============================================================================
 // IC18 ROM parser
 // ============================================================================
-
-enum class ParamsRomFormat;
 
 struct PatchSet {
     PatchData patches[NUM_PROGRAMS];

@@ -1,20 +1,26 @@
-#ifndef SOUND_CHIP_H
-#define SOUND_CHIP_H
+#pragma once
 
 #include <cstdint>
 #include <functional>
-#include "mame_utils.h"
 #include "constants.h"
+
+// Parsed wave ROM sample data (ROM-independent after parsing)
+struct SampleData {
+  uint16_t exp[0x20000];
+  bool exp_sign[0x20000];
+  uint16_t delta[0x20000];
+  bool delta_sign[0x20000];
+};
 
 class SoundChip {
 public:
-  SoundChip(const u8 *ic5, const u8 *ic6, const u8 *ic7);
+  SoundChip();
+
+  // Load parsed sample data
+  void loadSamples(const SampleData &data);
 
   // Audio generation: produce one sample
-  s32 update();
-
-  // Reload sample ROMs
-  void load_samples(const u8 *ic5, const u8 *ic6, const u8 *ic7);
+  int32_t update();
 
   // Voice/part register API
   void setPitch(int voice, int part, uint16_t pitch);
@@ -29,10 +35,10 @@ public:
   std::function<void(int voice, int part)> onEnvelopeIRQ;
 
 private:
-  uint16_t samples_exp[0x20000];
-  bool samples_exp_sign[0x20000];
-  uint16_t samples_delta[0x20000];
-  bool samples_delta_sign[0x20000];
+  uint16_t samples_exp[0x20000] = {};
+  bool samples_exp_sign[0x20000] = {};
+  uint16_t samples_delta[0x20000] = {};
+  bool samples_delta_sign[0x20000] = {};
 
   uint32_t phase_exp_table[0x10000];
   uint16_t samples_exp_table[0x8000];
@@ -52,5 +58,3 @@ private:
 
   SA_Part m_parts[NUM_VOICES][PARTS_PER_VOICE_MEM];
 };
-
-#endif

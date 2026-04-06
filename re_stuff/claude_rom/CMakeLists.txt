@@ -12,10 +12,6 @@ add_library(synth_firmware STATIC synth_firmware.cpp patch_data.cpp)
 target_include_directories(synth_firmware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(synth_firmware PUBLIC sound_chip)
 
-# WAV export (standalone, no EMU dependency)
-add_executable(export_wav export_wav.cpp)
-target_link_libraries(export_wav PRIVATE synth_firmware)
-
 # Standalone player (SDL2 + optional PortMidi)
 find_package(SDL2 QUIET)
 if(NOT SDL2_FOUND)

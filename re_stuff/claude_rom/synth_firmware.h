@@ -9,13 +9,14 @@
 #pragma once
 #include <cstdint>
 #include "patch_data.h"
-#include "constants.h"
-
-class SoundChip;
+#include "sound_chip.h"
 
 class SynthFirmware {
 public:
-    explicit SynthFirmware(SoundChip &chip);
+    SynthFirmware();
+
+    // Load parsed wave ROM sample data. Can be called multiple times (e.g. MKS-20 ROM set switching).
+    void loadSamples(const SampleData &data);
 
     // Load a patch (parsed from IC18). Stops all voices.
     void loadPatch(const PatchData &patch);
@@ -42,10 +43,10 @@ public:
     bool sampleRate32k = false;
 
 private:
-    SoundChip &m_chip;
+    SoundChip m_chip;
     const PatchData *m_patch = nullptr;
 
-    // ROM tables (from rd200_tables.h, loaded once in constructor)
+    // ROM tables (loaded once in constructor)
     struct ProgramConfig { uint8_t voice_mask, release_threshold, release_param; };
     ProgramConfig m_program_config[NUM_PROGRAMS];
     uint8_t m_env_scale[NUM_ENV_SCALE_TABLES][NUM_ENV_SCALE_ENTRIES];
@@ -87,9 +88,6 @@ private:
     void kill_voice(int vi);
     void all_voices_off();
     void voice_gc();
-
-    void chip_write(int voice, int part, int field, uint8_t value);
-    void chip_write16(int voice, int part, int field, uint16_t value);
 
     void on_envelope_irq(int voice_id, int part_id);
     uint16_t interpolate(const EnvChainEntry &e, uint8_t wp_double, uint8_t vel_level);
