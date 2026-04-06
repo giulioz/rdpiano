@@ -1,805 +1,306 @@
 /*
- * synth_firmware.cpp - Native C++ reimplementation of the RD200 CPU B firmware
+ * synth_firmware.cpp - RD200 CPU B sound engine (native C++ reimplementation)
  */
 
 #include "synth_firmware.h"
-#include "../../librdpiano/include/sound_chip.h"
+#include "sound_chip.h"
 #include "rd200_tables.h"
 #include <cstring>
-#include <algorithm>
 
 // ============================================================================
-// Construction / Reset
+// Construction
 // ============================================================================
 
-SynthFirmware::SynthFirmware(SoundChip &chip,
-                             const uint8_t *params_rom_descrambled,
-                             ParamsRomFormat format)
-    : m_chip(chip), m_params_rom(params_rom_descrambled), m_rom_format(format)
-{
-    // Load from rd200_tables.h (extracted from CPU B ROM)
-    for (int i = 0; i < 8; i++) {
-        m_program_config[i].voice_mask = cpub_program_config[i][0];
-        m_program_config[i].release_threshold = cpub_program_config[i][1];
-        m_program_config[i].release_param = cpub_program_config[i][2];
-    }
+SynthFirmware::SynthFirmware(SoundChip &chip) : m_chip(chip) {
+    for (int i = 0; i < 8; i++)
+        m_program_config[i] = {cpub_program_config[i][0], cpub_program_config[i][1], cpub_program_config[i][2]};
     for (int p = 0; p < 16; p++)
         memcpy(m_env_scale[p], cpub_env_scale_tables[p], 64);
 
-    if (m_rom_format == ParamsRomFormat::RD200) {
-        // RD200: IC18 has a real program table at offset 0.
-        // Map all 4 banks directly: IC18 bank N → params_emu slot N
-        //   latch=0 → params_emu[0x0000-0x7FFF] = IC18[0x0000-0x7FFF]
-        //   latch=1 → params_emu[0x8000-0xFFFF] = IC18[0x8000-0xFFFF]
-        //   latch=2 → params_emu[0x10000-0x17FFF] = IC18[0x10000-0x17FFF]
-        //   latch=3 → params_emu[0x18000-0x1FFFF] = IC18[0x18000-0x1FFFF]
-        // Firmware reads program table from latch=0, addr 0x4000+pgm*3
-        memcpy(m_params_emu, params_rom_descrambled, 0x20000);
-    } else {
-        // MKS-20: IC18 has no program table — patches are at hardcoded offsets.
-        // Map all 4 banks, then create a fake program table at bank 0
-        // with entries pointing to each patch's actual location.
-        //
-        // MKS-20 patch offsets in IC18 (same layout as RD200 but without header):
-        //   0: 0x00000  1: 0x03C20  2: 0x08000  3: 0x0AB50
-        //   4: 0x10000  5: 0x14260  6: 0x18000  7: 0x1BEF0
-        // From JUCE plugin patchToOffset[] (matching program button order)
-        static const uint32_t mks20_offsets[8] = {
-            0x000000, 0x008000, 0x010000, 0x018000,
-            0x003C20, 0x00AB50, 0x014260, 0x01BEF0
-        };
+    for (int v = 0; v < 16; v++)
+        for (int p = 0; p < 16; p++)
+            m_chip.clearPart(v, p);
 
-        // Copy all 4 banks (full 128KB) to slots 0-3
-        memcpy(m_params_emu, params_rom_descrambled, 0x20000);
-
-        // Overwrite the first 24 bytes (at bank 0 offset 0) with a fake program table.
-        // Each entry: {bank, addr_hi, addr_lo} where addr = 0x4000 + in-bank offset
-        for (int pgm = 0; pgm < 8; pgm++) {
-            uint32_t off = mks20_offsets[pgm];
-            uint8_t bank = off / 0x8000;
-            uint16_t addr = 0x4000 + (off % 0x8000);
-            m_params_emu[pgm * 3 + 0] = bank;
-            m_params_emu[pgm * 3 + 1] = (addr >> 8) & 0xFF;
-            m_params_emu[pgm * 3 + 2] = addr & 0xFF;
-        }
-    }
-
-    reset();
-}
-
-void SynthFirmware::reset()
-{
-    m_current_program = 0;
-    m_velocity_mode = 0;
-    m_soft_pedal = 0;
-    m_env_init_value = 0xFF;
-    m_tuning_value = 0;
-    m_tuning_prev = 0;
-    m_bank_latch = 0;
-    m_num_active_parts = 0x10;
-    m_num_voices = 0;
     m_voice_rr = 0;
-    for (int i = 0; i < 16; i++) m_voice_order[i] = i;
-    m_global_env_offset = 0;
-    m_release_mask_override = 0;
+    for (int i = 0; i < NUM_VOICES; i++) m_voice_order[i] = i;
+}
+
+// ============================================================================
+// Load patch
+// ============================================================================
+
+void SynthFirmware::loadPatch(const PatchData &patch) {
+    all_voices_off();
+    m_patch = &patch;
+    sampleRate32k = !(patch.flags & 0x04);
+
+    m_voice_release_mask = 0;
+    m_release_threshold = 0;
+    m_release_param = 0;
+
+    m_voice_rr = 0;
+    for (int i = 0; i < NUM_VOICES; i++) { m_voice_order[i] = i; m_voices[i] = Voice(); }
     m_sustain_mode = 0;
-    memset(m_sched_rr, 0, sizeof(m_sched_rr));
-    while (!m_cmd_queue.empty()) m_cmd_queue.pop();
-    for (int i = 0; i < MAX_VOICES; i++)
-        m_voices[i] = Voice();
-
-    // Initialize sound chip to silence (matches firmware boot at E026-E0B9)
-    // Set all voice/part registers to produce no sound
-    for (int v = 0; v < 16; v++) {
-        for (int p = 0; p < 16; p++) {
-            write_sound_chip(v, p, 0, 0x00);  // pitch_hi = 0
-            write_sound_chip(v, p, 1, 0x00);  // pitch_lo = 0
-            write_sound_chip(v, p, 2, 0x00);  // wave_loop = 0
-            write_sound_chip(v, p, 3, 0x00);  // wave_high = 0
-            write_sound_chip(v, p, 4, 0x00);  // env_dest = 0
-            write_sound_chip(v, p, 5, 0x00);  // env_speed = 0
-            write_sound_chip(v, p, 6, 0x00);  // flags = 0
-            write_sound_chip(v, p, 7, 0xFF);  // env_offset = 0xFF
-        }
-    }
 }
 
 // ============================================================================
-// IC18 Params Access (matches EMU's read_byte)
+// Audio generation
 // ============================================================================
 
-uint8_t SynthFirmware::params_read(uint32_t cpu_addr) const
-{
-    // IC18 params ROM: 0x4000-0xBFFF
-    if (cpu_addr >= 0x4000 && cpu_addr <= 0xBFFF)
-        return m_params_emu[(cpu_addr - 0x4000) | ((m_bank_latch & 3) << 15)];
-    // CPU B program ROM: 0xC000-0xFFFF
-    // IC18 chain pointers sometimes reference this range. The data there is
-    // firmware code reinterpreted as envelope parameters. In practice these
-    // parts produce near-silent or short transient sounds. Return 0x00
-    // which terminates the envelope chain (env_speed=0 → chain ends).
-    // RAM (0x0000-0x3FFF): also zeroed (silent envelope chains)
-    return 0x00;
-}
-
-// ============================================================================
-// Bilinear interpolation (ZEB16)
-// chain[0]=speed_lo_vel, chain[1]=dest_lo_wp, chain[2]=speed_hi_vel, chain[3]=dest_hi_wp
-// Returns: high byte = env_speed blend, low byte = env_dest blend
-// Written to sound chip as [field4=A=speed_blend, field5=B=dest_blend]
-// ============================================================================
-
-// Envelope scaling lookup (E92D pattern)
-// For valid indices (0-30 even): use the 16 extracted scaling tables
-// For overflow indices (>30): the firmware reads past the table into ROM code,
-// which mostly resolves to unmapped addresses returning 0xFF
-uint8_t SynthFirmware::lookup_env_scaling(uint8_t scaling_idx, uint8_t wp_quarter)
-{
-    // Valid range: scaling_idx = 0,2,4,...,30 → table indices 0-15
-    if (scaling_idx <= 30 && (scaling_idx & 1) == 0) {
-        int table = scaling_idx / 2;
-        int idx = (wp_quarter < 64) ? wp_quarter : 63;
-        return m_env_scale[table][idx];
+int32_t SynthFirmware::generateSample() {
+    voice_gc();
+    int guard = 0;
+    while (m_chip.irqTriggered && guard++ < 32) {
+        m_chip.irqTriggered = false;
+        uint8_t id = m_chip.getIrqId();
+        on_envelope_irq(id >> 4, id & 0x0F);
     }
-    // Overflow: firmware reads garbage from adjacent ROM data.
-    // In practice, most overflow pointers resolve to addresses outside
-    // the ROM range (0xE000-0xFFFF), returning 0xFF from unmapped memory.
-    return 0xFF;
-}
-
-uint16_t SynthFirmware::interpolate_envelope(uint16_t chain_addr, uint8_t wp_double, uint8_t vel_level)
-{
-    uint8_t c0 = params_read(chain_addr);
-    uint8_t c1 = params_read(chain_addr + 1);
-    uint8_t c2 = params_read(chain_addr + 2);
-    uint8_t c3 = params_read(chain_addr + 3);
-
-    // Wave param blend → env_dest (high byte of first MUL result)
-    uint8_t env_dest;
-    if (wp_double == 0) {
-        env_dest = c1;  // no blend, use low-wp value (ZEB12)
-    } else {
-        uint16_t blend = (uint16_t)wp_double * c3 + (uint16_t)(256 - wp_double) * c1;
-        env_dest = blend >> 8;
-    }
-
-    // Velocity blend → env_speed
-    uint8_t env_speed;
-    if (vel_level == 0) {
-        env_speed = c0;  // no blend, use low-vel value (ZEB3B)
-    } else {
-        uint16_t blend = (uint16_t)vel_level * c2 + (uint16_t)(256 - vel_level) * c0;
-        env_speed = blend >> 8;
-    }
-
-    // Firmware does STD $04,X: A→field4(env_dest), B→field5(env_speed)
-    // ZEB16: A = wp_blend (used for env_dest), pushed then pulled into B
-    //        velocity blend result ends in A
-    // So return: high byte = vel_blend → field4 = env_dest
-    //            low byte = wp_blend → field5 = env_speed
-    // Wait - the firmware PUSHES wp_blend, does vel_blend into A, PULB gets wp_blend into B
-    // Final: A = vel_blend, B = wp_blend
-    // STD: field4(env_dest) = A = vel_blend, field5(env_speed) = B = wp_blend
-    // So the VELOCITY blend determines env_dest and WAVE_PARAM blend determines env_speed!
-    return (env_speed << 8) | env_dest;  // env_speed=vel_blend→A→field4, env_dest=wp_blend→B→field5
-}
-
-// ============================================================================
-// External API
-// ============================================================================
-
-void SynthFirmware::sendMidiCmd(uint8_t status, uint8_t data1, uint8_t data2)
-{
-    // CPU A always sends F0,05,01 during normal operation (E27E in CPU A ROM).
-    // This sets release_mask_override=1, which forces release_param/threshold to 0.
-    // Ensure it's set on first use.
-    if (m_release_mask_override == 0) {
-        cmd_f0_config(0x05, 0x01);
-    }
-
-    uint8_t cmd = status >> 4;
-    if (cmd == 0xC) {
-        push_command(0x30 | (data1 & 0x07));
-    } else if (cmd == 0x8 || (cmd == 0x9 && data2 == 0)) {
-        push_command(0xB0, data1, 0x00);
-    } else if (cmd == 0x9) {
-        push_command(0xC0, data1, data2);
-    } else if (cmd == 0xB && data1 == 64) {
-        push_command(0x50 | (data2 >= 64 ? 0x0F : 0x00));
-    }
-}
-
-void SynthFirmware::push_command(uint8_t cmd) { m_cmd_queue.push(cmd); }
-void SynthFirmware::push_command(uint8_t cmd, uint8_t d1, uint8_t d2) {
-    m_cmd_queue.push(cmd); m_cmd_queue.push(d1); m_cmd_queue.push(d2);
-}
-
-int32_t SynthFirmware::generate_next_sample(bool sampleRate32)
-{
-    process_commands();
-    cmd_voice_update_tick();
-
-    // Process all pending envelope IRQs (multiple parts may complete per sample)
-    int irq_guard = 0;
-    while (m_chip.m_irq_triggered && irq_guard++ < 32) {
-        m_chip.m_irq_triggered = false;
-        uint8_t irq_id = m_chip.read(0);
-        on_envelope_irq(irq_id >> 4, irq_id & 0x0F);
-    }
-
     return m_chip.update();
 }
 
 // ============================================================================
-// Command Processing
+// Envelope helpers
 // ============================================================================
 
-void SynthFirmware::process_commands()
-{
-    while (!m_cmd_queue.empty()) {
-        uint8_t cmd = m_cmd_queue.front(); m_cmd_queue.pop();
-        if (cmd & 0x80) {
-            if (m_cmd_queue.size() < 2) break;
-            uint8_t d1 = m_cmd_queue.front(); m_cmd_queue.pop();
-            uint8_t d2 = m_cmd_queue.front(); m_cmd_queue.pop();
-            process_command_3byte(cmd, d1, d2);
-        } else {
-            process_command(cmd);
-        }
-    }
+uint16_t SynthFirmware::interpolate(const EnvChainEntry &e, uint8_t wp2, uint8_t vl) {
+    uint8_t d = wp2 ? (uint8_t)(((uint16_t)wp2*e.dest_hi_wp + (uint16_t)(256-wp2)*e.dest_lo_wp) >> 8) : e.dest_lo_wp;
+    uint8_t s = vl  ? (uint8_t)(((uint16_t)vl*e.speed_hi_vel + (uint16_t)(256-vl)*e.speed_lo_vel) >> 8) : e.speed_lo_vel;
+    return (s << 8) | d;
 }
 
-void SynthFirmware::process_command(uint8_t cmd) {
-    uint8_t hi = (cmd >> 4) & 0x0F, lo = cmd & 0x0F;
-    switch (hi) {
-        case 0x0: cmd_voice_reset(lo); break;
-        case 0x1: cmd_voice_update_tick(); break;
-        case 0x3: cmd_program_change(lo); break;
-        case 0x5: cmd_sustain(lo != 0); break;
-        case 0x6: cmd_sostenuto(lo != 0); break;
-        case 0x7: cmd_soft_pedal(lo != 0); break;
-        default: break;
-    }
-}
-
-void SynthFirmware::process_command_3byte(uint8_t cmd, uint8_t d1, uint8_t d2) {
-    uint8_t hi = (cmd >> 4) & 0x0F;
-    switch (hi) {
-        case 0xB: cmd_note_off(d1); break;
-        case 0xC: cmd_note_on(d1, d2, 0); break;
-        case 0xD: cmd_note_on(d1, d2, 1); break;
-        case 0xE: cmd_tuning(d1, d2); break;
-        case 0xF: cmd_f0_config(d1, d2); break;
-        default: break;
-    }
+uint8_t SynthFirmware::scale_lookup(uint8_t idx, uint8_t wpq) {
+    return (idx <= 30 && !(idx & 1)) ? m_env_scale[idx/2][wpq<64?wpq:63] : 0xFF;
 }
 
 // ============================================================================
-// Program Change (E19B)
+// Note On
 // ============================================================================
 
-void SynthFirmware::cmd_program_change(uint8_t program)
-{
-    m_velocity_mode = 0;
-    all_voices_off();
-    m_current_program = program & 0x07;
+void SynthFirmware::noteOn(uint8_t note, uint8_t velocity) {
+    if (!m_patch || velocity == 0) { noteOff(note); return; }
 
-    m_bank_latch = 0;
-    uint16_t table_addr = 0x4000 + m_current_program * 3;
-    uint8_t bank = params_read(table_addr);
-    uint16_t base_addr = (params_read(table_addr + 1) << 8) | params_read(table_addr + 2);
-
-    m_bank_latch = bank;
-    m_base_addr = base_addr;
-    m_note_map_addr = base_addr + 0x0100;
-    m_env_map_addr = base_addr + 0x091F;
-
-    m_program_flags = params_read(base_addr);
-
-    // bit2=1 → 16 parts, ~20kHz (more CPU time per sample = more parts)
-    // bit2=0 → 10 parts, 32kHz (less CPU time per sample = fewer parts)
-    if (m_program_flags & 0x04) {
-        m_num_active_parts = 0x10;
-        m_num_parts_limit = 0x10;
-        current_sample_rate = false;  // 20kHz
-    } else {
-        m_num_active_parts = 0x0A;
-        m_num_parts_limit = 0x0A;
-        current_sample_rate = true;   // 32kHz
-    }
-
-    m_voice_release_mask = m_program_config[m_current_program].voice_mask;
-    m_release_threshold = (m_release_mask_override == 0)
-        ? m_program_config[m_current_program].release_threshold : 0;
-    m_release_param = (m_release_mask_override == 0)
-        ? m_program_config[m_current_program].release_param : 0;
-
-    // Sound chip has 16 voice slots regardless of parts-per-voice
-    m_num_voices = 16;
-    m_voice_rr = 0;
-    // Initialize indirection table: identity [0,1,...,15]
-    for (int i = 0; i < 16; i++) m_voice_order[i] = i;
-    memset(m_sched_rr, 0, sizeof(m_sched_rr));
-    for (int i = 0; i < MAX_VOICES; i++)
-        m_voices[i] = Voice();
-}
-
-// ============================================================================
-// Note On (E5A1 → ZE79B full envelope chain setup)
-// ============================================================================
-
-void SynthFirmware::cmd_note_on(uint8_t note, uint8_t velocity, uint8_t layer)
-{
-    uint8_t wave_param = params_read(m_base_addr + velocity);
-
+    uint8_t wp = m_patch->velocity_table[velocity];
     int vi = allocate_voice();
     if (vi < 0) return;
 
     Voice &v = m_voices[vi];
+    if (v.flags || v.assignment) kill_voice(vi);
 
-    // If voice is occupied, kill it first (firmware E5E9: re-trigger path)
-    if (v.flags != 0 || v.assignment != 0) {
-        kill_voice(vi);
-    }
+    v.wave_param = wp;
+    v.note = note;
 
-    v.wave_param = wave_param;
-    v.env_level = note;
-    int nparts = PARTS_PER_NOTE;
+    uint8_t wp2 = wp << 1, wpq = wp2 >> 2;
+    bool wp_hi = wp & 0x80;
 
-    // Derived values (E7C7-E7CE)
-    uint8_t wp_double = wave_param << 1;            // ASLB: wave_param * 2 (8-bit truncated)
-    uint8_t wp_quarter = wp_double >> 2;            // LSRB;LSRB: wp_double / 4 (NOT wave_param/4!)
-    // BPL ZE7C7 at E7C3: branches if wp < 0x80 (positive), skipping INX;INX
-    // So wp >= 0x80 → INX;INX → offset = 2; wp < 0x80 → offset = 0
-    uint16_t wp_offset = (wave_param & 0x80) ? 2 : 0;  // M00C4
-    // BMI at E924: branches if wp >= 0x80 (negative), skipping INX
-    // So wp >= 0x80 → no adj; wp < 0x80 → adj = 1
-    uint8_t wp_chain_adj = (wave_param & 0x80) ? 0 : 1; // env_chain offset
-
-    // Octave-wrap note (E60F-E621)
-    int adj = (int)note - 0x0F;
+    int adj = (int)note - 15;
     while (adj < 0) adj += 12;
-    while (adj > 0x62) adj -= 12;
+    while (adj > 98) adj -= 12;
+    if (adj >= (int)m_patch->note_map.size()) return;
 
-    // IC18 pointers
-    uint16_t note_entry_addr = m_note_map_addr + adj * 21;
-    uint8_t env_index = params_read(note_entry_addr);
-    uint16_t env_entry_addr = m_env_map_addr + env_index * 70;
+    const NoteMapping &nm = m_patch->note_map[adj];
+    if (nm.env_index >= (int)m_patch->env_table.size()) return;
+    const EnvSetup &es = m_patch->env_table[nm.env_index];
 
-    // env_chain_ptr base = env_entry_addr + wp_chain_adj
-    uint16_t env_chain_base = env_entry_addr + wp_chain_adj;
-
-    // --- Phase 1: Clear flags/env_offset for all parts (E7E1) ---
-    for (int p = 0; p < nparts; p++) {
-        write_sound_chip(vi, p, 6, 0x00);
-        write_sound_chip(vi, p, 7, m_env_init_value);
+    // Phase 1: Clear flags/env_offset
+    for (int p = 0; p < PARTS_PER_NOTE; p++) {
+        m_chip.setFlags(vi, p, 0x00);
+        m_chip.setEnvOffset(vi, p, m_env_init_value);
     }
 
-    // --- Phase 2: Write pitches from IC18 note mapping (E80B) ---
-    for (int p = 0; p < nparts; p++) {
-        uint8_t ph = params_read(note_entry_addr + 1 + p*2);
-        uint8_t pl = params_read(note_entry_addr + 1 + p*2 + 1);
-        uint16_t pitch = ((uint16_t)ph << 8) | pl;
-        uint16_t pitched = pitch + m_tuning_value;
-        // Store in voice RAM for re-tuning
-        v.parts[p].pitch_with_tuning = pitched;
-        write_sound_chip(vi, p, 0, pitched >> 8);
-        write_sound_chip(vi, p, 1, pitched & 0xFF);
+    // Phase 2: Pitches
+    for (int p = 0; p < PARTS_PER_NOTE; p++) {
+        uint16_t pit = nm.pitch[p] + m_tuning;
+        v.parts[p].pitch = pit;
+        m_chip.setPitch(vi, p, pit);
     }
 
-    // --- Phase 3: Write wave_loop/wave_high from IC18 envelope table (E88D) ---
-    for (int p = 0; p < nparts; p++) {
-        uint16_t part_env = env_entry_addr + p * 7;
-        uint8_t wl = params_read(part_env);
-        uint8_t wh = params_read(part_env + 1);
-        if (p == 0) wh += m_global_env_offset;  // only part 0 gets offset
-        write_sound_chip(vi, p, 2, wl);
-        write_sound_chip(vi, p, 3, wh);
+    // Phase 3: Wave addresses
+    for (int p = 0; p < PARTS_PER_NOTE; p++) {
+        uint8_t wh = es.parts[p].wave_high + (p == 0 ? m_global_env_offset : 0);
+        m_chip.setWave(vi, p, es.parts[p].wave_loop, wh);
     }
 
-    // --- Phase 3b: Write env_data field to voice RAM (E8DA) ---
-    // Reads byte [6] of each 7-byte part in the envelope table
-    // Writes to voice_ram parts at offset +0 (field0)
-    for (int p = 0; p < nparts; p++) {
-        v.parts[p].field0 = params_read(env_entry_addr + p * 7 + 6);
-    }
+    // Phase 3b: field0 (release speed base)
+    for (int p = 0; p < PARTS_PER_NOTE; p++)
+        v.parts[p].field0 = es.parts[p].field0;
 
-    // --- Phase 4: Envelope chain setup with scaling (E920-EB11) ---
-    for (int p = 0; p < nparts; p++) {
-        // Read scaling index from env_chain[part*7 + 4]
-        uint8_t scaling_idx = params_read(env_chain_base + p * 7 + 4);
+    // Phase 4: Envelope chain setup
+    for (int p = 0; p < PARTS_PER_NOTE; p++) {
+        const auto &eps = es.parts[p];
+        uint8_t si = wp_hi ? eps.scaling_idx : eps.scaling_idx_alt;
+        uint8_t vl = scale_lookup(si, wpq);
+        v.parts[p].velocity_level = vl;
 
-        // Look up velocity_level using exact firmware ROM lookup
-        uint8_t vel_level = lookup_env_scaling(scaling_idx, wp_quarter);
+        const auto *ch = wp_hi ? &eps.chain_alt : &eps.chain;
+        v.parts[p].chain = ch;
 
-        v.parts[p].velocity_level = vel_level;
-
-        // Read initial chain pointer from envelope table bytes [2-3] of this part
-        uint16_t chain_raw = (params_read(env_entry_addr + p * 7 + 2) << 8)
-                           |  params_read(env_entry_addr + p * 7 + 3);
-
-        uint16_t env_dest_speed;
-        if (chain_raw == 0) {
-            // No chain: write env_dest=0, env_speed=1
-            v.parts[p].env_chain_ptr = 0;
-            env_dest_speed = 0x0001;  // A=0x00 (speed), B=0x01 (dest)
+        if (ch->empty()) {
+            v.parts[p].chain_index = -1;
+            m_chip.setEnvelope(vi, p, 0x00, 0x01);
         } else {
-            // Adjust chain pointer by wp_offset
-            uint16_t chain_ptr = chain_raw + wp_offset;
-            v.parts[p].env_chain_ptr = chain_ptr;
-            // Bilinear interpolation
-            env_dest_speed = interpolate_envelope(chain_ptr, wp_double, vel_level);
+            v.parts[p].chain_index = 0;
+            uint16_t ds = interpolate((*ch)[0], wp2, vl);
+            m_chip.setEnvelope(vi, p, (ds >> 8) & 0xFF, ds & 0xFF);
         }
-
-        write_sound_chip(vi, p, 4, (env_dest_speed >> 8) & 0xFF);  // env_speed blend → field 4
-        write_sound_chip(vi, p, 5, env_dest_speed & 0xFF);          // env_dest blend → field 5
     }
 
-    // --- Phase 5: Final writes (EB09-EB11) ---
-    // Write flags=0xFF, env_offset=env_init_value to last active part (part nparts-1)
-    // offset $96 = part 9 fields 6,7 when nparts=10
-    {
-        int last_part = nparts - 1;
-        write_sound_chip(vi, last_part, 6, 0xFF);
-        write_sound_chip(vi, last_part, 7, m_env_init_value);
-    }
+    // Phase 5: Final marker
+    m_chip.setFlags(vi, PARTS_PER_NOTE - 1, 0xFF);
+    m_chip.setEnvOffset(vi, PARTS_PER_NOTE - 1, m_env_init_value);
 
-    // Firmware E5FF: flags = 0x81 | M00A0 (sustain state) | layer_flag
-    // bit 7=active, bit 5=sustain hold (if pedal down), bit 4=sent, bit 0=envelope
     v.flags = 0x91 | m_sustain_mode;
     v.assignment = 0x0A;
 }
 
 // ============================================================================
-// Note Off (E556)
+// Note Off
 // ============================================================================
 
-void SynthFirmware::cmd_note_off(uint8_t note)
-{
-    for (int i = 0; i < m_num_voices; i++) {
+void SynthFirmware::noteOff(uint8_t note) {
+    for (int i = 0; i < NUM_VOICES; i++) {
         Voice &v = m_voices[i];
-        if ((v.flags & 0x80) && v.env_level == note) {
+        if ((v.flags & 0x80) && v.note == note) {
             v.flags &= ~0x80;
-            if (!(v.flags & 0x20) && !(v.flags & 0x40))
-                release_voice(i);
+            if (!(v.flags & 0x20) && !(v.flags & 0x40)) release_voice(i);
             return;
         }
     }
 }
 
 // ============================================================================
-// Pedals & Config
+// Pedals & Tuning
 // ============================================================================
 
-void SynthFirmware::cmd_sustain(bool on) {
-    // Firmware E44F/E4AF
+void SynthFirmware::sustainPedal(bool on) {
     if (on) {
-        m_sustain_mode = 0x20;  // M00A0: ORed into flags during future note-on
-        for (int i = 0; i < m_num_voices; i++) {
+        m_sustain_mode = 0x20;
+        for (int i = 0; i < NUM_VOICES; i++) {
             Voice &v = m_voices[i];
-            if ((v.flags & 0xC0) == 0xC0) continue;
-            if (!(v.flags & 0x10)) continue;
-            if (v.assignment == 0) continue;
+            if ((v.flags & 0xC0) == 0xC0 || !(v.flags & 0x10) || !v.assignment) continue;
             v.flags |= 0x20;
         }
     } else {
-        m_sustain_mode = 0x00;
-        for (int i = 0; i < m_num_voices; i++) {
+        m_sustain_mode = 0;
+        for (int i = 0; i < NUM_VOICES; i++) {
             Voice &v = m_voices[i];
-            if (v.flags & 0xC0) {
-                v.flags &= ~0x30;
-            } else if (v.flags & 0x20) {
-                v.flags &= ~0x30;
-                if (v.assignment != 0) release_voice(i);
-            }
+            if (v.flags & 0xC0) v.flags &= ~0x30;
+            else if (v.flags & 0x20) { v.flags &= ~0x30; if (v.assignment) release_voice(i); }
         }
     }
 }
 
-void SynthFirmware::cmd_sostenuto(bool on) {
-    if (on) {
-        for (int i = 0; i < m_num_voices; i++)
-            if (m_voices[i].flags & 0x80) m_voices[i].flags |= 0x40;
-    } else {
-        for (int i = 0; i < m_num_voices; i++) {
-            Voice &v = m_voices[i];
-            if (v.flags & 0x40) {
-                v.flags &= ~0x40;
-                if (!(v.flags & 0x80) && !(v.flags & 0x20)) release_voice(i);
-            }
-        }
-    }
-}
-
-void SynthFirmware::cmd_soft_pedal(bool on) { m_soft_pedal = on ? 0x80 : 0x00; }
-
-void SynthFirmware::cmd_tuning(uint8_t hi, uint8_t lo) {
-    uint16_t raw = ((hi << 8) | lo) << 1;
-    raw >>= 1;
-    if (hi & 0x20) raw |= 0xC000;
-    m_tuning_value = (int16_t)raw;
-}
-
-void SynthFirmware::cmd_voice_reset(uint8_t param) { /* TODO */ }
-void SynthFirmware::cmd_param_update(uint8_t cmd, uint8_t note, uint8_t param) { /* TODO */ }
-
-void SynthFirmware::cmd_f0_config(uint8_t subcmd, uint8_t value) {
-    switch (subcmd) {
-        case 0x00: m_velocity_mode = (value == 0) ? 1 : 3; break;
-        case 0x03: m_global_env_offset = value; break;
-        case 0x04: m_bank_latch = (value == 0) ? 0 : 4; break;
-        case 0x05: m_release_mask_override = value; break;
-        default: break;
-    }
-}
-
-void SynthFirmware::cmd_voice_update_tick() {
-    if (m_velocity_mode != 0) return;
-    for (int i = 0; i < m_num_voices; i++) {
+void SynthFirmware::sostenutoPedal(bool on) {
+    if (on) { for (int i = 0; i < NUM_VOICES; i++) if (m_voices[i].flags & 0x80) m_voices[i].flags |= 0x40; }
+    else { for (int i = 0; i < NUM_VOICES; i++) {
         Voice &v = m_voices[i];
-        if (v.flags == 0) continue;
+        if (v.flags & 0x40) { v.flags &= ~0x40; if (!(v.flags & 0x80) && !(v.flags & 0x20)) release_voice(i); }
+    }}
+}
 
-        bool voice_finished = false;
+void SynthFirmware::softPedal(bool on) { m_soft_pedal = on ? 0x80 : 0; }
+void SynthFirmware::setTuning(int16_t value) { m_tuning = value; }
 
-        if ((v.flags & 0x01) && v.assignment == 0) {
-            v.flags = 0;
-            voice_finished = true;
-        } else if (!(v.flags & 0x01)) {
-            v.assignment = 0;
-        }
-
-        // Released voice with empty chains → free it
-        if (v.flags && !(v.flags & 0xE0)) {
-            bool all_done = true;
-            for (int p = 0; p < PARTS_PER_NOTE; p++) {
-                if (v.parts[p].env_chain_ptr != 0) { all_done = false; break; }
-            }
-            if (all_done) {
-                v.flags = 0;
-                v.assignment = 0;
-                voice_finished = true;
-            }
-        }
-
-        if (voice_finished) {
-            // Firmware E38F-E3BB: when a voice finishes, it moves to the front
-            // of the allocation queue and the scheduler counters advance.
-            // Move this voice to just after the round-robin pointer.
-            for (int pos = 0; pos < m_num_voices; pos++) {
-                if (m_voice_order[pos] == i) {
-                    uint8_t saved = m_voice_order[pos];
-                    if (pos > m_voice_rr) {
-                        for (int k = pos; k > m_voice_rr; k--)
-                            m_voice_order[k] = m_voice_order[k-1];
-                        m_voice_order[m_voice_rr] = saved;
-                    } else if (pos < m_voice_rr) {
-                        for (int k = pos; k < m_voice_rr - 1; k++)
-                            m_voice_order[k] = m_voice_order[k+1];
-                        m_voice_order[m_voice_rr - 1] = saved;
-                        // Adjust pointer since we shifted entries before it
-                        if (m_voice_rr > 0) m_voice_rr--;
-                    }
-                    break;
-                }
-            }
-        }
-    }
+void SynthFirmware::sendMidi(uint8_t status, uint8_t data1, uint8_t data2) {
+    uint8_t cmd = status >> 4;
+    if (cmd == 0x9 && data2 > 0) noteOn(data1, data2);
+    else if (cmd == 0x9 || cmd == 0x8) noteOff(data1);
+    else if (cmd == 0xB && data1 == 64) sustainPedal(data2 >= 64);
+    else if (cmd == 0xB && data1 == 66) sostenutoPedal(data2 >= 64);
+    else if (cmd == 0xB && data1 == 67) softPedal(data2 >= 64);
 }
 
 // ============================================================================
-// Voice Management
+// Voice management
 // ============================================================================
 
 int SynthFirmware::allocate_voice() {
-    // Firmware ZE51B: advancing pointer through indirection table.
-    // voice[0x20+pos] maps position → voice number.
-    // When voices finish, they get moved to the front of the queue
-    // (via voice_update_tick), so recently-freed voices are reused first.
-    // Higher-pitched notes decay faster → freed sooner → reused first.
-    // This naturally preserves bass notes during voice stealing.
     int vi = m_voice_order[m_voice_rr];
-    m_voice_rr = (m_voice_rr + 1) % m_num_voices;
+    m_voice_rr = (m_voice_rr + 1) % NUM_VOICES;
     return vi;
 }
 
 void SynthFirmware::release_voice(int vi) {
     Voice &v = m_voices[vi];
-    int nparts = PARTS_PER_NOTE;
-    uint8_t note_val = v.env_level;
-
-    // Compute 8 release envelope speed values (ZEB3F-EBB5)
     uint8_t rel[8];
-
-    if (note_val > m_release_threshold) {
-        // High note: use voice_release_common (EBBF)
-        // A = wave_param rotated left 3× then complemented, ANDed with mask
-        uint8_t wp = v.wave_param;
-        uint8_t a = wp;
-        // ROLA×3: rotate left through carry 3 times (effectively: a = (wp << 3) | (wp >> 5))
-        // But since ROLA uses carry, and carry starts as 0 from LDAA:
-        // Actually the firmware does LDAA $40,X which doesn't set carry, then ROLA×3
-        // ROLA shifts A left, bit 7 → carry, carry → bit 0
-        // Starting with carry=0 (from LDAA):
-        uint16_t r = (uint16_t)a << 1; // first ROLA
-        uint8_t c = (r >> 8) & 1; a = (r & 0xFE) | 0; // carry was 0
-        a = (a << 1) | c; c = (a >> 7) & 1; a &= 0xFE; a |= ((r >> 8) & 1); // hmm this is getting complicated
-
-        // Simpler: just do what the 6301 does
-        // ROLA: {C, A} <<= 1 (9-bit shift left)
-        uint16_t ca = (uint16_t)wp; // C=0 initially
-        ca = (ca << 1); // ROLA 1: C=bit7, A=A<<1
-        ca = ((ca & 0x1FE) | ((ca >> 8) & 1)) & 0x1FF; // nope...
-
-        // Let me just do it with explicit carry tracking
-        uint8_t carry = 0;
-        a = wp;
-        for (int i = 0; i < 3; i++) {
-            uint8_t new_carry = (a >> 7) & 1;
-            a = (a << 1) | carry;
-            carry = new_carry;
-        }
-        a = ~a;  // COMA
-        a &= m_voice_release_mask;  // ANDA
-
-        // voice_release_write_env: TAB, then STD to all slots
-        // A = B = same value → all 8 release values are identical
-        for (int i = 0; i < 8; i++) rel[i] = a;
-
-    } else {
-        int nb = (int)note_val - 0x15;
-        if (nb < 0) {
-            // Note < 21: all zero speeds (ZEB47 → voice_release_write_env with A=0)
-            for (int i = 0; i < 8; i++) rel[i] = 0;
-        } else {
-            // Compute base speed (EB4E-EB57)
-            uint16_t d = (uint16_t)0x76 * (uint8_t)nb;  // 118 * (note-21)
-            d <<= 2;  // ASLD×2
-            uint8_t a_val = (d >> 8) & 0xFF;
-            d = (uint16_t)a_val * m_release_param;  // MUL with release_param
-            d <<= 1;  // ASLD
-            uint8_t base = (d >> 8) & 0xFF;
-            rel[0] = base;  // release_env_lo_0
-
-            if (nb < 0x1B) {
-                // Variable increment (EB61-EB8E)
-                uint16_t d2 = (uint16_t)0x97 * (uint8_t)nb;
-                d2 <<= 3;  // ASLD×3
-                uint8_t a2 = (d2 >> 8) & 0xFF;
-                d2 = (uint16_t)a2 * 0x6D;
-                d2 >>= 6;  // LSRD×6
-                // d2 is the increment (16-bit with fraction)
-                uint16_t acc = (uint16_t)base << 8; // put base in high byte... no
-
-                // The accumulation: D starts at some value, repeatedly ADDD increment
-                // Let me trace it exactly:
-                // After STD M00CE (increment stored), then:
-                // ADDA rel_lo_0: A = (d2>>8) + base
-                // Actually D = d2 here. A = d2 high, B = d2 low.
-                uint16_t inc = d2 & 0xFFFF;
-                uint16_t acc16 = inc;  // D after STD M00CE
-                // ADDA release_env_lo_0: A = (acc16 >> 8) + base
-                uint8_t a_acc = ((acc16 >> 8) & 0xFF) + base;
-                rel[1] = a_acc;  // release_env_hi_0
-
-                acc16 = ((uint16_t)a_acc << 8) | (acc16 & 0xFF);
-                acc16 += inc;
-                rel[2] = (acc16 >> 8) & 0xFF;  // release_env_lo_1
-
-                acc16 += inc;
-                rel[3] = (acc16 >> 8) & 0xFF;  // release_env_hi_1
-
-                acc16 += inc;
-                rel[4] = (acc16 >> 8) & 0xFF;  // release_env_lo_2
-
-                acc16 += inc;
-                rel[5] = (acc16 >> 8) & 0xFF;  // release_env_hi_2
-
-                acc16 += inc;
-                rel[6] = (acc16 >> 8) & 0xFF;  // release_env_lo_3
-
-                acc16 += inc;
-                rel[7] = (acc16 >> 8) & 0xFF;  // release_env_hi_3
-            } else {
-                // Fixed increment 0x00DB (EB90-EBB5)
-                uint16_t acc16 = 0x00DB;
-                uint8_t a_acc = ((acc16 >> 8) & 0xFF) + base;  // ADDA base
-                rel[1] = a_acc;
-
-                acc16 = ((uint16_t)a_acc << 8) | (acc16 & 0xFF);
-                for (int i = 2; i < 8; i++) {
-                    acc16 += 0x00DB;
-                    rel[i] = (acc16 >> 8) & 0xFF;
-                }
-            }
-        }
+    int nb = (int)v.note - 0x15;
+    if (nb < 0) memset(rel, 0, 8);
+    else {
+        uint16_t d = (uint16_t)0x76 * (uint8_t)nb; d = (d<<2)&0xFFFF;
+        d = (uint16_t)((d>>8)&0xFF) * m_release_param; d = (d<<1)&0xFFFF;
+        uint8_t base = (d>>8)&0xFF; rel[0] = base;
+        uint16_t inc = (nb < 0x1B)
+            ? (uint16_t)(((uint16_t)((((uint16_t)0x97*(uint8_t)nb)<<3)>>8)&0xFF)*0x6D)>>6
+            : 0x00DB;
+        uint16_t acc = inc;
+        rel[1] = ((acc>>8)&0xFF)+base; acc = ((uint16_t)rel[1]<<8)|(acc&0xFF);
+        for (int i=2;i<8;i++){acc=(acc+inc)&0xFFFF; rel[i]=(acc>>8)&0xFF;}
     }
 
-    // Now write release to sound chip (EBD0-EC83)
-    // First: clear all chain pointers in voice RAM
-    for (int p = 0; p < nparts; p++)
-        v.parts[p].env_chain_ptr = 0;
-
-    // Mapping: 10 parts use 8 release values with pattern:
-    // p0→rel[0], p1→rel[1], p2→rel[2], p3→rel[3],
-    // p4→rel[4], p5→rel[5], p6→rel[6], p7→rel[7],
-    // p8→rel[0], p9→rel[0]
-    static const int rel_map[10] = {0, 1, 2, 3, 4, 5, 6, 7, 0, 0};
-
-    for (int p = 0; p < nparts; p++) {
-        uint8_t release_speed = rel[rel_map[p]];
-        // Add field0 from voice RAM with saturation
-        uint16_t sum = (uint16_t)release_speed + v.parts[p].field0;
-        if (sum > 0xFF) sum = 0xFF;
-        write_sound_chip(vi, p, 4, 0x00);          // env_dest = 0
-        write_sound_chip(vi, p, 5, (uint8_t)sum);  // env_speed
+    for (int p = 0; p < PARTS_PER_NOTE; p++) v.parts[p].chain_index = -1;
+    static const int rm[10]={0,1,2,3,4,5,6,7,0,0};
+    for (int p = 0; p < PARTS_PER_NOTE; p++) {
+        uint16_t s = (uint16_t)rel[rm[p]] + v.parts[p].field0;
+        m_chip.setEnvelope(vi, p, 0x00, (uint8_t)(s > 0xFF ? 0xFF : s));
     }
-
     v.assignment = 0x0A;
 }
 
 void SynthFirmware::kill_voice(int vi) {
-    Voice &v = m_voices[vi];
-    for (int p = 0; p < 16; p++)
-        write_sound_chip_word(vi, p, 4, 0x0000);
-    v.flags = 0;
-    v.assignment = 0;
+    for (int p = 0; p < 16; p++) m_chip.silencePart(vi, p);
+    m_voices[vi].flags = 0;
+    m_voices[vi].assignment = 0;
 }
 
 void SynthFirmware::all_voices_off() {
-    for (int i = 0; i < MAX_VOICES; i++)
-        if (m_voices[i].assignment != 0) kill_voice(i);
+    for (int i = 0; i < NUM_VOICES; i++) if (m_voices[i].assignment) kill_voice(i);
+}
+
+void SynthFirmware::voice_gc() {
+    for (int i = 0; i < NUM_VOICES; i++) {
+        Voice &v = m_voices[i];
+        if (!v.flags) continue;
+        bool done = false;
+        if ((v.flags & 1) && !v.assignment) { v.flags = 0; done = true; }
+        else if (!(v.flags & 1)) v.assignment = 0;
+        if (v.flags && !(v.flags & 0xE0)) {
+            bool all = true;
+            for (int p = 0; p < PARTS_PER_NOTE; p++) if (v.parts[p].chain_index >= 0) { all = false; break; }
+            if (all) { v.flags = 0; v.assignment = 0; done = true; }
+        }
+        if (done) {
+            for (int pos = 0; pos < NUM_VOICES; pos++) if (m_voice_order[pos] == i) {
+                uint8_t s = m_voice_order[pos];
+                if (pos > m_voice_rr) { for (int k=pos;k>m_voice_rr;k--) m_voice_order[k]=m_voice_order[k-1]; m_voice_order[m_voice_rr]=s; }
+                else if (pos < m_voice_rr) { for (int k=pos;k<m_voice_rr-1;k++) m_voice_order[k]=m_voice_order[k+1]; m_voice_order[m_voice_rr-1]=s; if (m_voice_rr>0) m_voice_rr--; }
+                break;
+            }
+        }
+    }
 }
 
 // ============================================================================
-// Sound Chip Interface
+// Envelope IRQ
 // ============================================================================
 
-void SynthFirmware::write_sound_chip(int voice, int part, int field, uint8_t value) {
-    m_chip.write((voice << 8) | (part << 4) | field, value);
-}
-void SynthFirmware::write_sound_chip_word(int voice, int part, int field, uint16_t value) {
-    write_sound_chip(voice, part, field, (value >> 8) & 0xFF);
-    write_sound_chip(voice, part, field + 1, value & 0xFF);
-}
+void SynthFirmware::on_envelope_irq(uint8_t vid, uint8_t pid) {
+    if (vid >= NUM_VOICES || pid >= PARTS_PER_NOTE) return;
+    Voice &v = m_voices[vid]; VoicePart &vp = v.parts[pid];
 
-// ============================================================================
-// Envelope IRQ (ED1A) - fires when sound chip part finishes envelope segment
-// ============================================================================
-
-void SynthFirmware::on_envelope_irq(uint8_t voice_id, uint8_t part_id)
-{
-    if (voice_id >= MAX_VOICES || part_id >= MAX_PARTS) return;
-
-    Voice &v = m_voices[voice_id];
-    VoicePart &vp = v.parts[part_id];
-
-    uint16_t chain_ptr = vp.env_chain_ptr;
-    if (chain_ptr == 0) {
-        // Chain ended: silence this part, decrement assignment
-        write_sound_chip(voice_id, part_id, 4, 0x00);
-        write_sound_chip(voice_id, part_id, 5, 0x00);
+    if (vp.chain_index < 0 || !vp.chain) {
+        m_chip.silencePart(vid, pid);
         if (v.assignment > 0) v.assignment--;
         return;
     }
 
-    // Advance chain by 6 bytes
-    uint16_t new_ptr = chain_ptr + 6;
-    vp.env_chain_ptr = new_ptr;
-
-    // Read wave_param from voice
-    uint8_t wp_double = v.wave_param << 1;
-    uint8_t vel_level = vp.velocity_level;
-
-    // Bilinear interpolation from new chain position
-    uint16_t env_ds = interpolate_envelope(new_ptr, wp_double, vel_level);
-    uint8_t env_speed = (env_ds >> 8) & 0xFF;
-    uint8_t env_dest = env_ds & 0xFF;
-
-    write_sound_chip(voice_id, part_id, 4, env_speed);
-    write_sound_chip(voice_id, part_id, 5, env_dest);
-
-    // If env_speed == 0, terminate chain (ED89-ED92)
-    if (env_speed == 0) {
-        vp.env_chain_ptr = 0;
+    vp.chain_index++;
+    if (vp.chain_index >= (int)vp.chain->size()) {
+        vp.chain_index = -1;
+        m_chip.silencePart(vid, pid);
+        if (v.assignment > 0) v.assignment--;
+        return;
     }
+
+    uint16_t ds = interpolate((*vp.chain)[vp.chain_index], v.wave_param << 1, vp.velocity_level);
+    m_chip.setEnvelope(vid, pid, (ds >> 8) & 0xFF, ds & 0xFF);
+    if (!(ds >> 8)) vp.chain_index = -1;
 }

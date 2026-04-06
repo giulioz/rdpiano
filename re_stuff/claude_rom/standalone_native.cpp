@@ -19,12 +19,10 @@
 
 #define SDL_MAIN_HANDLED
 #include "SDL.h"
-#ifndef NO_PORTMIDI
 #include <portmidi.h>
-#endif
 
 #include "synth_firmware.h"
-#include "../../librdpiano/include/sound_chip.h"
+#include "sound_chip.h"
 
 // ============================================================================
 // Globals
@@ -32,6 +30,7 @@
 
 static SynthFirmware *firmware = nullptr;
 static SoundChip *sound_chip = nullptr;
+PatchSet patch_set;
 static SDL_AudioDeviceID sdl_audio;
 static SDL_SpinLock fw_lock;
 static std::atomic<bool> quit_requested{false};
@@ -76,9 +75,9 @@ void audio_callback(void *, Uint8 *stream, int len) {
     int samples = len / 4;  // stereo 16-bit
 
     SDL_AtomicLock(&fw_lock);
-    bool sr32 = firmware->current_sample_rate;
+    bool sr32 = firmware->sampleRate32k;
     for (int i = 0; i < samples; i++) {
-        int32_t raw = firmware->generate_next_sample(sr32) / OUTPUT_SCALE;
+        int32_t raw = firmware->generateSample() / OUTPUT_SCALE;
         if (raw > 32767) raw = 32767;
         if (raw < -32768) raw = -32768;
         int16_t s = (int16_t)raw;
@@ -92,7 +91,6 @@ void audio_callback(void *, Uint8 *stream, int len) {
 // MIDI via PortMidi (optional)
 // ============================================================================
 
-#ifndef NO_PORTMIDI
 static PmStream *midiInStream = nullptr;
 
 int MIDI_Init() {
@@ -120,7 +118,7 @@ void MIDI_UpdatePortMidi() {
         uint8_t data2 = Pm_MessageData2(event.message);
 
         SDL_AtomicLock(&fw_lock);
-        firmware->sendMidiCmd(status, data1, data2);
+        firmware->sendMidi(status, data1, data2);
         SDL_AtomicUnlock(&fw_lock);
 
         printf("MIDI: %02X %02X %02X\n", status, data1, data2);
@@ -131,11 +129,6 @@ void MIDI_Quit() {
     if (midiInStream) Pm_Close(midiInStream);
     Pm_Terminate();
 }
-#else
-int MIDI_Init() { return 0; }
-void MIDI_UpdatePortMidi() {}
-void MIDI_Quit() {}
-#endif
 
 // ============================================================================
 // Computer keyboard → MIDI (always available)
@@ -176,7 +169,7 @@ static int key_to_note(SDL_Keycode key) {
 
 static void send_midi(uint8_t status, uint8_t d1, uint8_t d2) {
     SDL_AtomicLock(&fw_lock);
-    firmware->sendMidiCmd(status, d1, d2);
+    firmware->sendMidi(status, d1, d2);
     SDL_AtomicUnlock(&fw_lock);
 }
 
@@ -192,7 +185,9 @@ void handle_keyboard(SDL_Event &ev) {
         // Number keys 1-8 → program change
         if (ev.key.keysym.sym >= SDLK_1 && ev.key.keysym.sym <= SDLK_8) {
             current_program = ev.key.keysym.sym - SDLK_1;
-            send_midi(0xC0, current_program, 0);
+            SDL_AtomicLock(&fw_lock);
+            firmware->loadPatch(patch_set.patches[current_program]);
+            SDL_AtomicUnlock(&fw_lock);
             printf("Program change: %d\n", current_program);
         }
         // Space → sustain pedal
@@ -246,9 +241,11 @@ int main(int argc, char *argv[]) {
     uint8_t paramsrom[0x20000];
     descramble_params(paramsrom_raw, paramsrom, 0x20000);
 
-    // Create sound chip and firmware (no program ROM needed — uses embedded)
+    // Parse patches and create firmware
     sound_chip = new SoundChip(ic5, ic6, ic7);
-    firmware = new SynthFirmware(*sound_chip, paramsrom, fmt);
+    patch_set.load(paramsrom, fmt);
+    firmware = new SynthFirmware(*sound_chip);
+    firmware->loadPatch(patch_set.patches[0]);
 
     printf("%s mode. Send MIDI to 'RdPiano Native' virtual port.\n",
            is_rd200 ? "RD200" : "MKS-20");
