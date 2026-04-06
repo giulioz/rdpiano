@@ -18,8 +18,8 @@ public:
     // Load parsed wave ROM sample data. Can be called multiple times (e.g. MKS-20 ROM set switching).
     void loadSamples(const SampleData &data);
 
-    // Load a patch (parsed from IC18). Stops all voices.
-    void loadPatch(const PatchData &patch);
+    // Load a patch from a PatchSet. Stops all voices and loads model-specific tables.
+    void loadPatch(const PatchSet &set, int program);
 
     // Generate one audio sample. Call at the rate matching the loaded patch.
     int32_t generateSample();
@@ -46,8 +46,7 @@ private:
     SoundChip m_chip;
     const PatchData *m_patch = nullptr;
 
-    // ROM tables (loaded once in constructor)
-    struct ProgramConfig { uint8_t voice_mask, release_threshold, release_param; };
+    // Model-specific tables (loaded from PatchSet)
     ProgramConfig m_program_config[NUM_PROGRAMS];
     uint8_t m_env_scale[NUM_ENV_SCALE_TABLES][NUM_ENV_SCALE_ENTRIES];
 

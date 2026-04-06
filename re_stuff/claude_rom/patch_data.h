@@ -48,6 +48,13 @@ struct NoteMapping {
     uint16_t pitch[PARTS_PER_VOICE];  // pitch values (big-endian in ROM)
 };
 
+// Per-program release tuning (from CPU B program ROM, RD200 only)
+struct ProgramConfig {
+    uint8_t voice_mask = 0;
+    uint8_t release_threshold = 0;
+    uint8_t release_param = 0;
+};
+
 // Complete parsed patch data
 struct PatchData {
     uint8_t flags;                    // bit 2: sample rate flag
@@ -63,7 +70,11 @@ struct PatchData {
 struct PatchSet {
     PatchData patches[NUM_PROGRAMS];
 
-    // Parse IC18 into patch data
+    // Model-specific tables (from CPU B program ROM, differ between RD200 and MKS-20)
+    uint8_t env_scale_tables[NUM_ENV_SCALE_TABLES][NUM_ENV_SCALE_ENTRIES];
+    ProgramConfig program_config[NUM_PROGRAMS];
+
+    // Parse IC18 into patch data, also loads model-specific tables
     void load(const uint8_t *ic18_descrambled, ParamsRomFormat format);
 
 private:

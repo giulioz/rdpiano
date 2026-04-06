@@ -35,9 +35,10 @@ static SDL_SpinLock fw_lock;
 static std::atomic<bool> quit_requested{false};
 static constexpr int OUTPUT_SCALE = 4;
 
-// For MKS-20: extra sample ROMs for patches 3-7
-static std::vector<uint8_t> ic5b_data, ic6b_data, ic7b_data;
+// For MKS-20: two parsed sample ROM sets
+static std::unique_ptr<SampleData> samples_a, samples_b;
 static bool has_rom_set_b = false;
+static int current_rom_set = -1;  // 0=A, 1=B
 
 // ============================================================================
 // ROM loading
@@ -207,6 +208,20 @@ static void send_midi(uint8_t status, uint8_t d1, uint8_t d2) {
 
 static int current_program = 0;
 
+// MKS-20: patches 0-2 use ROM set A, patches 3-7 use ROM set B
+static int rom_set_for_program(int pgm) { return (has_rom_set_b && pgm >= 3) ? 1 : 0; }
+
+static void switch_program(int pgm) {
+    current_program = pgm;
+    int needed_set = rom_set_for_program(pgm);
+    if (needed_set != current_rom_set) {
+        current_rom_set = needed_set;
+        firmware->loadSamples(needed_set == 0 ? *samples_a : *samples_b);
+        printf("ROM set: %c\n", 'A' + needed_set);
+    }
+    firmware->loadPatch(patch_set, pgm);
+}
+
 void handle_keyboard(SDL_Event &ev) {
     if (ev.type == SDL_KEYDOWN && !ev.key.repeat) {
         int note = key_to_note(ev.key.keysym.sym);
@@ -216,9 +231,8 @@ void handle_keyboard(SDL_Event &ev) {
         }
         // Number keys 1-8 → program change
         if (ev.key.keysym.sym >= SDLK_1 && ev.key.keysym.sym <= SDLK_8) {
-            current_program = ev.key.keysym.sym - SDLK_1;
             SDL_AtomicLock(&fw_lock);
-            firmware->loadPatch(patch_set.patches[current_program]);
+            switch_program(ev.key.keysym.sym - SDLK_1);
             SDL_AtomicUnlock(&fw_lock);
             printf("Program change: %d\n", current_program);
         }
@@ -266,31 +280,36 @@ int main(int argc, char *argv[]) {
     bool is_rd200 = (strcmp(argv[5], "rd200") == 0);
     auto fmt = is_rd200 ? ParamsRomFormat::RD200 : ParamsRomFormat::MKS20;
 
-    if (!is_rd200 && argc >= 9) {
-        ic5b_data = load_rom(argv[6], 0x20000);
-        ic6b_data = load_rom(argv[7], 0x20000);
-        ic7b_data = load_rom(argv[8], 0x20000);
-        has_rom_set_b = (!ic5b_data.empty() && !ic6b_data.empty() && !ic7b_data.empty());
-        if (has_rom_set_b)
-            printf("MKS-20 mode: ROM set B loaded for patches 3-7\n");
-    }
-
-    // Descramble and parse ROMs
-    uint8_t paramsrom[0x20000];
-    descramble_params(paramsrom_raw.data(), paramsrom, 0x20000);
-
+    // Descramble and parse wave ROMs (set A)
     std::vector<uint8_t> ic5d(0x20000), ic6d(0x20000), ic7d(0x20000);
     descramble_wave_rom(ic5.data(), ic5d.data(), 0x20000);
     descramble_wave_rom(ic6.data(), ic6d.data(), 0x20000);
     descramble_wave_rom(ic7.data(), ic7d.data(), 0x20000);
+    samples_a = std::make_unique<SampleData>(parse_wave_roms(ic5d.data(), ic6d.data(), ic7d.data()));
 
-    SampleData samples = parse_wave_roms(ic5d.data(), ic6d.data(), ic7d.data());
+    // MKS-20: parse ROM set B for patches 3-7
+    if (!is_rd200 && argc >= 9) {
+        auto ic5b = load_rom(argv[6], 0x20000);
+        auto ic6b = load_rom(argv[7], 0x20000);
+        auto ic7b = load_rom(argv[8], 0x20000);
+        if (!ic5b.empty() && !ic6b.empty() && !ic7b.empty()) {
+            descramble_wave_rom(ic5b.data(), ic5d.data(), 0x20000);
+            descramble_wave_rom(ic6b.data(), ic6d.data(), 0x20000);
+            descramble_wave_rom(ic7b.data(), ic7d.data(), 0x20000);
+            samples_b = std::make_unique<SampleData>(parse_wave_roms(ic5d.data(), ic6d.data(), ic7d.data()));
+            has_rom_set_b = true;
+            printf("MKS-20 mode: ROM set B loaded for patches 3-7\n");
+        }
+    }
+
+    // Descramble params ROM and parse patches
+    uint8_t paramsrom[0x20000];
+    descramble_params(paramsrom_raw.data(), paramsrom, 0x20000);
     patch_set.load(paramsrom, fmt);
 
-    // Create firmware and load data
+    // Create firmware and load initial program
     firmware = std::make_unique<SynthFirmware>();
-    firmware->loadSamples(samples);
-    firmware->loadPatch(patch_set.patches[0]);
+    switch_program(0);
 
     printf("%s mode. Send MIDI to 'RdPiano Native' virtual port.\n",
            is_rd200 ? "RD200" : "MKS-20");

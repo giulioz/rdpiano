@@ -1,10 +1,46 @@
 /*
- * patch_data.cpp - IC18 ROM parser
+ * patch_data.cpp - IC18 ROM parser + model-specific CPU B ROM tables
  */
 
 #include "patch_data.h"
+#include <algorithm>
+#include <cstring>
+
+// ============================================================================
+// CPU B ROM tables — differ between RD200 and MKS-20
+// ============================================================================
+
+// Per-program release tuning (RD200 only; MKS-20 has no such table — all zeros)
+static const ProgramConfig rd200_program_config[NUM_PROGRAMS] = {
+    { 0x03, 0x5A, 0x06 },  // Piano1
+    { 0x03, 0x5A, 0x08 },  // Piano2
+    { 0x03, 0x5A, 0x06 },  // Piano3
+    { 0x00, 0x00, 0x00 },  // Harpsichord
+    { 0x00, 0x00, 0x00 },  // Clavi
+    { 0x00, 0x00, 0x00 },  // Vibraphone
+    { 0x00, 0x00, 0x00 },  // EPiano1
+    { 0x00, 0x00, 0x00 },  // EPiano2
+};
+
+#include "env_scale_tables.inc"
+
+// ============================================================================
+// PatchSet loader
+// ============================================================================
 
 void PatchSet::load(const uint8_t *ic18, ParamsRomFormat format) {
+    // Load model-specific tables from CPU B ROM data
+    const auto &scale_src = (format == ParamsRomFormat::RD200)
+        ? rd200_env_scale_tables : mks20_env_scale_tables;
+    for (int t = 0; t < NUM_ENV_SCALE_TABLES; t++)
+        std::copy_n(scale_src[t], NUM_ENV_SCALE_ENTRIES, env_scale_tables[t]);
+
+    if (format == ParamsRomFormat::RD200)
+        std::copy_n(rd200_program_config, NUM_PROGRAMS, program_config);
+    else
+        std::fill_n(program_config, NUM_PROGRAMS, ProgramConfig{});
+
+    // Parse IC18 patches
     if (format == ParamsRomFormat::RD200) {
         // RD200: program table at IC18[0], 8 entries of {bank, addr_hi, addr_lo}
         for (int pgm = 0; pgm < NUM_PROGRAMS; pgm++) {
