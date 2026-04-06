@@ -44,3 +44,44 @@ target_include_directories(export_wav PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${LIBRDPIANO_DIR}/include
 )
+
+# Standalone native player
+find_package(SDL2 QUIET)
+if(NOT SDL2_FOUND)
+    # Try homebrew path
+    find_library(SDL2_LIB SDL2 PATHS /opt/homebrew/lib)
+    find_path(SDL2_INCLUDE SDL.h PATHS /opt/homebrew/include/SDL2)
+    if(SDL2_LIB AND SDL2_INCLUDE)
+        set(SDL2_FOUND TRUE)
+    endif()
+endif()
+
+find_library(PORTMIDI_LIB portmidi PATHS /opt/homebrew/lib /usr/local/lib)
+find_path(PORTMIDI_INCLUDE portmidi.h PATHS /opt/homebrew/include /usr/local/include)
+
+if(SDL2_FOUND)
+    add_executable(standalone_native standalone_native.cpp)
+    target_link_libraries(standalone_native PRIVATE synth_firmware sound_chip)
+    target_include_directories(standalone_native PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${LIBRDPIANO_DIR}/include
+    )
+
+    if(TARGET SDL2::SDL2)
+        target_link_libraries(standalone_native PRIVATE SDL2::SDL2)
+    else()
+        target_link_libraries(standalone_native PRIVATE ${SDL2_LIB})
+        target_include_directories(standalone_native PRIVATE ${SDL2_INCLUDE})
+    endif()
+
+    if(PORTMIDI_LIB)
+        target_link_libraries(standalone_native PRIVATE ${PORTMIDI_LIB})
+        target_include_directories(standalone_native PRIVATE ${PORTMIDI_INCLUDE})
+        message(STATUS "Building standalone_native (SDL2 + PortMidi)")
+    else()
+        target_compile_definitions(standalone_native PRIVATE NO_PORTMIDI=1)
+        message(STATUS "Building standalone_native (SDL2 only, no MIDI input)")
+    endif()
+else()
+    message(STATUS "Skipping standalone_native (SDL2 not found)")
+endif()

@@ -20,8 +20,7 @@ enum class ParamsRomFormat {
 class SynthFirmware {
 public:
     SynthFirmware(SoundChip &chip,
-                  const uint8_t *params_rom_descrambled,  // 128KB IC18
-                  const uint8_t *program_rom_descrambled, // 8KB CPU B ROM (for data tables only)
+                  const uint8_t *params_rom_descrambled,  // 128KB IC18 (descrambled)
                   ParamsRomFormat format = ParamsRomFormat::MKS20);
 
     // External API (matches Mcu interface)
@@ -59,9 +58,6 @@ private:
     // Per-part envelope scaling curves (16 × 64 bytes)
     uint8_t m_env_scale[16][64];
 
-    // Full CPU B ROM copy (for overflow lookups that read past tables)
-    uint8_t m_cpub_rom[0x2000];
-
     // Default envelope chain templates (70 bytes each)
     uint8_t m_env_chain_A[70];   // no next pointer
     uint8_t m_env_chain_B[70];   // chains to release table
@@ -80,6 +76,7 @@ private:
     uint8_t m_program_flags = 0;      // bit 2 = sample rate
     uint8_t m_velocity_mode = 0;      // bit 0: velocity on, bit 1: curve variant
     uint8_t m_soft_pedal = 0;         // 0x00 or 0x80
+    uint8_t m_sustain_mode = 0;       // 0x00 or 0x20 (M00A0: ORed into note-on flags)
     uint8_t m_env_init_value = 0xFF;
     uint8_t m_global_env_offset = 0;
     uint8_t m_release_mask_override = 0;
@@ -107,7 +104,8 @@ private:
     // Voice state
     // =============================================
     static constexpr int MAX_VOICES = 16;
-    static constexpr int MAX_PARTS = 10;
+    static constexpr int MAX_PARTS = 16;
+    static constexpr int PARTS_PER_NOTE = 10;  // firmware always uses exactly 10 parts per note (unrolled)
     static constexpr int VOICE_RAM_PART_SIZE = 6;
     static constexpr int VOICE_RAM_SIZE = 0x3C;  // per voice
 
@@ -138,6 +136,8 @@ private:
     Voice m_voices[MAX_VOICES];
     uint8_t m_num_voices = 0;
     uint8_t m_voice_rr = 0;            // round-robin pointer
+    uint8_t m_voice_order[16] = {};   // indirection table: maps position → voice number
+    uint8_t m_voice_order_size = 0;   // how many entries are in the free/reuse queue
     uint8_t m_sched_rr[4] = {0};       // scheduler round-robins
 
     // Voice release config (from program config table)

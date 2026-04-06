@@ -184,7 +184,7 @@ int main(int argc, char *argv[]) {
     }
 
     SoundChip native_chip(ic5, ic6, ic7);
-    SynthFirmware native(native_chip, paramsrom, progrom, fmt);
+    SynthFirmware native(native_chip, paramsrom, fmt);
 
     printf("Booting EMU...\n");
     emu.reset();
@@ -357,7 +357,100 @@ int main(int argc, char *argv[]) {
     }
 
     // ======================================================================
-    // TEST 4: Audio level comparison
+    // TEST 4: Voice stealing stress test (isolated)
+    // ======================================================================
+    {
+        printf("\n========================================\n");
+        printf("TEST 4: Voice stealing - 20 overlapping notes\n");
+        printf("========================================\n");
+
+        // Fresh program change to reset state
+        emu.sendMidiCmd(0xC0, 0x00, 0x00);
+        native.sendMidiCmd(0xC0, 0x00, 0x00);
+        for (int i = 0; i < 1000; i++) {
+            emu.generate_next_sample(sr32);
+            native.generate_next_sample(sr32);
+        }
+
+        emu_chip.log_writes = true; emu_chip.write_log.clear();
+        native_chip.log_writes = true; native_chip.write_log.clear();
+
+        // Play 20 notes 50ms apart (heavy overlap, forces voice stealing)
+        int sr = sr32 ? 32000 : 20000;
+        int notes_played = 0;
+        for (int s = 0; s < sr * 3; s++) {  // 3 seconds
+            // Send notes every 50ms
+            if (s % (sr / 20) == 0 && notes_played < 20) {
+                uint8_t note = 36 + notes_played * 3;
+                if (note > 96) note = 96;
+                emu.sendMidiCmd(0x90, note, 100);
+                native.sendMidiCmd(0x90, note, 100);
+                notes_played++;
+            }
+            emu.generate_next_sample(sr32);
+            native.generate_next_sample(sr32);
+        }
+
+        emu_chip.log_writes = false;
+        native_chip.log_writes = false;
+
+        // Count writes per voice
+        printf("\nEMU writes by voice:\n");
+        int emu_vcounts[16] = {};
+        for (auto &w : emu_chip.write_log) emu_vcounts[w.offset >> 8]++;
+        for (int v = 0; v < 16; v++)
+            if (emu_vcounts[v]) printf("  v%02d: %d writes\n", v, emu_vcounts[v]);
+
+        printf("\nNATIVE writes by voice:\n");
+        int nat_vcounts[16] = {};
+        for (auto &w : native_chip.write_log) nat_vcounts[w.offset >> 8]++;
+        for (int v = 0; v < 16; v++)
+            if (nat_vcounts[v]) printf("  v%02d: %d writes\n", v, nat_vcounts[v]);
+
+        printf("\nEMU total: %zu writes, NATIVE total: %zu writes\n",
+               emu_chip.write_log.size(), native_chip.write_log.size());
+
+        // Count how many unique voices were used for note-on (pitch writes)
+        // A note-on writes pitch_hi (field 0) - count unique voices that got pitch writes
+        int emu_noteons = 0, nat_noteons = 0;
+        bool emu_v_used[16] = {}, nat_v_used[16] = {};
+        for (auto &w : emu_chip.write_log) {
+            if ((w.offset & 0xF) == 0) emu_v_used[w.offset >> 8] = true;
+        }
+        for (auto &w : native_chip.write_log) {
+            if ((w.offset & 0xF) == 0) nat_v_used[w.offset >> 8] = true;
+        }
+        for (int v = 0; v < 16; v++) {
+            if (emu_v_used[v]) emu_noteons++;
+            if (nat_v_used[v]) nat_noteons++;
+        }
+        printf("\nVoices used: EMU=%d NATIVE=%d\n", emu_noteons, nat_noteons);
+
+        // Show first 20 pitch writes from each to see allocation order
+        printf("\nEMU note-on allocation order (first pitch_hi writes):\n");
+        int count = 0;
+        for (auto &w : emu_chip.write_log) {
+            int field = w.offset & 0xF;
+            int voice = w.offset >> 8;
+            int part = (w.offset >> 4) & 0xF;
+            if (field == 0 && part == 0 && count < 20) {
+                printf("  [%d] voice %d pitch_hi=0x%02X\n", count++, voice, w.value);
+            }
+        }
+        printf("\nNATIVE note-on allocation order (first pitch_hi writes):\n");
+        count = 0;
+        for (auto &w : native_chip.write_log) {
+            int field = w.offset & 0xF;
+            int voice = w.offset >> 8;
+            int part = (w.offset >> 4) & 0xF;
+            if (field == 0 && part == 0 && count < 20) {
+                printf("  [%d] voice %d pitch_hi=0x%02X\n", count++, voice, w.value);
+            }
+        }
+    }
+
+    // ======================================================================
+    // TEST 5: Audio level comparison
     // ======================================================================
     {
         printf("\n========================================\n");

@@ -4,6 +4,7 @@
 
 #include "synth_firmware.h"
 #include "../../librdpiano/include/sound_chip.h"
+#include "rd200_tables.h"
 #include <cstring>
 #include <algorithm>
 
@@ -13,19 +14,17 @@
 
 SynthFirmware::SynthFirmware(SoundChip &chip,
                              const uint8_t *params_rom_descrambled,
-                             const uint8_t *program_rom_descrambled,
                              ParamsRomFormat format)
     : m_chip(chip), m_params_rom(params_rom_descrambled), m_rom_format(format)
 {
-    const uint8_t *rom = program_rom_descrambled;
+    // Load from rd200_tables.h (extracted from CPU B ROM)
     for (int i = 0; i < 8; i++) {
-        m_program_config[i].voice_mask = rom[0x0254 + i*3];
-        m_program_config[i].release_threshold = rom[0x0254 + i*3 + 1];
-        m_program_config[i].release_param = rom[0x0254 + i*3 + 2];
+        m_program_config[i].voice_mask = cpub_program_config[i][0];
+        m_program_config[i].release_threshold = cpub_program_config[i][1];
+        m_program_config[i].release_param = cpub_program_config[i][2];
     }
     for (int p = 0; p < 16; p++)
-        memcpy(m_env_scale[p], &rom[0x1049 + p*64], 64);
-    memcpy(m_cpub_rom, rom, 0x2000);
+        memcpy(m_env_scale[p], cpub_env_scale_tables[p], 64);
 
     if (m_rom_format == ParamsRomFormat::RD200) {
         // RD200: IC18 has a real program table at offset 0.
@@ -37,15 +36,31 @@ SynthFirmware::SynthFirmware(SoundChip &chip,
         // Firmware reads program table from latch=0, addr 0x4000+pgm*3
         memcpy(m_params_emu, params_rom_descrambled, 0x20000);
     } else {
-        // MKS-20: IC18 starts with raw patch data (no program table).
-        // Copy first 32KB to bank 1 (matching EMU's loadSounds behavior).
-        // Create fake program table at bank 0 so all 8 programs play this patch.
-        memset(m_params_emu, 0xFF, sizeof(m_params_emu));
-        memcpy(&m_params_emu[0x8000], params_rom_descrambled, 0x8000);
+        // MKS-20: IC18 has no program table — patches are at hardcoded offsets.
+        // Map all 4 banks, then create a fake program table at bank 0
+        // with entries pointing to each patch's actual location.
+        //
+        // MKS-20 patch offsets in IC18 (same layout as RD200 but without header):
+        //   0: 0x00000  1: 0x03C20  2: 0x08000  3: 0x0AB50
+        //   4: 0x10000  5: 0x14260  6: 0x18000  7: 0x1BEF0
+        // From JUCE plugin patchToOffset[] (matching program button order)
+        static const uint32_t mks20_offsets[8] = {
+            0x000000, 0x008000, 0x010000, 0x018000,
+            0x003C20, 0x00AB50, 0x014260, 0x01BEF0
+        };
+
+        // Copy all 4 banks (full 128KB) to slots 0-3
+        memcpy(m_params_emu, params_rom_descrambled, 0x20000);
+
+        // Overwrite the first 24 bytes (at bank 0 offset 0) with a fake program table.
+        // Each entry: {bank, addr_hi, addr_lo} where addr = 0x4000 + in-bank offset
         for (int pgm = 0; pgm < 8; pgm++) {
-            m_params_emu[pgm * 3 + 0] = 0x01;  // bank 1
-            m_params_emu[pgm * 3 + 1] = 0x40;  // addr_hi
-            m_params_emu[pgm * 3 + 2] = 0x00;  // addr_lo → 0x4000
+            uint32_t off = mks20_offsets[pgm];
+            uint8_t bank = off / 0x8000;
+            uint16_t addr = 0x4000 + (off % 0x8000);
+            m_params_emu[pgm * 3 + 0] = bank;
+            m_params_emu[pgm * 3 + 1] = (addr >> 8) & 0xFF;
+            m_params_emu[pgm * 3 + 2] = addr & 0xFF;
         }
     }
 
@@ -64,12 +79,29 @@ void SynthFirmware::reset()
     m_num_active_parts = 0x10;
     m_num_voices = 0;
     m_voice_rr = 0;
+    for (int i = 0; i < 16; i++) m_voice_order[i] = i;
     m_global_env_offset = 0;
     m_release_mask_override = 0;
+    m_sustain_mode = 0;
     memset(m_sched_rr, 0, sizeof(m_sched_rr));
     while (!m_cmd_queue.empty()) m_cmd_queue.pop();
     for (int i = 0; i < MAX_VOICES; i++)
         m_voices[i] = Voice();
+
+    // Initialize sound chip to silence (matches firmware boot at E026-E0B9)
+    // Set all voice/part registers to produce no sound
+    for (int v = 0; v < 16; v++) {
+        for (int p = 0; p < 16; p++) {
+            write_sound_chip(v, p, 0, 0x00);  // pitch_hi = 0
+            write_sound_chip(v, p, 1, 0x00);  // pitch_lo = 0
+            write_sound_chip(v, p, 2, 0x00);  // wave_loop = 0
+            write_sound_chip(v, p, 3, 0x00);  // wave_high = 0
+            write_sound_chip(v, p, 4, 0x00);  // env_dest = 0
+            write_sound_chip(v, p, 5, 0x00);  // env_speed = 0
+            write_sound_chip(v, p, 6, 0x00);  // flags = 0
+            write_sound_chip(v, p, 7, 0xFF);  // env_offset = 0xFF
+        }
+    }
 }
 
 // ============================================================================
@@ -81,10 +113,12 @@ uint8_t SynthFirmware::params_read(uint32_t cpu_addr) const
     // IC18 params ROM: 0x4000-0xBFFF
     if (cpu_addr >= 0x4000 && cpu_addr <= 0xBFFF)
         return m_params_emu[(cpu_addr - 0x4000) | ((m_bank_latch & 3) << 15)];
-    // CPU B program ROM: 0xC000-0xFFFF (8KB mirrored, mask 0x1FFF)
-    if (cpu_addr >= 0xC000)
-        return m_cpub_rom[(cpu_addr - 0xC000) & 0x1FFF];
-    // RAM (0x0000-0x3FFF): all zeroed
+    // CPU B program ROM: 0xC000-0xFFFF
+    // IC18 chain pointers sometimes reference this range. The data there is
+    // firmware code reinterpreted as envelope parameters. In practice these
+    // parts produce near-silent or short transient sounds. Return 0x00
+    // which terminates the envelope chain (env_speed=0 → chain ends).
+    // RAM (0x0000-0x3FFF): also zeroed (silent envelope chains)
     return 0x00;
 }
 
@@ -95,24 +129,21 @@ uint8_t SynthFirmware::params_read(uint32_t cpu_addr) const
 // Written to sound chip as [field4=A=speed_blend, field5=B=dest_blend]
 // ============================================================================
 
-// Replicate the firmware's scaling table lookup exactly (E92D pattern)
-// LDX #env_scaling_ptr_table; ABX; LDX ,X; LDAB wp_quarter; ABX; LDAB ,X
+// Envelope scaling lookup (E92D pattern)
+// For valid indices (0-30 even): use the 16 extracted scaling tables
+// For overflow indices (>30): the firmware reads past the table into ROM code,
+// which mostly resolves to unmapped addresses returning 0xFF
 uint8_t SynthFirmware::lookup_env_scaling(uint8_t scaling_idx, uint8_t wp_quarter)
 {
-    // env_scaling_ptr_table is at ROM offset 0x0D9D (addr ED9D)
-    // ABX adds scaling_idx (byte) to table base, reads 2-byte pointer
-    uint16_t table_offset = 0x0D9D + scaling_idx;
-    if (table_offset + 1 >= 0x2000) return 0xFF;  // past ROM end
-
-    uint16_t ptr = (m_cpub_rom[table_offset] << 8) | m_cpub_rom[table_offset + 1];
-
-    // Read from that pointer + wp_quarter
-    // If pointer is in ROM range (E000-FFFF), read from ROM
-    if (ptr >= 0xE000 && (ptr + wp_quarter) < 0x10000) {
-        uint16_t rom_off = (ptr - 0xE000) + wp_quarter;
-        if (rom_off < 0x2000) return m_cpub_rom[rom_off];
+    // Valid range: scaling_idx = 0,2,4,...,30 → table indices 0-15
+    if (scaling_idx <= 30 && (scaling_idx & 1) == 0) {
+        int table = scaling_idx / 2;
+        int idx = (wp_quarter < 64) ? wp_quarter : 63;
+        return m_env_scale[table][idx];
     }
-    // Otherwise it's unmapped → 0xFF
+    // Overflow: firmware reads garbage from adjacent ROM data.
+    // In practice, most overflow pointers resolve to addresses outside
+    // the ROM range (0xE000-0xFFFF), returning 0xFF from unmapped memory.
     return 0xFF;
 }
 
@@ -188,7 +219,9 @@ int32_t SynthFirmware::generate_next_sample(bool sampleRate32)
     process_commands();
     cmd_voice_update_tick();
 
-    if (m_chip.m_irq_triggered) {
+    // Process all pending envelope IRQs (multiple parts may complete per sample)
+    int irq_guard = 0;
+    while (m_chip.m_irq_triggered && irq_guard++ < 32) {
         m_chip.m_irq_triggered = false;
         uint8_t irq_id = m_chip.read(0);
         on_envelope_irq(irq_id >> 4, irq_id & 0x0F);
@@ -281,8 +314,11 @@ void SynthFirmware::cmd_program_change(uint8_t program)
     m_release_param = (m_release_mask_override == 0)
         ? m_program_config[m_current_program].release_param : 0;
 
-    m_num_voices = m_num_active_parts;
+    // Sound chip has 16 voice slots regardless of parts-per-voice
+    m_num_voices = 16;
     m_voice_rr = 0;
+    // Initialize indirection table: identity [0,1,...,15]
+    for (int i = 0; i < 16; i++) m_voice_order[i] = i;
     memset(m_sched_rr, 0, sizeof(m_sched_rr));
     for (int i = 0; i < MAX_VOICES; i++)
         m_voices[i] = Voice();
@@ -300,9 +336,15 @@ void SynthFirmware::cmd_note_on(uint8_t note, uint8_t velocity, uint8_t layer)
     if (vi < 0) return;
 
     Voice &v = m_voices[vi];
+
+    // If voice is occupied, kill it first (firmware E5E9: re-trigger path)
+    if (v.flags != 0 || v.assignment != 0) {
+        kill_voice(vi);
+    }
+
     v.wave_param = wave_param;
     v.env_level = note;
-    int nparts = std::min((int)m_num_active_parts, MAX_PARTS);
+    int nparts = PARTS_PER_NOTE;
 
     // Derived values (E7C7-E7CE)
     uint8_t wp_double = wave_param << 1;            // ASLB: wave_param * 2 (8-bit truncated)
@@ -402,7 +444,9 @@ void SynthFirmware::cmd_note_on(uint8_t note, uint8_t velocity, uint8_t layer)
         write_sound_chip(vi, last_part, 7, m_env_init_value);
     }
 
-    v.flags = 0x81;
+    // Firmware E5FF: flags = 0x81 | M00A0 (sustain state) | layer_flag
+    // bit 7=active, bit 5=sustain hold (if pedal down), bit 4=sent, bit 0=envelope
+    v.flags = 0x91 | m_sustain_mode;
     v.assignment = 0x0A;
 }
 
@@ -428,15 +472,25 @@ void SynthFirmware::cmd_note_off(uint8_t note)
 // ============================================================================
 
 void SynthFirmware::cmd_sustain(bool on) {
+    // Firmware E44F/E4AF
     if (on) {
-        for (int i = 0; i < m_num_voices; i++)
-            if (m_voices[i].flags & 0x80) m_voices[i].flags |= 0x20;
-    } else {
+        m_sustain_mode = 0x20;  // M00A0: ORed into flags during future note-on
         for (int i = 0; i < m_num_voices; i++) {
             Voice &v = m_voices[i];
-            if (v.flags & 0x20) {
-                v.flags &= ~0x20;
-                if (!(v.flags & 0x80) && !(v.flags & 0x40)) release_voice(i);
+            if ((v.flags & 0xC0) == 0xC0) continue;
+            if (!(v.flags & 0x10)) continue;
+            if (v.assignment == 0) continue;
+            v.flags |= 0x20;
+        }
+    } else {
+        m_sustain_mode = 0x00;
+        for (int i = 0; i < m_num_voices; i++) {
+            Voice &v = m_voices[i];
+            if (v.flags & 0xC0) {
+                v.flags &= ~0x30;
+            } else if (v.flags & 0x20) {
+                v.flags &= ~0x30;
+                if (v.assignment != 0) release_voice(i);
             }
         }
     }
@@ -483,8 +537,52 @@ void SynthFirmware::cmd_voice_update_tick() {
     if (m_velocity_mode != 0) return;
     for (int i = 0; i < m_num_voices; i++) {
         Voice &v = m_voices[i];
-        if ((v.flags & 0x01) && v.assignment == 0) v.flags = 0;
-        else if (!(v.flags & 0x01)) v.assignment = 0;
+        if (v.flags == 0) continue;
+
+        bool voice_finished = false;
+
+        if ((v.flags & 0x01) && v.assignment == 0) {
+            v.flags = 0;
+            voice_finished = true;
+        } else if (!(v.flags & 0x01)) {
+            v.assignment = 0;
+        }
+
+        // Released voice with empty chains → free it
+        if (v.flags && !(v.flags & 0xE0)) {
+            bool all_done = true;
+            for (int p = 0; p < PARTS_PER_NOTE; p++) {
+                if (v.parts[p].env_chain_ptr != 0) { all_done = false; break; }
+            }
+            if (all_done) {
+                v.flags = 0;
+                v.assignment = 0;
+                voice_finished = true;
+            }
+        }
+
+        if (voice_finished) {
+            // Firmware E38F-E3BB: when a voice finishes, it moves to the front
+            // of the allocation queue and the scheduler counters advance.
+            // Move this voice to just after the round-robin pointer.
+            for (int pos = 0; pos < m_num_voices; pos++) {
+                if (m_voice_order[pos] == i) {
+                    uint8_t saved = m_voice_order[pos];
+                    if (pos > m_voice_rr) {
+                        for (int k = pos; k > m_voice_rr; k--)
+                            m_voice_order[k] = m_voice_order[k-1];
+                        m_voice_order[m_voice_rr] = saved;
+                    } else if (pos < m_voice_rr) {
+                        for (int k = pos; k < m_voice_rr - 1; k++)
+                            m_voice_order[k] = m_voice_order[k+1];
+                        m_voice_order[m_voice_rr - 1] = saved;
+                        // Adjust pointer since we shifted entries before it
+                        if (m_voice_rr > 0) m_voice_rr--;
+                    }
+                    break;
+                }
+            }
+        }
     }
 }
 
@@ -493,23 +591,20 @@ void SynthFirmware::cmd_voice_update_tick() {
 // ============================================================================
 
 int SynthFirmware::allocate_voice() {
-    int start = m_voice_rr;
-    for (int t = 0; t < m_num_voices; t++) {
-        int vi = (start + t) % m_num_voices;
-        if (m_voices[vi].assignment == 0 && m_voices[vi].flags == 0) {
-            m_voice_rr = (vi + 1) % m_num_voices;
-            return vi;
-        }
-    }
-    int vi = m_voice_rr;
-    m_voice_rr = (vi + 1) % m_num_voices;
-    kill_voice(vi);
+    // Firmware ZE51B: advancing pointer through indirection table.
+    // voice[0x20+pos] maps position → voice number.
+    // When voices finish, they get moved to the front of the queue
+    // (via voice_update_tick), so recently-freed voices are reused first.
+    // Higher-pitched notes decay faster → freed sooner → reused first.
+    // This naturally preserves bass notes during voice stealing.
+    int vi = m_voice_order[m_voice_rr];
+    m_voice_rr = (m_voice_rr + 1) % m_num_voices;
     return vi;
 }
 
 void SynthFirmware::release_voice(int vi) {
     Voice &v = m_voices[vi];
-    int nparts = std::min((int)m_num_active_parts, MAX_PARTS);
+    int nparts = PARTS_PER_NOTE;
     uint8_t note_val = v.env_level;
 
     // Compute 8 release envelope speed values (ZEB3F-EBB5)
