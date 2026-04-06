@@ -13,6 +13,7 @@
 enum class ParamsRomFormat {
     MKS20,
     RD200,
+    MK80,
 };
 
 // 4 bytes used for bilinear envelope interpolation
@@ -67,12 +68,24 @@ struct PatchData {
 // IC18 ROM parser
 // ============================================================================
 
+// MK-80 specific tone shaping tables (from CPU B ROM)
+struct MK80Tables {
+    uint8_t bass_scale[NUM_PROGRAMS][99][3];   // partials 0-2, per note
+    uint8_t mid_scale[NUM_PROGRAMS][99][7];    // partials 3-9, per note
+    uint8_t split_point[NUM_PROGRAMS][2];      // note threshold for partials 8-9
+    int8_t stretch_a[99];                      // stretch tuning curve A
+    int8_t stretch_b[54];                      // stretch tuning curve B
+    int8_t stretch_c[45];                      // stretch tuning curve C
+    bool loaded = false;
+};
+
 struct PatchSet {
     PatchData patches[NUM_PROGRAMS];
 
-    // Model-specific tables (from CPU B program ROM, differ between RD200 and MKS-20)
+    // Model-specific tables (from CPU B program ROM)
     uint8_t env_scale_tables[NUM_ENV_SCALE_TABLES][NUM_ENV_SCALE_ENTRIES];
     ProgramConfig program_config[NUM_PROGRAMS];
+    MK80Tables mk80_tables;
 
     // Parse IC18 into patch data, also loads model-specific tables
     void load(const uint8_t *ic18_descrambled, ParamsRomFormat format);

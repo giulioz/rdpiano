@@ -513,5 +513,104 @@ Tables 10 and 11 appear to serve a different purpose in the MKS-20 — possibly 
 | `MKS20_B.info` | f9dasm info file for MKS-20 CPU B ROM |
 | `MKS20_B.asm` | Annotated MKS-20 CPU B disassembly |
 | `MKS20_B_descrambled.bin` | Descrambled MKS-20 CPU B ROM |
+| `MK80_B.info` | f9dasm info file for MK-80 CPU B ROM |
+| `MK80_B.asm` | Annotated MK-80 CPU B disassembly (6044 lines) |
+| `MK80_B_descrambled.bin` | Descrambled MK-80 CPU B ROM |
 | `RD200_A.info` | f9dasm info file for RD200 CPU A ROM |
 | `RD200_A.asm` | Annotated RD200 CPU A disassembly |
+
+---
+
+## MK-80 CPU B Analysis
+
+The MK-80 Electronic Piano (1987) is the most feature-rich of the three instruments. It shares the same sound chip board but has a 16KB CPU B ROM (double the 8KB of RD-200 and MKS-20), enabling significantly more features.
+
+### ROM Overview
+
+- **Size:** 16KB, mapped at C000-FFFF (vs E000-FFFF for 8KB ROMs)
+- **No padding:** The full 16KB is used (RD200/MKS-20 have ~3KB of 0xFF padding)
+- **Descrambling:** Same address/data bitswap as the 8KB ROMs, with bit 13 passing through
+- **Envelope scaling tables:** All 16 curves are **byte-identical** to the RD-200
+- **Release env table:** **Identical** to RD-200 (at D80B instead of EF29)
+
+### Command Map Comparison
+
+| Cmd | MK-80 | RD200 | MKS-20 | Notes |
+|-----|-------|-------|--------|-------|
+| 0x00 | voice_reset | voice_reset | note_off | MK-80 matches RD200 |
+| 0x10 | voice_update_tick | voice_update_tick | set_env_init | MK-80 matches RD200 |
+| 0x30 | program_change | program_change | — | MK-80 matches RD200 |
+| **0x40** | **program_change_respond** | — | program_change | **NEW**: handshake with CPU A |
+| 0x50 | sustain | sustain | — | MK-80 matches RD200 |
+| 0x60 | sostenuto | sostenuto | — | MK-80 matches RD200 |
+| 0x70 | — | soft_pedal | — | Not implemented |
+| 0x80 | param_update | param_update | note_on_L1 | MK-80 matches RD200 |
+| **0x90** | **param_subdispatch** | (note_off alias) | — | **NEW**: structured params |
+| 0xA0 | param_update_hi | param_update_hi | note_on_L2 | MK-80 matches RD200 |
+| 0xB0 | note_off | note_off | — | Same as RD200 |
+| 0xC0 | note_on_L1 | note_on_L1 | set_env_init | MK-80 matches RD200 |
+| 0xD0 | note_on_L2 | note_on_L2 | — | Same as RD200 |
+| 0xE0 | tuning | tuning | tuning | Same across all |
+| 0xF0 | config | config | config | Same F0,00-04 sub-commands |
+
+The MK-80 command set is a **superset of the RD-200** with two new commands. It uses the same command numbering as the RD-200 (not the MKS-20's renumbered scheme).
+
+### New Feature: OCF Timer Interrupt (C693)
+
+The MK-80 adds an **output compare flag (OCF) timer interrupt** that the other two ROMs don't use (their OCF vectors point to the reset handler). This runs periodically at ~2.7kHz (timer reload value 0x0A6B) and handles:
+
+1. **Per-voice countdown timers** for auto-release — when a voice's timer reaches zero, it triggers note-off automatically
+2. **Auto bend step application** with decay toward zero across all 16 voice allocation slots — enables smooth real-time auto bend that the RD-200 doesn't have
+3. **Envelope rate processing** on a divided tick (every 12th OCF trigger) — offloads periodic envelope maintenance from the main loop
+
+This is the most significant architectural addition over the RD-200.
+
+### New Command: 0x40 — Program Change with Handshake (C4C8)
+
+After performing a program change (same logic as 0x30), this command additionally signals CPU A with the sample rate byte via PORT1 and performs a clock handshake. This allows CPU A to know when program loading is complete — the RD-200's program change is fire-and-forget.
+
+### New Command: 0x90 — Parameter Sub-dispatch (C50D)
+
+Routes to 8 sub-commands for extended sound parameters that the RD-200 handles via the simpler 0x80/0xA0 param update commands:
+
+| Sub | Purpose |
+|-----|---------|
+| 0x90,00 | Stretch tuning mode select |
+| 0x90,01 | Tightness (bass envelope scaling) |
+| 0x90,02 | Brightness (treble envelope scaling) |
+| 0x90,03 | Body (mid envelope scaling) |
+| 0x90,04 | Auto bend pitch (14-bit) |
+| 0x90,05 | Auto bend velocity sensitivity |
+| 0x90,06 | Auto bend time |
+| 0x90,07 | Auto bend key follow |
+
+These enable the MK-80's expanded sound shaping capabilities: per-register tonal shaping (brightness, punch, tightness, body), auto bend with configurable decay, and stretch tuning.
+
+### Extra Envelope Scaling Tables
+
+Beyond the standard 16 tables (identical to RD-200), the MK-80 has:
+
+- **5 additional 64-byte scaling curves** (at DCEB-DE53) — used for the tightness/brightness/body per-program envelope shaping controlled by cmd 0x90 sub-commands 01-03
+- **3 stretch tuning tables** (at DD8E-DE53) — pitch offsets applied when stretch tuning mode is active
+- **Envelope split point table** (at DE54) — defines the note boundary between tightness and brightness envelope regions for per-program tonal shaping
+
+### Architecture: Like RD-200, Not MKS-20
+
+The MK-80 follows the RD-200's "smart CPU B" architecture:
+- **Voice allocation** is internal (round-robin with steal, 16 slots)
+- **Sustain/sostenuto** handled internally by CPU B
+- **Note-off** searches by note number (not slot-addressed like MKS-20)
+- **Program config table** was not found — may be absent like MKS-20, or stored differently
+- **IC18 reading** likely uses program table at IC18 offset 0 (like RD-200)
+
+### F0 Config Sub-commands
+
+Same 5 sub-commands as MKS-20 (no F0,05 release_mask_override):
+
+| Sub | Purpose | Same as RD200? |
+|-----|---------|----------------|
+| F0,00 | Velocity mode | Yes (functionally) |
+| F0,01 | Sample rate muting | Yes |
+| F0,02 | Alt params table | Yes |
+| F0,03 | Global env offset | Yes |
+| F0,04 | Bank latch | Yes |

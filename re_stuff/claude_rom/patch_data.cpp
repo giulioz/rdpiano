@@ -23,26 +23,41 @@ static const ProgramConfig rd200_program_config[NUM_PROGRAMS] = {
 };
 
 #include "env_scale_tables.inc"
+#include "mk80_stretch_tuning.inc"
+#include "mk80_tone_tables.inc"
 
 // ============================================================================
 // PatchSet loader
 // ============================================================================
 
 void PatchSet::load(const uint8_t *ic18, ParamsRomFormat format) {
-    // Load model-specific tables from CPU B ROM data
-    const auto &scale_src = (format == ParamsRomFormat::RD200)
-        ? rd200_env_scale_tables : mks20_env_scale_tables;
+    // Load model-specific envelope scaling tables from CPU B ROM data
+    const auto &scale_src = (format == ParamsRomFormat::MKS20)
+        ? mks20_env_scale_tables : rd200_env_scale_tables;  // MK80 uses same as RD200
     for (int t = 0; t < NUM_ENV_SCALE_TABLES; t++)
         std::copy_n(scale_src[t], NUM_ENV_SCALE_ENTRIES, env_scale_tables[t]);
 
+    // Load per-program release config (RD200 only; MKS-20 and MK-80 have no such table)
     if (format == ParamsRomFormat::RD200)
         std::copy_n(rd200_program_config, NUM_PROGRAMS, program_config);
     else
         std::fill_n(program_config, NUM_PROGRAMS, ProgramConfig{});
 
+    // Load MK-80 tone shaping tables
+    mk80_tables.loaded = false;
+    if (format == ParamsRomFormat::MK80) {
+        memcpy(mk80_tables.bass_scale, mk80_bass_scale, sizeof(mk80_bass_scale));
+        memcpy(mk80_tables.mid_scale, mk80_mid_scale, sizeof(mk80_mid_scale));
+        memcpy(mk80_tables.split_point, mk80_split_point, sizeof(mk80_split_point));
+        memcpy(mk80_tables.stretch_a, mk80_stretch_tuning_a, sizeof(mk80_stretch_tuning_a));
+        memcpy(mk80_tables.stretch_b, mk80_stretch_tuning_b, sizeof(mk80_stretch_tuning_b));
+        memcpy(mk80_tables.stretch_c, mk80_stretch_tuning_c, sizeof(mk80_stretch_tuning_c));
+        mk80_tables.loaded = true;
+    }
+
     // Parse IC18 patches
-    if (format == ParamsRomFormat::RD200) {
-        // RD200: program table at IC18[0], 8 entries of {bank, addr_hi, addr_lo}
+    if (format == ParamsRomFormat::RD200 || format == ParamsRomFormat::MK80) {
+        // RD200/MK80: program table at IC18[0], 8 entries of {bank, addr_hi, addr_lo}
         for (int pgm = 0; pgm < NUM_PROGRAMS; pgm++) {
             uint8_t bank = ic18[pgm * 3];
             uint16_t addr = (ic18[pgm * 3 + 1] << 8) | ic18[pgm * 3 + 2];
@@ -54,7 +69,6 @@ void PatchSet::load(const uint8_t *ic18, ParamsRomFormat format) {
             0x000000, 0x008000, 0x010000, 0x018000,
             0x003C20, 0x00AB50, 0x014260, 0x01BEF0
         };
-        // Build a full IC18 mapping (all 4 banks accessible)
         for (int pgm = 0; pgm < NUM_PROGRAMS; pgm++) {
             uint8_t bank = offsets[pgm] / 0x8000;
             uint16_t addr = 0x4000 + (offsets[pgm] % 0x8000);

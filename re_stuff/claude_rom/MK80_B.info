@@ -1,0 +1,804 @@
+* MK-80 CPU B (Sound Engine) - f9dasm info file
+* HD63B03RP, ROM descrambled, mapped at C000-FFFF (16KB)
+* Roland MK-80 digital piano, same sound chip board as RD-200/MKS-20
+
+OPTION 6301
+
+* =============================================
+* CPU Internal Registers (0x0000-0x001F)
+* =============================================
+LABEL 0000 PORT1_DDR
+LABEL 0001 PORT2_DDR
+LABEL 0002 PORT1_DATA
+LABEL 0003 PORT2_CTRL
+LABEL 0004 PORT3_DDR
+LABEL 0005 PORT3_DATA
+LABEL 0008 TCSR
+LABEL 0009 COUNTER_HI
+LABEL 000B OCR_HI
+LABEL 000D ICR_HI
+
+* =============================================
+* Internal RAM - Voice Slot State (0x0020-0x002F)
+* Voice note assignment: slot N at 0x0020+N
+* =============================================
+LABEL 0020 voice_note_slot_0
+LABEL 0021 voice_note_slot_1
+LABEL 0022 voice_note_slot_2
+LABEL 0023 voice_note_slot_3
+LABEL 0024 voice_note_slot_4
+LABEL 0025 voice_note_slot_5
+LABEL 0026 voice_note_slot_6
+LABEL 0027 voice_note_slot_7
+LABEL 0028 voice_note_slot_8
+LABEL 0029 voice_note_slot_9
+LABEL 002A voice_note_slot_A
+LABEL 002B voice_note_slot_B
+LABEL 002C voice_note_slot_C
+LABEL 002D voice_note_slot_D
+LABEL 002E voice_note_slot_E
+LABEL 002F voice_note_slot_F
+
+* =============================================
+* Internal RAM - Voice Pending State (0x0050-0x005F)
+* Pending note on/off flags per slot
+* =============================================
+LABEL 0050 voice_pending_0
+LABEL 0051 voice_pending_1
+LABEL 0052 voice_pending_2
+LABEL 0053 voice_pending_3
+LABEL 0054 voice_pending_4
+LABEL 0055 voice_pending_5
+LABEL 0056 voice_pending_6
+LABEL 0057 voice_pending_7
+LABEL 0058 voice_pending_8
+LABEL 0059 voice_pending_9
+LABEL 005A voice_pending_A
+LABEL 005B voice_pending_B
+LABEL 005C voice_pending_C
+LABEL 005D voice_pending_D
+LABEL 005E voice_pending_E
+LABEL 005F voice_pending_F
+
+* =============================================
+* Internal RAM - Voice Tuning Offsets (0x0060-0x006F)
+* Per-voice tuning delta accumulators
+* =============================================
+LABEL 0060 voice_tune_acc_0
+LABEL 0062 voice_tune_acc_1
+LABEL 0064 voice_tune_acc_2
+LABEL 0066 voice_tune_acc_3
+LABEL 0068 voice_tune_acc_4
+LABEL 006A voice_tune_acc_5
+LABEL 006C voice_tune_acc_6
+LABEL 006E voice_tune_acc_7
+
+* =============================================
+* Internal RAM - Core Working Variables
+* =============================================
+LABEL 0070 cur_voice_idx_ptr
+LABEL 0071 cur_voice_iter
+LABEL 0074 ocf_voice_limit
+LABEL 0075 samplerate_response
+LABEL 0076 program_flags
+LABEL 0077 ic18_patch_base
+LABEL 0079 ic18_note_base
+LABEL 007B ic18_env_base
+LABEL 007D env_chain_ptr
+LABEL 007F note_entry_ptr
+LABEL 0081 env_data_ptr
+LABEL 0083 sound_chip_ptr
+LABEL 0085 saved_sp
+LABEL 0087 voice_ram_ptr
+LABEL 0089 interp_temp
+LABEL 008B tuning_fine_adj
+LABEL 008C patch_config_byte
+LABEL 008D program_number
+LABEL 008E voice_param_byte
+LABEL 008F env_note_quarter
+LABEL 0090 env_note_double
+LABEL 0091 env_scale_value
+LABEL 0092 voice_base_offset
+LABEL 0094 env_chain_slot_0
+LABEL 0095 env_chain_slot_1
+LABEL 0096 env_chain_slot_2
+LABEL 0097 env_chain_slot_3
+LABEL 0098 env_chain_slot_4
+LABEL 0099 env_chain_slot_5
+LABEL 009A env_chain_slot_6
+LABEL 009B env_chain_slot_7
+LABEL 009C irq_voice_id
+LABEL 009D irq_env_interp
+LABEL 009E irq_env_scale
+LABEL 009F irq_voice_ram_ptr
+LABEL 00A0 irq_sndchip_ptr_hi
+LABEL 00A3 irq_sndchip_offset
+LABEL 00A7 wait_counter
+LABEL 00A8 rx_command_byte
+LABEL 00A9 rx_data_byte1
+LABEL 00AA rx_data_byte2
+LABEL 00AB ic18_note_offset_hi
+LABEL 00AD ic18_env_chain_offset_hi
+LABEL 00AF ic18_env_data_offset_hi
+LABEL 00B1 ic18_env_data_cur_hi
+LABEL 00B3 tuning_base
+LABEL 00B5 voice_ram_iter
+LABEL 00B7 sndchip_iter_hi
+LABEL 00B8 sndchip_iter_lo
+LABEL 00B9 voice_state_base
+LABEL 00BA voice_alloc_offset
+LABEL 00BB voice_alloc_slot_ptr
+LABEL 00BC voice_alloc_note
+LABEL 00BD icf_handler_ptr
+LABEL 00BF release_boost
+
+* =============================================
+* Internal RAM - Synthesis Parameters
+* =============================================
+LABEL 00C1 stretch_tuning_mode
+LABEL 00C2 auto_bend_offset
+LABEL 00C4 velocity_curve
+LABEL 00C5 brightness
+LABEL 00C6 punch
+LABEL 00C7 sustain_pedal_flag
+LABEL 00C8 env_velocity_temp
+LABEL 00C9 tightness
+LABEL 00CA body
+LABEL 00CB auto_bend_pitch
+LABEL 00CC auto_bend_velocity_sens
+LABEL 00CD auto_bend_time
+LABEL 00CE auto_bend_enable
+LABEL 00CF auto_bend_key_follow
+LABEL 00D0 voice_alloc_iter_ptr
+LABEL 00D2 auto_bend_amount
+LABEL 00D4 tuning_delta
+LABEL 00D6 tuning_delta_copy
+LABEL 00D8 auto_bend_step
+LABEL 00DA auto_bend_decay
+LABEL 00DC pitch_calc_temp
+LABEL 00DE env_split_threshold
+LABEL 00DF sostenuto_pedal_flag
+LABEL 00E0 env_partial_idx
+LABEL 00E1 ic18_bank_byte
+LABEL 00E2 ocf_busy_flag
+LABEL 00E3 ocf_divider
+LABEL 00E4 tuning_value_hi
+LABEL 00E5 tuning_value_lo
+
+* =============================================
+* External RAM
+* =============================================
+LABEL 0100 VOICE_ALLOC_TABLE
+LABEL 0290 VOICE_RAM_BASE
+
+* =============================================
+* Memory-mapped devices
+* =============================================
+LABEL 1000 SOUND_CHIP_BASE
+
+* =============================================
+* IC18 Params ROM
+* =============================================
+LABEL 4000 PARAMS_ROM_BASE
+
+* =============================================
+* Bank select latch
+* =============================================
+LABEL F000 BANK_LATCH
+
+* =============================================
+* CODE: Init / Clear RAM (C000-C00E)
+* =============================================
+CODE C000-C00E
+LABEL C000 clear_ram_20
+LABEL C006 clear_ram_loop
+
+* =============================================
+* CODE: Reset handler (C00F-C0FB)
+* =============================================
+CODE C00F-C0FB
+LABEL C00F reset_handler
+LABEL C03F reset_init_voice_marks
+LABEL C052 reset_read_ic18_config
+LABEL C066 reset_set_samplerate
+LABEL C07F reset_init_soundchip_loop
+LABEL C09B reset_init_env_offset
+LABEL C0AB reset_delay_loop
+LABEL C0BF reset_init_ocf_limit
+LABEL C0C9 reset_init_voice_state
+LABEL C0EE reset_select_icf_handler
+LABEL C0FC main_loop_sleep
+
+* =============================================
+* CODE: Main loop - pitch processing (C0FE-C260)
+* =============================================
+CODE C0FE-C260
+LABEL C0FE main_loop
+LABEL C105 process_voice_pitch_loop
+LABEL C10F process_voice_active
+LABEL C123 pitch_calc_slot
+LABEL C143 pitch_store_tuning
+LABEL C1C4 pitch_extra_partials
+LABEL C1CD pitch_restore_sp
+LABEL C1D2 pitch_skip
+LABEL C1D3 pitch_loop_next
+LABEL C1DE pitch_update_envdata
+LABEL C1F4 pitch_write_soundchip
+LABEL C204 write_chip_voice_loop
+LABEL C211 write_chip_partial
+LABEL C239 write_chip_check_8part
+LABEL C241 write_chip_skip_extra
+LABEL C248 write_chip_done
+LABEL C250 write_chip_inactive
+LABEL C257 write_chip_advance
+
+* =============================================
+* CODE: ICF handler - inter-CPU receive (C263-C317)
+* =============================================
+CODE C263-C317
+LABEL C263 icf_handler
+LABEL C267 icf_irq_first_check
+LABEL C26F icf_read_data_byte
+LABEL C275 icf_wait_clock_low
+LABEL C289 icf_read_extra_byte1
+LABEL C293 icf_wait_clock_low_2
+LABEL C2A3 icf_read_extra_byte2
+LABEL C2AB icf_wait_clock_low_3
+LABEL C2BD icf_dispatch
+LABEL C2C5 icf_dispatch_jump
+LABEL C2CB icf_alternate_handler
+LABEL C2CE icf_alt_wait_clock
+LABEL C2E0 icf_alt_dispatch
+LABEL C2ED icf_alt_wait_release
+LABEL C2F9 icf_alt_clear_irq
+LABEL C301 icf_read_extra_bytes
+LABEL C30B icf_read_wait
+
+* =============================================
+* DATA: Command dispatch table (C318-C337)
+* 16 entries, indexed by command nibble >> 1
+* =============================================
+WORD C318-C337
+LABEL C318 cmd_dispatch_table
+
+* =============================================
+* CODE: Tuning command and sub-dispatch (C338-C35B)
+* =============================================
+CODE C338-C35B
+LABEL C338 cmd_E0_tuning
+LABEL C347 tuning_subdispatch_table
+LABEL C353 tuning_store_note_offset
+LABEL C356 tuning_store_note_offset_2
+LABEL C359 tuning_store_env_offset
+
+* =============================================
+* CODE: Program change (C35C-C3E3)
+* =============================================
+CODE C35C-C3E3
+LABEL C35C cmd_30_program_change
+LABEL C361 program_change_core
+LABEL C36C program_change_load
+LABEL C3E4 program_change_disable_irq
+
+* =============================================
+* CODE: All voices off and chip reinit (C3E4-C4C7)
+* =============================================
+CODE C3E4-C4C7
+LABEL C3E4 all_voices_off
+LABEL C3F5 all_voices_off_loop
+LABEL C402 all_voices_off_next
+LABEL C419 wait_chip_silent
+LABEL C421 wait_chip_check
+LABEL C451 all_voices_write_release
+LABEL C463 all_voices_write_next
+LABEL C473 wait_chip_silent_2
+LABEL C47B wait_chip_check_2
+LABEL C4A2 all_voices_done
+LABEL C4A8 clear_voice_env_state
+LABEL C4C0 write_release_envelope
+
+* =============================================
+* CODE: Cmd 0x40 - Program change with response (C4C8-C4ED)
+* NEW: Not in RD-200. Sets flag, does program change,
+* then signals CPU A with sample rate byte via PORT1.
+* =============================================
+CODE C4C8-C4ED
+LABEL C4C8 cmd_40_program_change_respond
+LABEL C4CF cmd_40_wait_clock
+LABEL C4E3 cmd_40_wait_release
+
+* =============================================
+* CODE: Cmd 0x10 - Voice update tick (C4EE-C50C)
+* Iterates all 16 voices, releases those matching
+* a layer bit pattern. Envelope layer management.
+* =============================================
+CODE C4EE-C50C
+LABEL C4EE cmd_10_voice_update_tick
+LABEL C4F9 voice_update_loop
+LABEL C507 voice_update_next
+
+* =============================================
+* CODE: Cmd 0x90 - Sub-dispatch (C50D-C53A)
+* NEW: Not in RD-200. Routes to 8 sub-handlers for
+* setting stretch tuning, brightness/punch, tightness/body, auto bend.
+* =============================================
+CODE C50D-C553
+LABEL C50D cmd_90_param_subdispatch
+LABEL C51B cmd_90_subdispatch_table
+LABEL C52B cmd_90_00_nop
+LABEL C52C cmd_90_01_nop
+LABEL C52D cmd_90_02_set_stretch_tuning
+LABEL C536 cmd_90_03_set_brightness_punch
+LABEL C53B cmd_90_04_set_tightness_body
+LABEL C540 cmd_90_05_set_pitchbend
+LABEL C54C cmd_90_06_set_auto_bend_time
+LABEL C554 compute_auto_bend_step
+
+* =============================================
+* CODE: Auto bend calculation (C554-C692)
+* =============================================
+CODE C554-C692
+LABEL C554 auto_bend_step_calc
+LABEL C563 auto_bend_positive
+LABEL C57B auto_bend_min_step
+LABEL C581 auto_bend_half
+LABEL C587 auto_bend_quarter
+LABEL C58F auto_bend_eighth
+LABEL C597 auto_bend_store
+LABEL C59C auto_bend_max
+LABEL C59E auto_bend_store_step
+LABEL C5A1 auto_bend_negative
+LABEL C5BE compute_pitch_from_value
+LABEL C5CF pitch_pos_store
+LABEL C5D7 pitch_pos_clamp
+LABEL C5DD pitch_neg_compute
+LABEL C5E9 pitch_neg_negate
+LABEL C5F7 pitch_neg_clamp
+LABEL C5FD compute_auto_bend_decay
+LABEL C607 auto_bend_nonzero
+LABEL C61A auto_bend_div_256
+LABEL C62D auto_bend_div_128
+LABEL C63E auto_bend_div_64
+LABEL C64D auto_bend_div_32
+LABEL C658 auto_bend_store_decay
+LABEL C65E auto_bend_min_decay
+LABEL C663 fill_auto_bend_offsets
+LABEL C66A fill_positive_loop
+LABEL C674 fill_positive_next
+LABEL C67C fill_negative_loop
+LABEL C686 fill_negative_next
+LABEL C68E cmd_90_07_set_velocity
+
+* =============================================
+* CODE: OCF handler - Timer output compare (C693-C7F3)
+* NEW: Not in RD-200/MKS-20. Periodic timer ISR.
+* Decrements voice countdown timers and applies
+* envelope decay/release on timeout. Also handles
+* the auto bend step application to all voices.
+* =============================================
+CODE C693-C7F3
+LABEL C693 ocf_handler
+LABEL C699 ocf_process_tick
+LABEL C69B ocf_reload_timer
+LABEL C6AA ocf_voice_countdown
+LABEL C6AD ocf_countdown_loop
+LABEL C6BA ocf_countdown_next
+LABEL C6C5 ocf_env_decay_start
+LABEL C6D0 ocf_pitch_decay_check
+LABEL C6D4 ocf_pitch_decay_pos_loop
+LABEL C6E0 ocf_pitch_decay_pos_zero
+LABEL C6E4 ocf_pitch_decay_pos_next
+LABEL C6ED ocf_pitch_decay_neg_loop
+LABEL C6F9 ocf_pitch_decay_neg_zero
+LABEL C6FD ocf_pitch_decay_neg_next
+LABEL C704 ocf_env_divider_check
+LABEL C70C ocf_env_process_start
+LABEL C712 ocf_env_voice_loop
+LABEL C740 ocf_env_layer2_check
+LABEL C74F ocf_env_apply_decay
+LABEL C75A ocf_env_check_countdown
+LABEL C764 ocf_env_store
+LABEL C768 ocf_env_next
+LABEL C76F ocf_env_done
+
+* =============================================
+* DATA: Envelope rate table (C774-C7F3)
+* 128-entry lookup: raw value -> decay rate
+* =============================================
+DATA C774-C7F3
+LABEL C774 env_rate_table
+
+* =============================================
+* CODE: Clear voice state arrays (C7F4-C804)
+* =============================================
+CODE C7F4-C804
+LABEL C7F4 clear_voice_state
+
+* =============================================
+* CODE: Note on layer 1 (C805-C886)
+* Voice allocation, note assignment, steal logic
+* =============================================
+CODE C805-C886
+LABEL C805 cmd_C0_note_on_L1
+LABEL C811 voice_find_weakest
+LABEL C81B voice_find_next
+LABEL C81F voice_found_slot
+LABEL C840 voice_store_note
+LABEL C844 voice_priority_update
+LABEL C881 voice_priority_done
+
+* =============================================
+* CODE: Note off (C887-C8B9)
+* =============================================
+CODE C887-C8B9
+LABEL C887 cmd_B0_note_off
+LABEL C893 note_off_found
+LABEL C8AC note_off_all_param
+LABEL C8B4 cmd_A0_param_update_hi
+
+* =============================================
+* CODE: Param update / Note on common (C8BA-C96E)
+* =============================================
+CODE C8BA-C96E
+LABEL C8BA cmd_80_param_update
+LABEL C8C1 param_update_core
+LABEL C8EE note_on_setup_voice
+LABEL C994 setup_note_pitch_lookup
+LABEL C9CF note_on_check_stretch_tuning
+LABEL C9F0 note_on_stretch_table_low
+LABEL C9F5 note_on_stretch_table_check
+LABEL C9FF note_on_stretch_prog4
+LABEL CA0C note_on_stretch_table_high
+LABEL CA0F note_on_stretch_apply
+LABEL CA1D note_on_write_soundchip
+
+* =============================================
+* CODE: Write pitch to sound chip (CA1D-CB00)
+* Writes all 10 partial pitch values to sound chip
+* =============================================
+CODE CA1D-CB00
+LABEL CA1D write_pitch_all_partials
+LABEL CA26 write_pitch_partial_1
+LABEL CA55 write_pitch_base_tuning
+
+* =============================================
+* CODE: Load envelope from IC18 (CB01-CD8C)
+* Sets up 10 envelope chains from IC18 data
+* =============================================
+CODE CB01-CD8C
+LABEL CB01 load_env_from_ic18
+LABEL CB52 load_env_scaling_0
+LABEL CB81 load_env_chain_0_done
+LABEL CB89 load_env_scaling_1
+LABEL CBB3 load_env_chain_1_done
+LABEL CBBB load_env_scaling_2
+LABEL CBE5 load_env_chain_2_done
+LABEL CBED load_env_scaling_3
+LABEL CC17 load_env_chain_3_done
+LABEL CC1F load_env_scaling_4
+LABEL CC49 load_env_chain_4_done
+LABEL CC51 load_env_scaling_5
+LABEL CC7B load_env_chain_5_done
+LABEL CC83 load_env_scaling_6
+LABEL CCAD load_env_chain_6_done
+LABEL CCB5 load_env_scaling_7
+LABEL CCDF load_env_chain_7_done
+LABEL CCE7 load_env_scaling_8
+LABEL CD11 load_env_chain_8_done
+LABEL CD19 load_env_scaling_9
+LABEL CD43 load_env_chain_9_done
+LABEL CD4B write_env_waveform_data
+
+* =============================================
+* CODE: Note on layer 2 (CDAC-CDC3)
+* =============================================
+CODE CDAC-CDC3
+LABEL CDAC cmd_D0_note_on_L2
+LABEL CD91 note_on_set_env_chains
+LABEL CDB2 note_on_set_env_low
+
+* =============================================
+* CODE: Note on - voice assignment loop (CDC4-CF23)
+* Checks all 16 voice slots, triggers voice start
+* =============================================
+CODE CDC4-CF23
+LABEL CDC4 note_on_assign_voices
+LABEL CDDB note_on_check_slot_1
+LABEL CDF1 note_on_check_slot_2
+LABEL CE07 note_on_check_slot_3
+LABEL CE1D note_on_check_slot_4
+LABEL CE33 note_on_check_slot_5
+LABEL CE49 note_on_check_slot_6
+LABEL CE5F note_on_check_slot_7
+LABEL CE75 note_on_check_slot_8
+LABEL CE8B note_on_check_slot_9
+LABEL CEA1 note_on_check_slot_A
+LABEL CEB7 note_on_check_slot_B
+LABEL CECD note_on_check_slot_C
+LABEL CEE3 note_on_check_slot_D
+LABEL CEF9 note_on_check_slot_E
+LABEL CF0F note_on_check_slot_F
+LABEL CF23 note_on_done
+
+* =============================================
+* CODE: Envelope interpolation (CF24-D041)
+* Per-partial envelope value calculation with
+* velocity scaling lookup
+* =============================================
+CODE CF24-D041
+LABEL CF24 env_interp_no_scale
+LABEL CF28 env_interp_no_note
+LABEL CF2C env_interp_full
+LABEL CF3F env_interp_apply_note
+LABEL CF51 env_interp_store
+LABEL CF58 env_select_table
+LABEL CF67 env_check_program
+LABEL CF7F env_no_special
+LABEL CF87 env_skip_zero
+LABEL CF8A env_scaling_ptr_by_program
+LABEL CF9A env_lookup_velocity
+LABEL CFAF env_apply_velocity
+LABEL CFBD env_vel_positive
+LABEL CFC5 env_vel_done_pos
+LABEL CFC7 env_vel_negative
+LABEL CFD0 env_vel_negate
+LABEL CFD2 env_vel_subtract
+LABEL CFD8 env_vel_done_neg
+LABEL CFDA env_mid_range_check
+LABEL CFE0 env_mid_scaling_ptr_by_prog
+LABEL CFF0 env_mid_lookup
+LABEL CFFB env_mid_note_offset
+LABEL D00C env_high_range_check
+LABEL D014 env_high_lookup
+LABEL D039 env_high_treble
+LABEL D03F env_interp_cancel
+
+* =============================================
+* CODE: Sustain handler (D042-D095)
+* =============================================
+CODE D042-D095
+LABEL D042 cmd_50_sustain
+LABEL D061 sustain_on_normal
+LABEL D074 sustain_off
+LABEL D07F sustain_apply_loop
+LABEL D083 sustain_voice_check
+LABEL D090 sustain_loop_next
+
+* =============================================
+* CODE: Sostenuto handler (D096-D0E9)
+* =============================================
+CODE D096-D0E9
+LABEL D096 cmd_60_sostenuto
+LABEL D0B5 sostenuto_on_normal
+LABEL D0C8 sostenuto_off
+LABEL D0D3 sostenuto_apply_loop
+LABEL D0D7 sostenuto_voice_check
+LABEL D0E4 sostenuto_loop_next
+
+* =============================================
+* CODE: Voice reset / all notes off (D0EA-D297)
+* =============================================
+CODE D0EA-D297
+LABEL D0EA cmd_00_voice_reset
+LABEL D100 voice_reset_set_pedal
+LABEL D107 voice_reset_sustain_on
+LABEL D11A voice_reset_sustain_normal
+LABEL D12D voice_reset_no_sustain
+LABEL D138 voice_reset_check_slots
+LABEL D297 voice_reset_done
+
+* =============================================
+* CODE: Voice release / reassign (D298-D3F2)
+* =============================================
+CODE D298-D3F2
+LABEL D298 voice_release_check
+LABEL D29F voice_start_release
+LABEL D2BA voice_release_check_prog
+LABEL D2CA voice_release_check_pedal
+LABEL D2DD voice_release_check_sustain
+LABEL D2F0 voice_write_release_env
+LABEL D315 voice_release_write_chip
+LABEL D32D voice_release_partial_0
+LABEL D33E voice_release_partial_1
+LABEL D34F voice_release_partial_2
+LABEL D360 voice_release_partial_3
+LABEL D371 voice_release_partial_4
+LABEL D382 voice_release_partial_5
+LABEL D393 voice_release_partial_6
+LABEL D3A4 voice_release_partial_7
+LABEL D3B5 voice_release_partial_8
+LABEL D3C6 voice_release_partial_9
+LABEL D3CB voice_release_restore_sp
+LABEL D3CC write_env_all_partials
+LABEL D3F3 voice_retrigger
+
+* =============================================
+* CODE: Voice kill / retrigger (D3F3-D46E)
+* =============================================
+CODE D3F3-D46E
+LABEL D3F3 voice_retrigger_setup
+LABEL D430 irq_voice_done
+LABEL D45C irq_voice_done_rti
+LABEL D45D voice_finished_handler
+
+* =============================================
+* CODE: IRQ1 handler - Sound chip interrupt (D46F-D620)
+* Per-partial envelope processing, identical structure
+* to RD-200 but with program-specific velocity tables
+* =============================================
+CODE D46F-D620
+LABEL D46F irq_handler
+LABEL D477 irq_read_chip_status
+LABEL D49A irq_env_chain_active
+LABEL D4C9 irq_env_no_interp
+LABEL D4CD irq_env_interpolate
+LABEL D4DB irq_env_apply_scale
+LABEL D4EC irq_env_store_raw
+LABEL D4F3 irq_env_select_table
+LABEL D507 irq_env_low_partial
+LABEL D529 irq_env_no_special
+LABEL D531 irq_env_skip_zero
+LABEL D534 irq_env_lookup
+LABEL D557 irq_env_apply_vel
+LABEL D565 irq_env_vel_positive
+LABEL D571 irq_env_vel_done_pos
+LABEL D574 irq_env_vel_negative
+LABEL D57D irq_env_vel_negate
+LABEL D57F irq_env_vel_subtract
+LABEL D585 irq_env_vel_done_neg
+LABEL D588 irq_env_mid_check
+LABEL D58F irq_env_mid_lookup
+LABEL D5A6 irq_env_mid_offset
+LABEL D5BA irq_env_high_check
+LABEL D5C2 irq_env_high_lookup
+LABEL D5F5 irq_env_high_treble
+LABEL D5FB irq_env_high_treble_offset
+LABEL D610 irq_env_cancel
+LABEL D611 irq_env_write
+LABEL D61A irq_env_clear_chain
+
+* =============================================
+* DATA: Envelope scaling pointer table (D621-D640)
+* 16 entries (pointers to 64-byte scaling curves)
+* Identical to RD-200
+* =============================================
+WORD D621-D640
+LABEL D621 env_scaling_ptr_table
+
+* =============================================
+* DATA: Note-to-pitch lookup table (D641-D6A3)
+* 99 entries: MIDI note -> pitch offset for
+* stretch tuning / scale correction
+* =============================================
+DATA D641-D6A3
+LABEL D641 note_pitch_offset_table
+
+* =============================================
+* CODE: F0 config command (D6A4-D6F0)
+* =============================================
+CODE D6A4-D6F0
+LABEL D6A4 cmd_F0_config
+LABEL D6B2 f0_subdispatch_table
+LABEL D6BC f0_00_set_program_flags
+LABEL D6C3 f0_00_store
+LABEL D6C6 f0_01_sample_rate
+LABEL D6CF f0_01_rate_B
+LABEL D6D6 f0_02_set_fine_tune
+LABEL D6D9 f0_03_bank_latch
+LABEL D6DD f0_03_write_latch
+LABEL D6E1 f0_04_params_table
+
+* =============================================
+* DATA: Params pointer tables (D6F1-D708)
+* =============================================
+WORD D6F1-D6F4
+LABEL D6F1 params_ptr_index
+
+* =============================================
+* DATA: IC18 params table entries (D6F5-D708)
+* Per-program pointer/offset data for IC18
+* =============================================
+DATA D6F5-D708
+LABEL D6F5 params_table_entries
+
+* =============================================
+* DATA: Default envelope chains (D709-D80A)
+* Template chains for note-on envelope setup
+* =============================================
+DATA D709-D80A
+LABEL D709 env_chain_template_A
+LABEL D720 env_chain_default_block
+LABEL D733 env_chain_template_B
+
+* =============================================
+* DATA: Release envelope table (D80B-D924)
+* Release curve data, identical to RD-200
+* =============================================
+DATA D80B-D924
+LABEL D80B release_env_table
+
+* =============================================
+* DATA: Dummy/separator (D925-D929)
+* =============================================
+DATA D925-D929
+LABEL D925 env_table_separator
+
+* =============================================
+* DATA: Envelope scaling curves (D92A-DCEB)
+* 16 tables x 64 bytes = 1024 bytes
+* Identical to RD-200
+* =============================================
+DATA D92A-DCEB
+LABEL D92A env_scale_part00
+LABEL D96A env_scale_part01
+LABEL D9AA env_scale_part02
+LABEL D9EA env_scale_part03
+LABEL DA2A env_scale_part04
+LABEL DA6A env_scale_part05
+LABEL DAAA env_scale_part06
+LABEL DAEA env_scale_part07
+LABEL DB2A env_scale_part08
+LABEL DB6A env_scale_part09
+LABEL DBAA env_scale_part10
+LABEL DBEA env_scale_part11
+LABEL DC2A env_scale_part12
+LABEL DC6A env_scale_part13
+LABEL DCAA env_scale_part14
+LABEL DCEA env_scale_part15
+
+* =============================================
+* DATA: Extra envelope scaling curves (DCEB-DD8D)
+* 5 additional 64-byte tables (NEW - not in RD-200)
+* Used for specific program/layer combinations
+* Indices 16-20 in the scaling system
+* =============================================
+DATA DCEB-DD8D
+LABEL DCEB env_scale_extra_00
+LABEL DD2B env_scale_extra_01
+LABEL DD5C env_scale_extra_02_zeros
+
+* =============================================
+* DATA: Stretch tuning tables (DD8E-DE53)
+* 3 tables of signed pitch offsets by note
+* Used for stretch tuning effect
+* =============================================
+DATA DD8E-DE53
+LABEL DD8E stretch_tuning_table_A
+LABEL DDF1 stretch_tuning_table_B
+LABEL DE27 stretch_tuning_table_C
+
+* =============================================
+* DATA: Envelope split point table (DE54-DEA3)
+* Per-program note split points for envelope
+* selection (bass vs treble scaling)
+* =============================================
+DATA DE54-DEA3
+LABEL DE54 env_split_point_table
+
+* =============================================
+* DATA: 0xFF padding / unused (DEA4-DFFF)
+* =============================================
+DATA DEA4-DFFF
+LABEL DEA4 unused_ff_padding
+
+* =============================================
+* DATA: Envelope chain data area (E000-FFEF)
+* Large data section containing per-note
+* envelope waveform data used for all programs.
+* Organized as multi-partial envelope chains
+* that get loaded to sound chip via IRQ.
+* =============================================
+DATA E000-FFEF
+
+* =============================================
+* DATA: Vector table (FFF0-FFFF)
+* =============================================
+WORD FFF0-FFFF
+LABEL FFF0 vec_trap
+LABEL FFF2 vec_sci
+LABEL FFF4 vec_tof
+LABEL FFF6 vec_ocf
+LABEL FFF8 vec_icf
+LABEL FFFA vec_irq1
+LABEL FFFC vec_swi
+LABEL FFFE vec_reset

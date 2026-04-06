@@ -208,6 +208,22 @@ static void send_midi(uint8_t status, uint8_t d1, uint8_t d2) {
 
 static int current_program = 0;
 
+// Tone shaping params (adjustable at runtime)
+static uint8_t param_punch = 0;
+static uint8_t param_tightness = 0;
+static uint8_t param_body = 0;
+static uint8_t param_brightness = 0;
+static uint8_t param_stretch = 0;
+static uint8_t param_auto_bend_pitch = 100;
+static uint8_t param_auto_bend_time = 2;
+static uint8_t param_auto_bend_vel = 4;
+
+static void print_params() {
+    printf("  Punch=%d Tight=%d Body=%d Bright=%d Stretch=%d AutoBend=%d/%d/%d\n",
+           param_punch, param_tightness, param_body, param_brightness,
+           param_stretch, param_auto_bend_pitch, param_auto_bend_time, param_auto_bend_vel);
+}
+
 // MKS-20: patches 0-2 use ROM set A, patches 3-7 use ROM set B
 static int rom_set_for_program(int pgm) { return (has_rom_set_b && pgm >= 3) ? 1 : 0; }
 
@@ -220,6 +236,12 @@ static void switch_program(int pgm) {
         printf("ROM set: %c\n", 'A' + needed_set);
     }
     firmware->loadPatch(patch_set, pgm);
+}
+
+static void apply_param(uint8_t &param, int delta, uint8_t max_val, const char *name) {
+    int v = (int)param + delta;
+    param = (uint8_t)std::clamp(v, 0, (int)max_val);
+    printf("%s = %d\n", name, param);
 }
 
 void handle_keyboard(SDL_Event &ev) {
@@ -241,11 +263,45 @@ void handle_keyboard(SDL_Event &ev) {
             send_midi(0xB0, 64, 127);
             printf("Sustain ON\n");
         }
-        if (ev.key.keysym.sym == SDLK_PERIOD) {
+
+        // F1/F2: Punch ±4
+        // F3/F4: Tightness ±8
+        // F5/F6: Body ±8
+        // F7/F8: Brightness ±8
+        // F9/F10: Stretch tuning cycle 0/1/2
+        // F11/F12: Auto bend pitch ±10
+        // 9/0: Auto bend time ±1
+        bool param_changed = false;
+        switch (ev.key.keysym.sym) {
+        case SDLK_F1: apply_param(param_punch, -4, 32, "Punch"); param_changed = true; break;
+        case SDLK_F2: apply_param(param_punch, +4, 32, "Punch"); param_changed = true; break;
+        case SDLK_F3: apply_param(param_tightness, -8, 127, "Tightness"); param_changed = true; break;
+        case SDLK_F4: apply_param(param_tightness, +8, 127, "Tightness"); param_changed = true; break;
+        case SDLK_F5: apply_param(param_body, -8, 127, "Body"); param_changed = true; break;
+        case SDLK_F6: apply_param(param_body, +8, 127, "Body"); param_changed = true; break;
+        case SDLK_F7: apply_param(param_brightness, -8, 127, "Brightness"); param_changed = true; break;
+        case SDLK_F8: apply_param(param_brightness, +8, 127, "Brightness"); param_changed = true; break;
+        case SDLK_F9:  param_stretch = (param_stretch + 2) % 3; printf("Stretch = %d\n", param_stretch); param_changed = true; break;
+        case SDLK_F10: param_stretch = (param_stretch + 1) % 3; printf("Stretch = %d\n", param_stretch); param_changed = true; break;
+        case SDLK_F11: apply_param(param_auto_bend_pitch, -10, 200, "AutoBend Pitch"); param_changed = true; break;
+        case SDLK_F12: apply_param(param_auto_bend_pitch, +10, 200, "AutoBend Pitch"); param_changed = true; break;
+        case SDLK_9: apply_param(param_auto_bend_time, -1, 4, "AutoBend Time"); param_changed = true; break;
+        case SDLK_0: apply_param(param_auto_bend_time, +1, 4, "AutoBend Time"); param_changed = true; break;
+        case SDLK_MINUS: apply_param(param_auto_bend_vel, -2, 255, "AutoBend VelSens"); param_changed = true; break;
+        case SDLK_EQUALS: apply_param(param_auto_bend_vel, +2, 255, "AutoBend VelSens"); param_changed = true; break;
+        default: break;
+        }
+
+        if (param_changed) {
             SDL_AtomicLock(&fw_lock);
-            firmware->setTuning(100);
+            firmware->setPunch(param_punch);
+            firmware->setTightness(param_tightness);
+            firmware->setBody(param_body);
+            firmware->setBrightness(param_brightness);
+            firmware->setStretchTuning(param_stretch);
+            firmware->setAutoBend(param_auto_bend_pitch, param_auto_bend_time,
+                                  param_auto_bend_vel, param_auto_bend_pitch != 100);
             SDL_AtomicUnlock(&fw_lock);
-            printf("Tuning changed\n");
         }
     }
     if (ev.type == SDL_KEYUP) {
@@ -267,7 +323,7 @@ void handle_keyboard(SDL_Event &ev) {
 
 int main(int argc, char *argv[]) {
     if (argc < 6) {
-        fprintf(stderr, "Usage: %s <ic5> <ic6> <ic7> <paramsrom> <rd200|mks20> [ic5b ic6b ic7b]\n", argv[0]);
+        fprintf(stderr, "Usage: %s <ic5> <ic6> <ic7> <paramsrom> <rd200|mks20|mk80> [ic5b ic6b ic7b]\n", argv[0]);
         return 1;
     }
 
@@ -278,7 +334,10 @@ int main(int argc, char *argv[]) {
     if (ic5.empty() || ic6.empty() || ic7.empty() || paramsrom_raw.empty()) return 1;
 
     bool is_rd200 = (strcmp(argv[5], "rd200") == 0);
-    auto fmt = is_rd200 ? ParamsRomFormat::RD200 : ParamsRomFormat::MKS20;
+    bool is_mk80  = (strcmp(argv[5], "mk80") == 0);
+    auto fmt = is_rd200 ? ParamsRomFormat::RD200
+             : is_mk80  ? ParamsRomFormat::MK80
+             : ParamsRomFormat::MKS20;
 
     // Descramble and parse wave ROMs (set A)
     std::vector<uint8_t> ic5d(0x20000), ic6d(0x20000), ic7d(0x20000);
@@ -351,6 +410,8 @@ int main(int argc, char *argv[]) {
     printf("  Keys: A-L = white keys (C4-D5), W/E/T/Y/U/O = black keys\n");
     printf("  Keys: Z-M = lower octave (C3-B3)\n");
     printf("  1-8 = program change, Space = sustain pedal\n");
+    printf("  F1/F2=Punch  F3/F4=Tightness  F5/F6=Body  F7/F8=Brightness\n");
+    printf("  F9/F10=Stretch  F11/F12=AutoBend pitch  9/0=time  -/+=vel\n");
     printf("  Esc/close window = quit\n\n");
 
     // Main loop
