@@ -2,7 +2,9 @@
 #define SOUND_CHIP_H
 
 #include <cstdint>
+#include <functional>
 #include "mame_utils.h"
+#include "constants.h"
 
 class SoundChip {
 public:
@@ -23,15 +25,10 @@ public:
   void silencePart(int voice, int part);
   void clearPart(int voice, int part);
 
-  // IRQ
-  bool irqTriggered = false;
-  uint8_t getIrqId() const { return m_irq_id; }
+  // Envelope IRQ callback: called with (voice, part) when envelope reaches destination
+  std::function<void(int voice, int part)> onEnvelopeIRQ;
 
 private:
-  static constexpr unsigned NUM_VOICES = 16;
-  static constexpr unsigned PARTS_PER_VOICE = 10;
-  static constexpr unsigned PARTS_PER_VOICE_MEM = 16;
-
   uint16_t samples_exp[0x20000];
   bool samples_exp_sign[0x20000];
   uint16_t samples_delta[0x20000];
@@ -54,7 +51,6 @@ private:
   };
 
   SA_Part m_parts[NUM_VOICES][PARTS_PER_VOICE_MEM];
-  uint8_t m_irq_id = 0;
 };
 
 #endif

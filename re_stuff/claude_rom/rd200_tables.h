@@ -10,6 +10,7 @@
 
 #pragma once
 #include <stdint.h>
+#include "constants.h"
 
 /* ============================================================================
  * CPU A TABLES (Front Panel / MIDI Processor)
@@ -123,7 +124,7 @@ static const uint16_t cpub_cmd_dispatch[16] = {
  * Byte 2: release_param (M00BF) - release envelope parameter
  * If M00BD is non-zero, bytes 1-2 are forced to 0.
  */
-static const uint8_t cpub_program_config[8][3] = {
+static const uint8_t cpub_program_config[NUM_PROGRAMS][3] = {
     { 0x03, 0x5A, 0x06 },  /* 0: Piano1 */
     { 0x03, 0x5A, 0x08 },  /* 1: Piano2 */
     { 0x03, 0x5A, 0x06 },  /* 2: Piano3 */
@@ -342,7 +343,7 @@ static const uint8_t cpub_env_scale_part15[64] = {  /* part 15 at F409 */
     0xCB, 0xCF, 0xD2, 0xD6, 0xD9, 0xDC, 0xE0, 0xE3, 0xE6, 0xEA, 0xED, 0xF0, 0xF3, 0xF7, 0xFA, 0xFD,
 };
 
-static const uint8_t *cpub_env_scale_tables[16] = {
+static const uint8_t *cpub_env_scale_tables[NUM_ENV_SCALE_TABLES] = {
     cpub_env_scale_part00, cpub_env_scale_part01, cpub_env_scale_part02, cpub_env_scale_part03,
     cpub_env_scale_part04, cpub_env_scale_part05, cpub_env_scale_part06, cpub_env_scale_part07,
     cpub_env_scale_part08, cpub_env_scale_part09, cpub_env_scale_part10, cpub_env_scale_part11,

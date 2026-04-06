@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <vector>
 #include <cstring>
+#include "constants.h"
 
 enum class ParamsRomFormat {
     MKS20,
@@ -39,13 +40,13 @@ struct EnvPartSetup {
 
 // Per-envelope-index entry (10 parts)
 struct EnvSetup {
-    EnvPartSetup parts[10];
+    EnvPartSetup parts[PARTS_PER_VOICE];
 };
 
 // Per-note entry from the note mapping table (21 bytes)
 struct NoteMapping {
     uint8_t env_index;
-    uint16_t pitch[10];  // 10 pitch values (big-endian in ROM)
+    uint16_t pitch[PARTS_PER_VOICE];  // pitch values (big-endian in ROM)
 };
 
 // Complete parsed patch data
@@ -63,7 +64,7 @@ struct PatchData {
 enum class ParamsRomFormat;
 
 struct PatchSet {
-    PatchData patches[8];
+    PatchData patches[NUM_PROGRAMS];
 
     // Parse IC18 into patch data
     void load(const uint8_t *ic18_descrambled, ParamsRomFormat format);

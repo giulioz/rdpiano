@@ -9,6 +9,7 @@
 #pragma once
 #include <cstdint>
 #include "patch_data.h"
+#include "constants.h"
 
 class SoundChip;
 
@@ -46,8 +47,8 @@ private:
 
     // ROM tables (from rd200_tables.h, loaded once in constructor)
     struct ProgramConfig { uint8_t voice_mask, release_threshold, release_param; };
-    ProgramConfig m_program_config[8];
-    uint8_t m_env_scale[16][64];
+    ProgramConfig m_program_config[NUM_PROGRAMS];
+    uint8_t m_env_scale[NUM_ENV_SCALE_TABLES][NUM_ENV_SCALE_ENTRIES];
 
     // State
     uint8_t m_soft_pedal = 0;
@@ -60,9 +61,6 @@ private:
     int16_t m_tuning = 0;
 
     // Voice state
-    static constexpr int NUM_VOICES = 16;
-    static constexpr int PARTS_PER_NOTE = 10;
-
     struct VoicePart {
         uint8_t field0 = 0;
         uint8_t velocity_level = 0;
@@ -72,7 +70,7 @@ private:
     };
 
     struct Voice {
-        VoicePart parts[PARTS_PER_NOTE];
+        VoicePart parts[PARTS_PER_VOICE];
         uint8_t note = 0;
         uint8_t wave_param = 0;
         uint8_t flags = 0;        // bit 7=active, 5=sustain, 4=sent, 6=sostenuto, 0=env
@@ -93,7 +91,7 @@ private:
     void chip_write(int voice, int part, int field, uint8_t value);
     void chip_write16(int voice, int part, int field, uint16_t value);
 
-    void on_envelope_irq(uint8_t voice_id, uint8_t part_id);
+    void on_envelope_irq(int voice_id, int part_id);
     uint16_t interpolate(const EnvChainEntry &e, uint8_t wp_double, uint8_t vel_level);
     uint8_t scale_lookup(uint8_t scaling_idx, uint8_t wp_quarter);
 };

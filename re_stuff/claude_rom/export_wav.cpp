@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
     const char *names[] = {"Piano_1","Piano_2","Piano_3","Harpsichord","Clavi","Vibraphone","EPiano_1","EPiano_2"};
     static const int mks20_romset[] = {0,0,0,1,1,1,1,1}; // 0=set A, 1=set B
 
-    for (int pgm = 0; pgm < 8; pgm++) {
+    for (int pgm = 0; pgm < NUM_PROGRAMS; pgm++) {
         const PatchData &pd = patch_set.patches[pgm];
         int sr = (pd.flags & 0x04) ? 20000 : 32000;
         printf("\n=== %d: %s (%dHz) ===\n", pgm, names[pgm], sr);

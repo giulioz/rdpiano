@@ -7,19 +7,19 @@
 void PatchSet::load(const uint8_t *ic18, ParamsRomFormat format) {
     if (format == ParamsRomFormat::RD200) {
         // RD200: program table at IC18[0], 8 entries of {bank, addr_hi, addr_lo}
-        for (int pgm = 0; pgm < 8; pgm++) {
+        for (int pgm = 0; pgm < NUM_PROGRAMS; pgm++) {
             uint8_t bank = ic18[pgm * 3];
             uint16_t addr = (ic18[pgm * 3 + 1] << 8) | ic18[pgm * 3 + 2];
             parse_patch(ic18, bank, addr, patches[pgm]);
         }
     } else {
         // MKS-20: patches at hardcoded offsets, no program table in ROM
-        static const uint32_t offsets[8] = {
+        static const uint32_t offsets[NUM_PROGRAMS] = {
             0x000000, 0x008000, 0x010000, 0x018000,
             0x003C20, 0x00AB50, 0x014260, 0x01BEF0
         };
         // Build a full IC18 mapping (all 4 banks accessible)
-        for (int pgm = 0; pgm < 8; pgm++) {
+        for (int pgm = 0; pgm < NUM_PROGRAMS; pgm++) {
             uint8_t bank = offsets[pgm] / 0x8000;
             uint16_t addr = 0x4000 + (offsets[pgm] % 0x8000);
             parse_patch(ic18, bank, addr, patches[pgm]);
@@ -45,7 +45,7 @@ void PatchSet::parse_patch(const uint8_t *ic18, uint8_t bank, uint16_t base_addr
     for (int n = 0; n < max_notes; n++) {
         uint16_t entry = note_map_addr + n * 21;
         out.note_map[n].env_index = rd(entry);
-        for (int p = 0; p < 10; p++) {
+        for (int p = 0; p < PARTS_PER_VOICE; p++) {
             uint8_t hi = rd(entry + 1 + p * 2);
             uint8_t lo = rd(entry + 1 + p * 2 + 1);
             out.note_map[n].pitch[p] = (hi << 8) | lo;
@@ -65,7 +65,7 @@ void PatchSet::parse_patch(const uint8_t *ic18, uint8_t bank, uint16_t base_addr
         uint16_t env_base = env_map_addr + ei * 70;
         EnvSetup &es = out.env_table[ei];
 
-        for (int p = 0; p < 10; p++) {
+        for (int p = 0; p < PARTS_PER_VOICE; p++) {
             uint16_t pe = env_base + p * 7;
             EnvPartSetup &eps = es.parts[p];
 

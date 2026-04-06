@@ -294,10 +294,9 @@ s32 SoundChip::update()
                     result += exp_val;
             }
 
-            if (irq && !irqTriggered)
+            if (irq && onEnvelopeIRQ)
             {
-                m_irq_id = partI | (voiceI << 4);
-                irqTriggered = true;
+                onEnvelopeIRQ(voiceI, partI);
             }
         }
     }
@@ -415,6 +414,8 @@ void SoundChip::silencePart(int voice, int part) {
 
 void SoundChip::clearPart(int voice, int part) {
     auto &p = m_parts[voice][part];
+    p.sub_phase = 0;
+    p.env_value = 0;
     p.pitch_lut_i = 0;
     p.wave_addr_loop = 0;
     p.wave_addr_high = 0;

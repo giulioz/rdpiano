@@ -12,17 +12,21 @@
 // ============================================================================
 
 SynthFirmware::SynthFirmware(SoundChip &chip) : m_chip(chip) {
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < NUM_PROGRAMS; i++)
         m_program_config[i] = {cpub_program_config[i][0], cpub_program_config[i][1], cpub_program_config[i][2]};
-    for (int p = 0; p < 16; p++)
-        memcpy(m_env_scale[p], cpub_env_scale_tables[p], 64);
+    for (int p = 0; p < NUM_ENV_SCALE_TABLES; p++)
+        memcpy(m_env_scale[p], cpub_env_scale_tables[p], NUM_ENV_SCALE_ENTRIES);
 
-    for (int v = 0; v < 16; v++)
-        for (int p = 0; p < 16; p++)
+    for (int v = 0; v < NUM_VOICES; v++)
+        for (int p = 0; p < PARTS_PER_VOICE_MEM; p++)
             m_chip.clearPart(v, p);
 
     m_voice_rr = 0;
     for (int i = 0; i < NUM_VOICES; i++) m_voice_order[i] = i;
+
+    m_chip.onEnvelopeIRQ = [this](int voice, int part) {
+        on_envelope_irq(voice, part);
+    };
 }
 
 // ============================================================================
@@ -49,12 +53,6 @@ void SynthFirmware::loadPatch(const PatchData &patch) {
 
 int32_t SynthFirmware::generateSample() {
     voice_gc();
-    int guard = 0;
-    while (m_chip.irqTriggered && guard++ < 32) {
-        m_chip.irqTriggered = false;
-        uint8_t id = m_chip.getIrqId();
-        on_envelope_irq(id >> 4, id & 0x0F);
-    }
     return m_chip.update();
 }
 
@@ -69,7 +67,7 @@ uint16_t SynthFirmware::interpolate(const EnvChainEntry &e, uint8_t wp2, uint8_t
 }
 
 uint8_t SynthFirmware::scale_lookup(uint8_t idx, uint8_t wpq) {
-    return (idx <= 30 && !(idx & 1)) ? m_env_scale[idx/2][wpq<64?wpq:63] : 0xFF;
+    return (idx <= (NUM_ENV_SCALE_TABLES-1)*2 && !(idx & 1)) ? m_env_scale[idx/2][wpq<NUM_ENV_SCALE_ENTRIES?wpq:NUM_ENV_SCALE_ENTRIES-1] : 0xFF;
 }
 
 // ============================================================================
@@ -102,30 +100,30 @@ void SynthFirmware::noteOn(uint8_t note, uint8_t velocity) {
     const EnvSetup &es = m_patch->env_table[nm.env_index];
 
     // Phase 1: Clear flags/env_offset
-    for (int p = 0; p < PARTS_PER_NOTE; p++) {
+    for (int p = 0; p < PARTS_PER_VOICE; p++) {
         m_chip.setFlags(vi, p, 0x00);
         m_chip.setEnvOffset(vi, p, m_env_init_value);
     }
 
     // Phase 2: Pitches
-    for (int p = 0; p < PARTS_PER_NOTE; p++) {
+    for (int p = 0; p < PARTS_PER_VOICE; p++) {
         uint16_t pit = nm.pitch[p] + m_tuning;
         v.parts[p].pitch = pit;
         m_chip.setPitch(vi, p, pit);
     }
 
     // Phase 3: Wave addresses
-    for (int p = 0; p < PARTS_PER_NOTE; p++) {
+    for (int p = 0; p < PARTS_PER_VOICE; p++) {
         uint8_t wh = es.parts[p].wave_high + (p == 0 ? m_global_env_offset : 0);
         m_chip.setWave(vi, p, es.parts[p].wave_loop, wh);
     }
 
     // Phase 3b: field0 (release speed base)
-    for (int p = 0; p < PARTS_PER_NOTE; p++)
+    for (int p = 0; p < PARTS_PER_VOICE; p++)
         v.parts[p].field0 = es.parts[p].field0;
 
     // Phase 4: Envelope chain setup
-    for (int p = 0; p < PARTS_PER_NOTE; p++) {
+    for (int p = 0; p < PARTS_PER_VOICE; p++) {
         const auto &eps = es.parts[p];
         uint8_t si = wp_hi ? eps.scaling_idx : eps.scaling_idx_alt;
         uint8_t vl = scale_lookup(si, wpq);
@@ -145,11 +143,11 @@ void SynthFirmware::noteOn(uint8_t note, uint8_t velocity) {
     }
 
     // Phase 5: Final marker
-    m_chip.setFlags(vi, PARTS_PER_NOTE - 1, 0xFF);
-    m_chip.setEnvOffset(vi, PARTS_PER_NOTE - 1, m_env_init_value);
+    m_chip.setFlags(vi, PARTS_PER_VOICE - 1, 0xFF);
+    m_chip.setEnvOffset(vi, PARTS_PER_VOICE - 1, m_env_init_value);
 
     v.flags = 0x91 | m_sustain_mode;
-    v.assignment = 0x0A;
+    v.assignment = PARTS_PER_VOICE;
 }
 
 // ============================================================================
@@ -236,23 +234,23 @@ void SynthFirmware::release_voice(int vi) {
         for (int i=2;i<8;i++){acc=(acc+inc)&0xFFFF; rel[i]=(acc>>8)&0xFF;}
     }
 
-    for (int p = 0; p < PARTS_PER_NOTE; p++) v.parts[p].chain_index = -1;
-    static const int rm[10]={0,1,2,3,4,5,6,7,0,0};
-    for (int p = 0; p < PARTS_PER_NOTE; p++) {
+    for (int p = 0; p < PARTS_PER_VOICE; p++) v.parts[p].chain_index = -1;
+    static const int rm[PARTS_PER_VOICE]={0,1,2,3,4,5,6,7,0,0};
+    for (int p = 0; p < PARTS_PER_VOICE; p++) {
         uint16_t s = (uint16_t)rel[rm[p]] + v.parts[p].field0;
         m_chip.setEnvelope(vi, p, 0x00, (uint8_t)(s > 0xFF ? 0xFF : s));
     }
-    v.assignment = 0x0A;
+    v.assignment = PARTS_PER_VOICE;
 }
 
 void SynthFirmware::kill_voice(int vi) {
-    for (int p = 0; p < 16; p++) m_chip.silencePart(vi, p);
+    for (int p = 0; p < PARTS_PER_VOICE_MEM; p++) m_chip.clearPart(vi, p);
     m_voices[vi].flags = 0;
     m_voices[vi].assignment = 0;
 }
 
 void SynthFirmware::all_voices_off() {
-    for (int i = 0; i < NUM_VOICES; i++) if (m_voices[i].assignment) kill_voice(i);
+    for (int i = 0; i < NUM_VOICES; i++) kill_voice(i);
 }
 
 void SynthFirmware::voice_gc() {
@@ -264,7 +262,7 @@ void SynthFirmware::voice_gc() {
         else if (!(v.flags & 1)) v.assignment = 0;
         if (v.flags && !(v.flags & 0xE0)) {
             bool all = true;
-            for (int p = 0; p < PARTS_PER_NOTE; p++) if (v.parts[p].chain_index >= 0) { all = false; break; }
+            for (int p = 0; p < PARTS_PER_VOICE; p++) if (v.parts[p].chain_index >= 0) { all = false; break; }
             if (all) { v.flags = 0; v.assignment = 0; done = true; }
         }
         if (done) {
@@ -282,8 +280,8 @@ void SynthFirmware::voice_gc() {
 // Envelope IRQ
 // ============================================================================
 
-void SynthFirmware::on_envelope_irq(uint8_t vid, uint8_t pid) {
-    if (vid >= NUM_VOICES || pid >= PARTS_PER_NOTE) return;
+void SynthFirmware::on_envelope_irq(int vid, int pid) {
+    if (vid >= NUM_VOICES || pid >= PARTS_PER_VOICE) return;
     Voice &v = m_voices[vid]; VoicePart &vp = v.parts[pid];
 
     if (vp.chain_index < 0 || !vp.chain) {
