@@ -1,0 +1,517 @@
+* MKS-20 CPU B (Sound Engine) - f9dasm info file
+* HD63B03RP, ROM descrambled, mapped at E000-FFFF
+* Very similar to RD200 CPU B but with different memory layout:
+*   - RAM variables at 0x0020-0x00A6 instead of 0x0080-0x00ED
+*   - 16 voices, $60 bytes per voice in external RAM (0x0200-0x0800)
+*   - Simplified command set (no pedal commands, no param update)
+*   - Different command numbering (cmd 0x00=note-off, 0x40=pgmchg, etc.)
+
+OPTION 6301
+
+* =============================================
+* CPU Internal Registers (0x0000-0x001F)
+* =============================================
+LABEL 0000 PORT1_DDR
+LABEL 0001 PORT2_DDR
+LABEL 0002 PORT1_DATA
+LABEL 0003 PORT2_CTRL
+LABEL 0004 PORT3_DDR
+LABEL 0006 PORT3_DATA
+LABEL 0008 TCSR
+LABEL 000D ICR_LO
+
+* =============================================
+* Internal RAM - Direct Page Variables (0x0020-0x00A6)
+* MKS-20 uses direct page vars where RD200 used 0x0080+
+* =============================================
+LABEL 0020 velocity_mode_flag
+LABEL 0021 env_init_value
+LABEL 0024 params_base_hi
+LABEL 0025 params_base_lo
+LABEL 0026 note_map_offset_hi
+LABEL 0027 note_map_offset_lo
+LABEL 0028 env_map_offset_hi
+LABEL 0029 env_map_offset_lo
+LABEL 002A env_chain_ptr_hi
+LABEL 002B env_chain_ptr_lo
+LABEL 002C note_entry_ptr_hi
+LABEL 002D note_entry_ptr_lo
+LABEL 002E env_data_ptr_hi
+LABEL 002F env_data_ptr_lo
+LABEL 0030 sound_chip_ptr_hi
+LABEL 0031 sound_chip_ptr_lo
+LABEL 0032 saved_sp_hi
+LABEL 0033 saved_sp_lo
+LABEL 0034 voice_ram_ptr_hi
+LABEL 0035 voice_ram_ptr_lo
+LABEL 0036 mul_temp_hi
+LABEL 0037 mul_temp_lo
+LABEL 0038 global_env_offset
+LABEL 0039 program_flags
+LABEL 003A current_program
+LABEL 003B prev_program
+LABEL 003C wave_param
+LABEL 003D wave_param_quarter
+LABEL 003E wave_param_double
+LABEL 003F env_velocity_temp
+LABEL 0040 cur_voice_slot_hi
+LABEL 0041 cur_sub_param
+LABEL 0060 num_voice_slots_hi
+LABEL 0063 num_active_parts_hi
+LABEL 0065 irq_chip_index
+LABEL 0066 irq_wave_param
+LABEL 0067 irq_wave_double
+LABEL 0068 irq_velocity
+LABEL 0069 irq_voice_ram_hi
+LABEL 006A irq_voice_ram_lo
+LABEL 006B irq_env_chain_hi
+LABEL 006C irq_env_chain_lo
+LABEL 006D irq_sndchip_hi
+LABEL 006E irq_sndchip_lo
+LABEL 0071 timeout_counter
+LABEL 0072 rx_command
+LABEL 0075 rx_data_hi
+LABEL 0077 rx_data_byte2
+LABEL 0078 rx_data_byte3
+LABEL 0079 cmd_queue_rd_hi
+LABEL 007A cmd_queue_rd_lo
+LABEL 007B tuning_value_hi
+LABEL 007C tuning_value_lo
+LABEL 007D cmd_queue_wr_hi
+LABEL 007E cmd_queue_wr_lo
+LABEL 007F sound_chip_iter_hi
+LABEL 0080 sound_chip_iter_lo
+LABEL 0081 voice_state_iter_hi
+LABEL 0082 voice_state_iter_lo
+LABEL 0084 voice_param_queue_0
+LABEL 008B voice_wavep_queue
+LABEL 0094 voice_rr_ptr_hi
+LABEL 0095 voice_rr_ptr_lo
+LABEL 0097 sched_rr_A_hi
+LABEL 0099 sched_rr_B_hi
+LABEL 009B sched_rr_C_hi
+LABEL 009C sched_rr_C_lo
+LABEL 009D sched_rr_D_hi
+LABEL 009F note_number
+LABEL 00A0 sustain_release_mode
+LABEL 00A1 soft_pedal_flag
+LABEL 00A2 layer_flag
+LABEL 00A3 velocity_mode
+LABEL 00A5 voice_alloc_base_hi
+LABEL 00A6 voice_alloc_base_lo
+LABEL 00BD release_mask_override
+LABEL 00BF release_param
+LABEL 00D2 irq_env_velocity
+LABEL 00D4 irq_env_voice_ram_hi
+LABEL 00D5 irq_env_voice_ram_lo
+LABEL 00D6 irq_env_chain_hi2
+LABEL 00D7 irq_env_chain_lo2
+LABEL 00D9 release_env_cache_0
+LABEL 00DA release_env_cache_1
+LABEL 00DC release_env_lo_0
+LABEL 00DE release_env_lo_2
+LABEL 00DF release_env_hi_2
+LABEL 00E0 release_env_lo_3
+LABEL 00E4 tuning_prev_hi
+LABEL 00E8 env_interp_temp
+LABEL 00EF voice_state_area
+LABEL 00F8 voice_state_area_end
+LABEL 00FF stack_guard
+
+* =============================================
+* External RAM
+* =============================================
+LABEL 0100 STACK_BOTTOM
+LABEL 01FF STACK_TOP
+LABEL 0200 VOICE_RAM_BASE
+
+* =============================================
+* Memory-mapped devices
+* =============================================
+LABEL 1000 SOUND_CHIP_BASE
+LABEL 4000 PARAMS_ROM_BASE
+
+* =============================================
+* Bank select latch (directly at ROM base address)
+* =============================================
+LABEL E000 BANK_LATCH
+
+* =============================================
+* CODE: Init - clear RAM subroutine (E000-E00E)
+* Clears 0x63 bytes starting at 0x0020
+* =============================================
+CODE E000-E00E
+LABEL E000 clear_ram_20
+LABEL E006 clear_ram_loop
+
+* =============================================
+* CODE: RESET handler and initialization (E00F-E0BA)
+* =============================================
+CODE E00F-E0BA
+LABEL E00F reset_handler
+LABEL E03D reset_init_voice_env
+LABEL E04A reset_load_program
+LABEL E055 reset_set_samplerate
+LABEL E05B reset_samplerate_port
+LABEL E062 reset_set_params_base
+LABEL E071 reset_clear_port1
+LABEL E074 reset_init_soundchip
+LABEL E077 reset_init_voice_loop
+LABEL E093 reset_init_env_offset
+LABEL E099 reset_env_offset_loop
+LABEL E0A3 reset_delay_fill
+LABEL E0A4 reset_delay_loop
+LABEL E0A7 reset_clear_env_dest
+LABEL E0AB reset_clear_env_loop
+LABEL E0B7 reset_enable_irq
+
+* =============================================
+* CODE: Main loop (E0BB-E11F)
+* Polls tuning_value vs tuning_prev; when changed,
+* processes note command queue.
+* Different from RD200: no voice_update_tick call,
+* compares cmd_queue_rd vs tuning_value.
+* =============================================
+CODE E0BB-E11F
+LABEL E0BB main_loop
+LABEL E0C7 process_note_commands
+LABEL E0D6 process_note_next
+LABEL E0F0 process_note_active
+LABEL E119 process_note_advance
+
+* =============================================
+* CODE: ICF handler - inter-CPU receive (E120-E163)
+* Input Capture Flag interrupt - receives commands
+* from CPU A via parallel port protocol
+* =============================================
+CODE E120-E163
+LABEL E120 icf_handler
+LABEL E125 icf_wait_clock_low
+LABEL E130 icf_dispatch
+LABEL E13F icf_wait_bus_release
+LABEL E149 icf_read_tcsr
+LABEL E14D icf_read_extra_bytes
+LABEL E157 icf_wait_clock_low_2
+
+* =============================================
+* DATA: Command dispatch table (E164-E183)
+* 16 x 2-byte pointers, indexed by (cmd & 0xF0) >> 3
+*
+* Command mapping (different from RD200!):
+*   0x00 -> E671 cmd_00_note_off
+*   0x10 -> E2E2 cmd_10_set_env_init
+*   0x20 -> 0000 (unused)
+*   0x30 -> 0000 (unused)
+*   0x40 -> E191 cmd_40_program_change
+*   0x50 -> 0000 (unused)
+*   0x60 -> 0000 (unused)
+*   0x70 -> 0000 (unused)
+*   0x80 -> E2F0 cmd_80_note_on_L1
+*   0x90 -> 0000 (unused)
+*   0xA0 -> E2EA cmd_A0_note_on_L2
+*   0xB0 -> 0000 (unused)
+*   0xC0 -> E2E2 cmd_C0_set_env_init
+*   0xD0 -> 0000 (unused)
+*   0xE0 -> E184 cmd_E0_tuning
+*   0xF0 -> EC43 cmd_F0_config
+*
+* Note: MKS-20 has NO pedal commands (50/60/70),
+* NO param update commands (80/A0 in RD200),
+* NO voice reset/update commands (00/10/90 in RD200)
+* =============================================
+WORD E164-E183
+LABEL E164 cmd_dispatch_table
+
+* =============================================
+* CODE: Tuning command E0 handler (E184-E190)
+* Receives 14-bit tuning value from CPU A
+* Identical algorithm to RD200
+* =============================================
+CODE E184-E190
+LABEL E184 cmd_E0_tuning
+
+* =============================================
+* CODE: Program change handler (E191-E205)
+* Cmd 0x40 - selects program from IC18 patch table
+* Lower nibble = program number (0-7)
+* =============================================
+CODE E191-E205
+LABEL E191 cmd_40_program_change
+LABEL E1A9 program_change_set_bank
+LABEL E1CC program_change_samplerate
+LABEL E1DE program_change_wait
+LABEL E1E3 program_change_reload
+LABEL E1E9 program_set_samplerate_flags
+LABEL E1FC program_store_prev
+LABEL E203 program_change_cleanup
+
+* =============================================
+* CODE: All voices off / program clear (E206-E2C1)
+* =============================================
+CODE E206-E2C1
+LABEL E206 all_voices_off
+LABEL E213 all_voices_off_loop
+LABEL E220 all_voices_next
+LABEL E237 voice_drain_wait
+LABEL E23F voice_drain_poll
+LABEL E266 voice_force_kill
+LABEL E26F voice_force_kill_loop
+LABEL E281 voice_force_next
+LABEL E291 voice_force_drain_wait
+LABEL E299 voice_force_drain_poll
+LABEL E2C0 all_voices_done
+
+* =============================================
+* CODE: Voice RAM zero subroutine (E2C2-E2DF)
+* Clears 10 envelope pairs in voice RAM, then
+* writes 0x00F8 to sound chip env register
+* =============================================
+CODE E2C2-E2E1
+LABEL E2C2 voice_zero_ram
+
+* =============================================
+* CODE: Set env init / Note-on dispatch (E2E2-E30D)
+* Cmd 0x10/0xC0: set env_init_value
+* Cmd 0x80: note on layer 1
+* Cmd 0xA0: note on layer 2
+* =============================================
+CODE E2E2-E30D
+LABEL E2E2 cmd_10_set_env_init
+LABEL E2EA cmd_A0_note_on_L2
+LABEL E2F0 cmd_80_note_on_L1
+LABEL E2F2 note_on_check_mode
+LABEL E2FC note_on_store_wave
+LABEL E30D note_on_skip
+
+* =============================================
+* CODE: Note-on core - pitch and envelope setup (E30E-E63E)
+* Full voice setup: calculates pitch from IC18 note
+* tables, loads envelope chain from IC18, applies
+* envelope scaling curves. 10 partials per voice.
+* =============================================
+CODE E30E-E63E
+LABEL E30E note_on_calc_pitch
+LABEL E320 note_on_get_voice
+LABEL E33E note_on_start_voice
+LABEL E346 note_on_save_sp
+LABEL E34A note_on_write_wave
+LABEL E351 write_pitch_to_soundchip
+LABEL E374 load_pitch_from_ic18
+LABEL E3F6 load_envelope_from_ic18
+LABEL E489 setup_envelope_chain
+LABEL E490 setup_env_chain_ptr
+LABEL E496 load_env_scaling_p0
+LABEL E4B8 setup_env_pair_p1
+LABEL E4C0 load_env_scaling_p1
+LABEL E4E2 setup_env_pair_p2
+LABEL E4EA load_env_scaling_p2
+LABEL E50C setup_env_pair_p3
+LABEL E514 load_env_scaling_p3
+LABEL E536 setup_env_pair_p4
+LABEL E53E load_env_scaling_p4
+LABEL E560 setup_env_pair_p5
+LABEL E568 load_env_scaling_p5
+LABEL E58A setup_env_pair_p6
+LABEL E592 load_env_scaling_p6
+LABEL E5B4 setup_env_pair_p7
+LABEL E5BC load_env_scaling_p7
+LABEL E5DE setup_env_pair_p8
+LABEL E5E6 load_env_scaling_p8
+LABEL E608 setup_env_pair_p9
+LABEL E610 load_env_scaling_p9
+LABEL E632 load_env_finish
+
+* =============================================
+* CODE: Envelope interpolation helper (E63F-E670)
+* Interpolates between two envelope values using
+* wave_param and env_velocity_temp as blend factors
+* =============================================
+CODE E63F-E670
+LABEL E63F env_interp_no_scale
+LABEL E643 env_interp_with_velocity
+LABEL E649 env_interp_calc
+LABEL E659 env_interp_apply_prev
+LABEL E66D env_interp_no_prev
+
+* =============================================
+* CODE: Note-off handler cmd 0x00 (E671-E6F4)
+* Releases a voice and clears its envelope data
+* =============================================
+CODE E671-E6F4
+LABEL E671 cmd_00_note_off
+LABEL E6F4 note_off_done
+
+* =============================================
+* CODE: Write envelope to all partials (E6F5-E71B)
+* Writes the same D value to 10 sound chip partial
+* envelope registers (offsets $04,$14,...$94)
+* Uses BRA $+2 pipeline trick for timing
+* =============================================
+CODE E6F5-E71B
+LABEL E6F5 write_env_all_partials
+
+* =============================================
+* CODE: Voice kill - forced release (E71C-E770)
+* Kills a voice by writing damping envelope and
+* waiting for sound chip to finish processing
+* =============================================
+CODE E71C-E770
+LABEL E71C voice_kill
+LABEL E76F voice_kill_done
+
+* =============================================
+* CODE: IRQ voice done handler (E771-E78A)
+* Called when IRQ finds a voice with zero envelope
+* chain pointer - decrements the voice active counter
+* =============================================
+CODE E771-E78A
+LABEL E771 irq_voice_done
+
+* =============================================
+* CODE: IRQ1 handler - sound chip envelope (E78B-E80A)
+* Processes envelope interpolation for the sound chip
+* that triggered the interrupt. Reads chip index from
+* SOUND_CHIP_BASE, computes voice RAM offset, loads
+* envelope chain pointer, interpolates next envelope
+* value, and writes to sound chip.
+* =============================================
+CODE E78B-E80A
+LABEL E78B irq_handler
+LABEL E7D0 irq_interp_calc
+LABEL E7E1 irq_interp_velocity
+LABEL E7F2 irq_write_envelope
+LABEL E7FB irq_clear_chain
+LABEL E801 irq_no_scale
+LABEL E806 irq_no_velocity
+
+* =============================================
+* DATA: Envelope scaling pointer table (E80B-E82A)
+* 16 x 2-byte pointers to 64-byte scaling curves
+* Referenced by LDX #$E80B (appears 10 times)
+* =============================================
+WORD E80B-E82A
+LABEL E80B env_scaling_ptr_table
+
+* =============================================
+* DATA: IC18 patch offset table (E82B-E842)
+* 8 entries x 3 bytes each: bank, addr_hi, addr_lo
+* Referenced at E198: LDX #$E82B
+* =============================================
+DATA E82B-E842
+LABEL E82B ic18_patch_table
+
+* =============================================
+* DATA: Envelope scaling curves (E843-EC42)
+* 16 tables x 64 bytes each = 1024 bytes
+* Indexed by note number (quarter value) for
+* per-partial velocity/envelope scaling
+* =============================================
+DATA E843-EC42
+LABEL E843 env_scale_part00
+LABEL E883 env_scale_part01
+LABEL E8C3 env_scale_part02
+LABEL E903 env_scale_part03
+LABEL E943 env_scale_part04
+LABEL E983 env_scale_part05
+LABEL E9C3 env_scale_part06
+LABEL EA03 env_scale_part07
+LABEL EA43 env_scale_part08
+LABEL EA83 env_scale_part09
+LABEL EAC3 env_scale_part10
+LABEL EB03 env_scale_part11
+LABEL EB43 env_scale_part12
+LABEL EB83 env_scale_part13
+LABEL EBC3 env_scale_part14
+LABEL EC03 env_scale_part15
+
+* =============================================
+* CODE: F0 config command handler (EC43-EC8C)
+* Sub-dispatches based on rx_data_byte2
+* =============================================
+CODE EC43-EC8C
+LABEL EC43 cmd_F0_config
+LABEL EC5B f0_00_set_velocity_mode
+LABEL EC62 f0_01_sample_rate
+LABEL EC6B f0_01_rate_32khz
+LABEL EC72 f0_03_set_global_env_offset
+LABEL EC75 f0_04_bank_latch
+LABEL EC79 f0_04_write_latch
+LABEL EC7D f0_02_params_table
+
+* =============================================
+* DATA: F0 sub-dispatch pointer table (EC51-EC5A)
+* 5 x 2-byte pointers for F0 sub-commands 0-4
+* =============================================
+WORD EC51-EC5A
+LABEL EC51 f0_subdispatch_table
+
+* =============================================
+* DATA: Params pointer table (EC8D-ECA4)
+* Pairs of pointers for alternate parameter sets
+* =============================================
+WORD EC8D-ECA4
+LABEL EC8D params_ptr_index
+
+* =============================================
+* DATA: Alternative note/env map data (ECA5-ECCD)
+* Note mapping tables for alternate voice configs
+* =============================================
+DATA ECA5-ECCD
+LABEL ECA5 alt_note_map_data
+
+* =============================================
+* DATA: Default envelope chain templates (ECCE-EDA6)
+* Pre-built envelope chain data used for voice
+* initialization. Multiple templates for different
+* voice configurations.
+* =============================================
+DATA ECCE-EDA6
+LABEL ECCE env_chain_template_A
+LABEL ED17 env_chain_template_B
+LABEL ED5D env_chain_template_C
+
+* =============================================
+* DATA: Release envelope table (EDA7-EEC0)
+* Release envelope curves for voice release.
+* Content is identical to RD200's release_env_table.
+* Starts with 6-byte chain header at EDA7,
+* then 7-byte entries from EDAD onward.
+* =============================================
+DATA EDA7-EEC0
+LABEL EDA7 release_env_chain_start
+LABEL EDAD release_env_table
+
+* =============================================
+* DATA: Extended envelope curve data (EEC1-EFFF)
+* Additional envelope curve data for releases
+* and sustained tones. Continues to end of
+* meaningful data before FF padding.
+* =============================================
+DATA EEC1-EFFF
+LABEL EEC1 env_curve_extended
+
+* =============================================
+* UNUSED: 0xFF padding (F000-FFED)
+* The MKS-20 ROM is smaller than RD200 and does
+* not include the sound chip interface code that
+* RD200 has at F449-FFF6. This area is all 0xFF.
+* =============================================
+UNUSED F000-FFED
+
+* =============================================
+* DATA: Padding before vectors (FFEE-FFEF)
+* =============================================
+DATA FFEE-FFEF
+
+* =============================================
+* DATA: HD6301 Vector table (FFF0-FFFF)
+* =============================================
+WORD FFF0-FFFF
+LABEL FFF0 vec_trap
+LABEL FFF2 vec_sci
+LABEL FFF4 vec_tof
+LABEL FFF6 vec_icf
+LABEL FFF8 vec_irq1
+LABEL FFFA vec_swi
+LABEL FFFC vec_nmi
+LABEL FFFE vec_reset

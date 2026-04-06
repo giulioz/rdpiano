@@ -344,3 +344,174 @@ Custom Roland chip with 16 voices × 10 active parts per voice (16 memory slots,
 ### Sample Rates
 - **20kHz mode** (flags bit 2 = 1): 16 parts per voice, ~100 CPU cycles per sample
 - **32kHz mode** (flags bit 2 = 0): 10 parts per voice, ~62 CPU cycles per sample
+
+---
+
+## MKS-20 CPU B Comparison
+
+The MKS-20 Digital Piano Module (1986) shares the same hardware as the RD-200 — identical sound chip, same CPU B (HD63B03RP), same IC18 params ROM format, same wave ROM format. The CPU B ROM is a different firmware revision with a simplified architecture.
+
+### ROM Layout Comparison
+
+| Region | RD200 Address | MKS-20 Address | Notes |
+|--------|---------------|----------------|-------|
+| Init/main loop | E000-E120 | E000-E11F | Very similar |
+| ICF handler | E121-E16D | E120-E163 | Same protocol |
+| Cmd dispatch table | E16E-E18D | E164-E183 | Different cmd numbers |
+| Program change | E19B | E191 | MKS-20 has IC18 offset table in ROM |
+| Pedal handlers | E3F2-E4F9 | *absent* | MKS-20 has no pedal commands |
+| Voice alloc | E51B-E655 | (within E30E-E63E) | Restructured |
+| Note setup | E79B-EBB6 | E30E-E63E | Same algorithm, compacted |
+| IRQ handler | ED1A-ED9C | E78B-E80A | Same algorithm |
+| Env scaling ptrs | ED9D | E80B | Same structure, 16 entries |
+| Env scale curves | F049-F448 | E843-EC42 | 16 × 64 bytes, minor value diffs |
+| F0 config handler | EDBD-EDFE | EC43-EC8C | 5 subcmds (vs 6 for RD200) |
+| Program config | E254 | *absent* | MKS-20 has no per-program release tuning |
+| IC18 patch table | (in IC18 ROM) | E82B | MKS-20 stores offsets in CPU B ROM |
+| Release env table | EF29 | EDAD | **Identical** content |
+| Sound chip I/O | (inline) | (inline) | Both write directly to 0x1000 |
+| Padding (0xFF) | F449-FFEF | F000-FFED | MKS-20 is more compact |
+| Vectors | FFF0-FFFF | FFF0-FFFF | Different handler addresses |
+
+Overall: 54% byte-identical (mostly due to shared padding and identical sound chip I/O patterns).
+
+### Architecture Difference: "Smart CPU A" vs "Smart CPU B"
+
+The fundamental difference is where musical intelligence lives:
+
+| Feature | RD200 | MKS-20 |
+|---------|-------|--------|
+| Voice allocation | CPU B (round-robin with steal) | CPU A (pre-assigned in command byte) |
+| Sustain pedal | CPU B (internal flag, prevents release) | CPU A (withholds note-off commands) |
+| Sostenuto pedal | CPU B (internal flag per voice) | CPU A (same approach as sustain) |
+| Soft pedal | CPU B (receives value from CPU A) | CPU A only (not sent to CPU B) |
+| Voice stealing | CPU B (searches for reclaimable voice) | CPU A (chooses which slot to reuse) |
+| Note-off matching | CPU B (searches by note number) | CPU A (targets slot directly by index) |
+
+The MKS-20 CPU B is a **"dumb voice player"** — it just plays slot V when told and releases slot V when told. CPU A does all the decision-making.
+
+### Command Protocol Differences
+
+Both use the same physical protocol: P1 data bus, P2.0 clock (ICF interrupt), P2.4 acknowledge. Bit 7 of first byte determines 1-byte vs 3-byte command. Upper nibble indexes dispatch table.
+
+**RD200 Command Map:**
+
+| Byte | Type | Command |
+|------|------|---------|
+| 0x0n | 1-byte | Voice reset with param n |
+| 0x1n | 1-byte | Voice update tick |
+| 0x3n | 1-byte | Program change (n = program 0-7) |
+| 0x50/0x5F | 1-byte | Sustain OFF/ON |
+| 0x60/0x6F | 1-byte | Sostenuto OFF/ON |
+| 0x70/0x7F | 1-byte | Soft pedal OFF/ON |
+| 0x80,off,val | 3-byte | Param update (low range) |
+| 0xA0,off,val | 3-byte | Param update (high range) |
+| 0xB0,note,0 | 3-byte | Note off (CPU B searches by note) |
+| 0xC0,note,vel | 3-byte | Note on layer 1 (CPU B allocates voice) |
+| 0xD0,note,vel | 3-byte | Note on layer 2 |
+| 0xE0,hi,lo | 3-byte | Tuning (14-bit signed) |
+| 0xF0,sub,val | 3-byte | Config (6 sub-commands) |
+
+**MKS-20 Command Map:**
+
+| Byte | Type | Command |
+|------|------|---------|
+| 0x0V | 3-byte | Note off voice slot V (CPU A specifies slot) |
+| 0x1V,_,val | 3-byte | Set env_init_value for voice V |
+| 0x4n | 1-byte | Program change (n = program 0-7) |
+| 0x8V,note,vel | 3-byte | Note on layer 1, voice slot V |
+| 0xAV,note,vel | 3-byte | Note on layer 2, voice slot V |
+| 0xCV,_,val | 3-byte | Set env_init_value (alias for 0x1V) |
+| 0xE0,hi,lo | 3-byte | Tuning (14-bit signed, identical) |
+| 0xF0,sub,val | 3-byte | Config (5 sub-commands) |
+
+Key differences:
+- **Voice slot in command byte**: MKS-20 embeds the voice slot (0-15) in the lower nibble of note-on/off commands. CPU A pre-assigns voices.
+- **No pedal commands**: Sustain/sostenuto/soft are handled entirely by CPU A.
+- **No param update**: The 0x80/0xA0 hot-update commands don't exist.
+- **New set_env_init (0x10/0xC0)**: Allows CPU A to set the envelope initial value per-voice before note-on. RD200 hardcodes this to 0xFF.
+
+### F0 Config Sub-commands
+
+| Sub | RD200 | MKS-20 | Identical? |
+|-----|-------|--------|------------|
+| F0,00 | Velocity mode (stores 0x01) | Velocity mode (stores 0xFF) | Functionally same |
+| F0,01 | Sample rate muting | Sample rate muting | Yes |
+| F0,02 | Alt params table | Alt params table | Yes |
+| F0,03 | Global env offset | Global env offset | Yes |
+| F0,04 | Bank latch | Bank latch | Yes |
+| F0,05 | Release mask override | *absent* | RD200 only |
+
+The `F0,05` command sets `release_mask_override` which works with the `program_config_table` to tune release behavior per-program (e.g., piano programs get `mask=0x03, threshold=0x5A, param=0x06` for damper simulation). The MKS-20 has no such table — all programs share the same release behavior.
+
+### IC18 Patch Table
+
+RD200 reads the patch offset table from IC18 ROM offset 0 (8 entries × 3 bytes: bank, addr_hi, addr_lo).
+
+MKS-20 stores the patch offset table **in the CPU B ROM itself** at E82B:
+
+| Program | Bank | CPU Address | Linear Offset |
+|---------|------|-------------|---------------|
+| 0 Piano 1 | 0x00 | 0x4000 | 0x000000 |
+| 1 Piano 2 | 0x01 | 0x4000 | 0x008000 |
+| 2 Piano 3 | 0x02 | 0x4000 | 0x010000 |
+| 3 Harpsichord | 0x07 | 0x4000 | 0x038000 |
+| 4 Clavi | 0x04 | 0x7C20 | 0x023C20 |
+| 5 Vibraphone | 0x05 | 0x6B50 | 0x02AB50 |
+| 6 E-Piano 1 | 0x06 | 0x8260 | 0x034260 |
+| 7 E-Piano 2 | 0x07 | 0x7EF0 | 0x03BEF0 |
+
+Note: The bank/address encoding is different from the hardcoded offsets used by the JUCE plugin. The MKS-20 CPU B ROM calculates `bank & 0x03` for the actual bank select and adds a `prev_program & 0x04` carry for upper bank selection.
+
+### Voice RAM Layout Comparison
+
+Both ROMs use the same per-part structure for the first 60 bytes ($3C):
+
+| Offset | Size | Field | Both ROMs |
+|--------|------|-------|-----------|
+| +$00 | 2 | Envelope chain pointer | Yes |
+| +$02 | 2 | field0 / release data | Yes |
+| +$04 | 2 | Pitch value | Yes |
+| (×10 parts, stride 6) | | | |
+
+The extra fields differ:
+
+**RD200** ($3C = 60 bytes per voice):
+- No extra fields in voice RAM. Per-voice bookkeeping (flags, wave_param, note) stored in internal RAM arrays at $0020-$006F (indexed by voice number).
+- Voice flags at internal RAM offset `$50 + voice_index`.
+
+**MKS-20** ($60 = 96 bytes per voice):
+- $3C-$43: wave_param copies, envelope work area, scaling index
+- $44-$55: Pitch register shadow copies for all 10 parts (2 bytes each)
+- $45: Voice flags/assignment counter (overlaps pitch area)
+- $55: Additional state byte
+
+The MKS-20 keeps everything per-voice in one contiguous block in external RAM. The RD200 splits it between internal RAM arrays and external voice RAM. No new data — just a different memory layout. The MKS-20 approach is cleaner (fully self-contained voice state) but uses more external RAM.
+
+### Envelope Scaling Table Differences
+
+Both ROMs have 16 envelope scaling curves (64 bytes each). Tables 0 and 12 are identical. Most others differ by ±1-2 per byte (minor rounding adjustments). Two tables are significantly different:
+
+| Table | RD200 | MKS-20 | Delta |
+|-------|-------|--------|-------|
+| 0 (linear) | Identical | Identical | 0 |
+| 1-9 | Standard curves | Slightly adjusted | ±1-3 per byte, 3-25 bytes differ |
+| 10 | S-curve variant | Completely different curve | 63/64 bytes differ, max ±131 |
+| 11 | S-curve variant | Completely different curve | 63/64 bytes differ, max ±154 |
+| 12 | Inverse S-curve | Identical | 0 |
+| 13-15 | Various curves | Minor tweaks | 1-4 bytes differ, ±1 |
+
+Tables 10 and 11 appear to serve a different purpose in the MKS-20 — possibly tailored for the different patch voicing (Harpsichord/Clavi vs the RD200's E-Piano patches that use these indices).
+
+### Disassembly Files
+
+| File | Description |
+|------|-------------|
+| `RD200_B.info` | f9dasm info file for RD200 CPU B ROM |
+| `RD200_B.asm` | Annotated RD200 CPU B disassembly |
+| `RD200_B_descrambled.bin` | Descrambled RD200 CPU B ROM |
+| `MKS20_B.info` | f9dasm info file for MKS-20 CPU B ROM |
+| `MKS20_B.asm` | Annotated MKS-20 CPU B disassembly |
+| `MKS20_B_descrambled.bin` | Descrambled MKS-20 CPU B ROM |
+| `RD200_A.info` | f9dasm info file for RD200 CPU A ROM |
+| `RD200_A.asm` | Annotated RD200 CPU A disassembly |
