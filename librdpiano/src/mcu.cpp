@@ -280,6 +280,9 @@ void Mcu::reset()
   m_nmi_state = 0;
   m_nmi_pending = 0;
 
+  std::fill(std::begin(note_held), std::end(note_held), false);
+  sustain_on = false;
+
   // We need to run the CPU for a bit before being able to send commands to it
   for (size_t i = 0; i < 1024 * 8; i++)
     execute_one();
@@ -596,6 +599,7 @@ void Mcu::sendMidiCmd(u8 data1, u8 data2, u8 data3)
 
   // note off
   else if (command == 0x8 || (command == 0x9 && data3 == 0)) {
+    note_held[data2 & 0x7f] = false;
     commands_queue.push(0xB0);
     commands_queue.push(data2);
     commands_queue.push(0x00);
@@ -603,14 +607,26 @@ void Mcu::sendMidiCmd(u8 data1, u8 data2, u8 data3)
   
   // note on
   else if (command == 0x9) {
+    // retrigger of a held note: release the old voice first so one note-off silences it
+    if (note_held[data2 & 0x7f]) {
+      commands_queue.push(0xB0);
+      commands_queue.push(data2);
+      commands_queue.push(0x00);
+    }
+    note_held[data2 & 0x7f] = true;
     commands_queue.push(0xC0);
     commands_queue.push(data2);
     commands_queue.push(data3);
   }
   
   // sustain
+  // sustain: continuous pedals send many values, but the firmware must only see on/off changes
   else if (command == 0xB && data2 == 64) {
-     commands_queue.push(0x50 | (data3 >= 64 ? 0xF : 0x0));
+    bool on = data3 >= 64;
+    if (on != sustain_on) {
+      sustain_on = on;
+      commands_queue.push(0x50 | (on ? 0xF : 0x0));
+    }
   }
 }
 

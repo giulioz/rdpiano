@@ -49,6 +49,10 @@ private:
 
   SoundChip sound_chip;
 
+  // MIDI state, so the firmware only gets commands it can handle
+  bool note_held[128] = {};
+  bool sustain_on = false;
+
   u8 latch_val = 0x00;
   u8 program_rom[0x2000];
   u8 params_rom[0x20000];
